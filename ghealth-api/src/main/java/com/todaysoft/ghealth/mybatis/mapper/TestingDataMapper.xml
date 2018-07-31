@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.TestingDataMapper">
+    <!-- start 映射方法 -->
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.TestingDataUploadRecordSearcher">
+        SELECT COUNT(*) FROM GHEALTH_TESTING_DATA_UPLOAD_RECORD t
+        <include refid="TestingDataUploadRecordFilters"></include>
+    </select>
+
+    <select id="list" resultMap="TestingDataUploadRecordEntity" parameterType="com.todaysoft.ghealth.mybatis.searcher.TestingDataUploadRecordSearcher">
+        SELECT * FROM GHEALTH_TESTING_DATA_UPLOAD_RECORD t
+        <include refid="TestingDataUploadRecordFilters"></include>
+        ORDER BY t.UPLOAD_TIME DESC
+        <include refid="SearchLimit"></include>
+    </select>
+
+    <select id="get" resultMap="TestingDataUploadRecordEntity" parameterType="java.lang.String">
+        SELECT * FROM GHEALTH_TESTING_DATA_UPLOAD_RECORD t WHERE t.ID =
+        #{id}
+    </select>
+
+    <insert id="insertUploadRecord" parameterType="com.todaysoft.ghealth.mybatis.model.TestingDataUploadRecord">
+        INSERT INTO GHEALTH_TESTING_DATA_UPLOAD_RECORD
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="title != null">
+                TITLE,
+            </if>
+            <if test="filename != null">
+                FILENAME,
+            </if>
+            <if test="downloadUrl != null">
+                DOWNLOAD_URL,
+            </if>
+            <if test="uploadTime != null">
+                UPLOAD_TIME,
+            </if>
+            <if test="uploaderName != null">
+                UPLOADER_NAME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                #{title, jdbcType=TIMESTAMP},
+            </if>
+            <if test="filename != null">
+                #{filename, jdbcType=VARCHAR},
+            </if>
+            <if test="downloadUrl != null">
+                #{downloadUrl, jdbcType=VARCHAR},
+            </if>
+            <if test="uploadTime != null">
+                #{uploadTime, jdbcType=TINYINT},
+            </if>
+            <if test="uploaderName != null">
+                #{uploaderName, jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="getOrderTestingData" resultMap="OrderTestingDataEntity">
+        SELECT * FROM GHEALTH_ORDER_TESTING_DATA WHERE ORDER_ID = #{orderId, jdbcType=VARCHAR}
+    </select>
+
+    <delete id="deleteOrderTestingData" parameterType="java.lang.String">
+        DELETE FROM GHEALTH_ORDER_TESTING_DATA WHERE ORDER_ID = #{orderId, jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insertOrderTestingData" parameterType="com.todaysoft.ghealth.mybatis.model.OrderTestingData">
+        INSERT INTO GHEALTH_ORDER_TESTING_DATA
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="orderId != null">
+                ORDER_ID,
+            </if>
+            <if test="uploadRecordId != null">
+                UPLOAD_RECORD_ID,
+            </if>
+            <if test="details != null">
+                DATA_DETAILS,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="orderId != null">
+                #{orderId, jdbcType=VARCHAR},
+            </if>
+            <if test="uploadRecordId != null">
+                #{uploadRecordId, jdbcType=VARCHAR},
+            </if>
+            <if test="details != null">
+                #{details, jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <!-- end 映射方法 -->
+
+    <!-- start 内部定义 -->
+    <resultMap id="TestingDataUploadRecordEntity" type="com.todaysoft.ghealth.mybatis.model.TestingDataUploadRecord">
+        <id column="ID" property="id" />
+        <result column="TITLE" property="title" />
+        <result column="FILENAME" property="filename" />
+        <result column="DOWNLOAD_URL" property="downloadUrl" />
+        <result column="UPLOAD_TIME" property="uploadTime" />
+        <result column="UPLOADER_NAME" property="uploaderName" />
+    </resultMap>
+
+    <resultMap id="OrderTestingDataEntity" type="com.todaysoft.ghealth.mybatis.model.OrderTestingData">
+        <id column="ID" property="id" />
+        <result column="ORDER_ID" property="orderId" />
+        <result column="UPLOAD_RECORD_ID" property="uploadRecordId" />
+        <result column="DATA_DETAILS" property="details" />
+    </resultMap>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="TestingDataUploadRecordFilters">
+        WHERE 1 = 1
+        <if test="_parameter.uploaderName != null and _parameter.uploaderName != ''">
+            <bind name="uploaderNamePattern" value="'%' + _parameter.uploaderName + '%'" />
+            AND t.UPLOADER_NAME LIKE #{uploaderNamePattern}
+        </if>
+        <if test="_parameter.uploadTimeStart != null">
+            AND t.UPLOAD_TIME >= #{_parameter.uploadTimeStart}
+        </if>
+        <if test="_parameter.uploadTimeEnd != null">
+            AND t.UPLOAD_TIME &lt; #{_parameter.uploadTimeEnd}
+        </if>
+    </sql>
+    <!-- end 内部定义 -->
+</mapper>

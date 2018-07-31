@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.SignInOrderDetailMapper">
+    <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.mybatis.model.SignInHistory" >
+        <id column="ID" property="id" />
+        <result column="ORDER_ID" property="order.id" />
+        <result column="PRODUCT_ID" property="order.product.id" />
+        <result column="PRODUCT_NAME" property="order.product.name" />
+        <result column="PRODUCT_CODE" property="order.product.code" />
+        <result column="PRODUCT_GUIDING_PRICE" property="order.product.guidingPrice" />
+        <result column="CUSTOMER_ID" property="order.customer.id" />
+        <result column="CUSTOMER_NAME" property="order.customer.name" />
+        <result column="CUSTOMER_PHONE" property="order.customer.phone" />
+        <result column="CUSTOMER_SEX" property="order.customer.sex" />
+        <result column="AGENCY_ID" property="order.agency.id" />
+        <result column="AGENCY_NAME" property="order.agency.name" />
+        <result column="CODE" property="order.code" />
+    </resultMap>
+    <sql id="Base_Column_List">
+
+        select
+        gSignInHistory.ID AS ID,
+        gOrder.ID AS ORDER_ID,
+        gOrder.CODE AS CODE,
+        gOrder.STATUS AS STATUS,
+        gOrder.REPORT_PRINT_REQUIRED AS REPORT_PRINT_REQUIRED,
+        gOrder.SAMPLE_TYPE AS SAMPLE_TYPE,
+        gOrder.CREATE_TIME AS CREATE_TIME,
+        gOrder.CREATOR_NAME AS CREATOR_NAME,
+        gOrder.ACTUAL_PRICE AS ACTUAL_PRICE,
+        gOrder.SUBMITOR_NAME AS SUBMITOR_NAME,
+        gOrder.SUBMIT_TIME AS submitTime,
+        gCustomer.ID AS CUSTOMER_ID,
+        gCustomer.NAME AS CUSTOMER_NAME,
+        gCustomer.PHONE AS CUSTOMER_PHONE,
+        gCustomer.SEX AS CUSTOMER_SEX,
+        gAgency.ID AS AGENCY_ID,
+        gAgency.NAME AS AGENCY_NAME,
+        gtProduct.ID AS PRODUCT_ID,
+        gtProduct.NAME AS PRODUCT_NAME,
+        gtProduct.CODE AS PRODUCT_CODE,
+        gtProduct.GUIDING_PRICE AS PRODUCT_GUIDING_PRICE,
+        gOrder.REPORT_GENERATE_TASK AS REPORT_GENERATE_TASK
+        FROM GHEALTH_SAMPLE_SIGN_DETAILS gSignInHistory
+        LEFT JOIN ghealth_order gOrder ON gSignInHistory.ORDER_ID =gOrder.ID
+        LEFT JOIN ghealth_customer gCustomer ON gOrder.CUSTOMER_ID =
+        gCustomer.ID
+        LEFT JOIN ghealth_agency gAgency ON gOrder.AGENCY_ID = gAgency.ID
+        LEFT JOIN ghealth_testing_product gtProduct ON gOrder.PRODUCT_ID
+        = gtProduct.ID
+        LEFT JOIN ghealth_order_report_generate_task gTask ON gOrder.REPORT_GENERATE_TASK = gTask.ID
+
+    </sql>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="SearchFilters">
+        WHERE gOrder.DELETED = 0
+        <if test="_parameter.id != null and _parameter.id != ''">
+            <bind name="idPattern" value="_parameter.id + '%'" />
+            AND gSignInHistory.OPERATE_ID LIKE #{idPattern}
+        </if>
+        <if test="_parameter.agencyName != null and _parameter.agencyName != ''">
+            <bind name="agencyNamePattern" value="_parameter.agencyName + '%'" />
+            AND gAgency.NAME LIKE #{agencyNamePattern}
+        </if>
+        <if test="_parameter.agencyId != null and _parameter.agencyId != ''">
+            AND gAgency.ID = #{agencyId}
+        </if>
+        <if test="_parameter.customerName != null and _parameter.customerName != ''">
+            <bind name="customerNamePattern" value="_parameter.customerName + '%'" />
+            AND gCustomer.NAME LIKE #{customerNamePattern}
+        </if>
+
+        <if test="_parameter.orderCode != null and _parameter.orderCode != ''">
+            <bind name="orderCodePattern" value="_parameter.orderCode + '%'" />
+            AND gOrder.CODE LIKE #{orderCodePattern}
+        </if>
+        <if test="_parameter.customerId != null and _parameter.customerId != ''">
+            AND gCustomer.ID = #{customerId} AND gOrder.status BETWEEN 1 AND 6
+        </if>
+        <if test="_parameter.productId != null and _parameter.productId != ''">
+            AND gtProduct.ID = #{productId}
+        </if>
+    </sql>
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.SignInOrderDetailSearcher">
+        SELECT COUNT(*)
+        FROM GHEALTH_SAMPLE_SIGN_DETAILS gSignInHistory
+        LEFT JOIN ghealth_order gOrder ON gSignInHistory.ORDER_ID =gOrder.ID
+        LEFT JOIN ghealth_customer gCustomer ON gOrder.CUSTOMER_ID = gCustomer.ID
+        LEFT JOIN ghealth_agency
+        gAgency ON gOrder.AGENCY_ID = gAgency.ID
+        LEFT JOIN ghealth_testing_product gtProduct ON gOrder.PRODUCT_ID = gtProduct.ID
+        <include refid="SearchFilters"></include>
+    </select>
+
+    <select id="search" resultMap="BaseResultMap" parameterType="com.todaysoft.ghealth.mybatis.searcher.SignInOrderDetailSearcher">
+        <include refid="Base_Column_List"></include>
+        <include refid="SearchFilters"></include>
+        <include refid="SearchLimit"></include>
+    </select>
+
+    <select id="getSearch" resultMap="BaseResultMap" parameterType="com.todaysoft.ghealth.mybatis.searcher.SignInOrderDetailSearcher">
+        <include refid="Base_Column_List"></include>
+            WHERE gOrder.DELETED = 0 AND gSignInHistory.SIGN_RECORD_ID=#{id}
+    </select>
+
+
+
+</mapper>

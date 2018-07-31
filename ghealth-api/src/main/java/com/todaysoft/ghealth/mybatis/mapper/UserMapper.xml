@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.UserMapper">
+    <resultMap id="PrimaryEntity" type="com.todaysoft.ghealth.mybatis.model.PrimaryEntity">
+        <id column="ID" property="id" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATOR_NAME" property="creatorName" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="UPDATOR_NAME" property="updatorName" />
+        <result column="DELETED" property="deleted" />
+        <result column="DELETE_TIME" property="deleteTime" />
+        <result column="DELETOR_NAME" property="deletorName" />
+    </resultMap>
+
+    <resultMap id="UserEntity" type="com.todaysoft.ghealth.mybatis.model.User" extends="PrimaryEntity">
+        <result column="USERNAME" property="username" />
+        <result column="PASSWORD" property="password" />
+        <result column="ENABLED" property="enabled" />
+        <result column="NAME" property="name" />
+        <result column="PHONE" property="phone" />
+        <result column="EMAIL" property="email" />
+        <result column="BUILTIN" property="builtin" />
+    </resultMap>
+
+    <resultMap id="UserAccountTokenEntity" type="com.todaysoft.ghealth.mybatis.model.UserAccountToken">
+        <id column="ID" property="id" />
+        <result column="ACCOUNT_ID" property="accountId" />
+        <result column="TOKEN" property="token" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="EXPIRE_TIME" property="expireTime" />
+    </resultMap>
+
+    <sql id="SearchFilters">
+        WHERE t.DELETED = 0
+        <if test="_parameter.username != null and _parameter.username != ''">
+            <choose>
+                <when test="_parameter.usernameExactMatches">AND t.USERNAME = #{username}</when>
+                <otherwise>
+                    <bind name="usernamePattern" value="'%'+ _parameter.username + '%'" />
+                    AND t.USERNAME LIKE #{usernamePattern}
+                </otherwise>
+            </choose>
+        </if>
+        <if test="_parameter.phone != null and _parameter.phone != ''">
+            <bind name="phonePattern" value="'%'+ _parameter.phone + '%'" />
+            AND t.PHONE LIKE #{phonePattern}
+        </if>
+        <if test="_parameter.name != null and _parameter.name != ''">
+            <bind name="namePattern" value="'%'+ _parameter.name + '%'" />
+            AND t.NAME LIKE #{namePattern}
+        </if>
+        <if test="_parameter.builtin != null">
+            AND t.BUILTIN = #{builtin}
+        </if>
+        <if test="_parameter.excludeKeys != null and _parameter.excludeKeys.size != 0">
+            <choose>
+                <when test="_parameter.excludeKeys.size == 1">
+                    AND t.ID !=
+                    <foreach collection="_parameter.excludeKeys" item="excludeKey" index="index" open="" close="" separator="">
+                        #{excludeKey}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND t.ID NOT IN
+                    <foreach collection="_parameter.excludeKeys" item="excludeKey" index="index" open="(" close=")" separator=",">
+                        #{excludeKey}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <select id="get" resultMap="UserEntity" parameterType="java.lang.String">
+        SELECT * FROM GHEALTH_USER t WHERE t.ID = #{id}
+    </select>
+
+    <select id="getUserByUsername" resultMap="UserEntity" parameterType="java.lang.String">
+        SELECT * FROM GHEALTH_USER t WHERE t.DELETED = 0 AND t.USERNAME =
+        #{username}
+    </select>
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.UserSearcher">
+        SELECT COUNT(*) FROM GHEALTH_USER t
+        <include refid="SearchFilters"></include>
+    </select>
+
+    <select id="search" resultMap="UserEntity" parameterType="com.todaysoft.ghealth.mybatis.searcher.UserSearcher">
+        SELECT * FROM GHEALTH_USER t
+        <include refid="SearchFilters"></include>
+        ORDER BY t.CREATE_TIME ASC
+        <include refid="SearchLimit"></include>
+    </select>
+
+    <insert id="insert" parameterType="com.todaysoft.ghealth.mybatis.model.User">
+        INSERT INTO GHEALTH_USER
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="username != null">
+                USERNAME,
+            </if>
+            <if test="password != null">
+                PASSWORD,
+            </if>
+            <if test="enabled != null">
+                ENABLED,
+            </if>
+            <if test="name != null">
+                NAME,
+            </if>
+            <if test="phone != null">
+                PHONE,
+            </if>
+            <if test="email != null">
+                EMAIL,
+            </if>
+            <if test="builtin != null">
+                BUILTIN,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME,
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME,
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME,
+            </if>
+            <if test="deleted != null">
+                DELETED,
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME,
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="username != null">
+                #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="enabled != null">
+                #{enabled,jdbcType=BIT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                #{phone, jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                #{email, jdbcType=VARCHAR},
+            </if>
+            <if test="builtin != null">
+                #{builtin, jdbcType=BIT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null">
+                #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="modify" parameterType="com.todaysoft.ghealth.mybatis.model.User">
+        UPDATE GHEALTH_USER
+        <set>
+            <if test="username != null">
+                USERNAME = #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                PASSWORD = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="enabled != null">
+                ENABLED = #{enabled,jdbcType=BIT},
+            </if>
+            <if test="name != null">
+                NAME = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                PHONE = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                EMAIL = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME = #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                DELETED = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME = #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME = #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE ID = #{id, jdbcType=VARCHAR}
+    </update>
+
+    <select id="getAccountTokenRecordByToken" resultMap="UserAccountTokenEntity" parameterType="java.lang.String">
+        SELECT * FROM GHEALTH_USER_TOKEN t WHERE t.TOKEN
+        = #{token}
+    </select>
+
+    <select id="getAccountTokenRecordByAccountId" resultMap="UserAccountTokenEntity" parameterType="java.lang.String">
+        SELECT * FROM GHEALTH_USER_TOKEN t WHERE
+        t.ACCOUNT_ID = #{accountId}
+    </select>
+
+    <select id="getUserAuthorizedResources" resultType="string" parameterType="java.lang.String">
+        SELECT res.URI FROM GHEALTH_RESOURCE res WHERE EXISTS
+        (
+            SELECT ar.AUTHORITY_ID FROM GHEALTH_AUTHORITY_RESOURCE ar WHERE ar.RESOURCE_ID = res.ID AND EXISTS
+            (
+                SELECT ra.ROLE_ID FROM GHEALTH_ROLE_AUTHORITY ra WHERE ra.AUTHORITY_ID = ar.AUTHORITY_ID AND EXISTS 
+                    (
+                        SELECT ur.USER_ID FROM GHEALTH_USER_ROLE ur WHERE ur.ROLE_ID = ra.ROLE_ID AND ur.USER_ID = #{id}
+                    )
+            )
+        )
+    </select>
+
+    <insert id="insertAccountToken" parameterType="com.todaysoft.ghealth.mybatis.model.UserAccountToken">
+        INSERT INTO GHEALTH_USER_TOKEN
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="accountId != null">
+                ACCOUNT_ID,
+            </if>
+            <if test="token != null">
+                TOKEN,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="expireTime != null">
+                EXPIRE_TIME,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="accountId != null">
+                #{accountId, jdbcType=VARCHAR},
+            </if>
+            <if test="token != null">
+                #{token, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="expireTime != null">
+                #{expireTime, jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateAccountToken" parameterType="com.todaysoft.ghealth.mybatis.model.UserAccountToken">
+        UPDATE GHEALTH_USER_TOKEN
+        <set>
+            <if test="token != null">
+                TOKEN = #{token, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME = #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="expireTime != null">
+                EXPIRE_TIME = #{expireTime, jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        WHERE ID = #{id, jdbcType=VARCHAR}
+    </update>
+</mapper>

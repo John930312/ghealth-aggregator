@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.CancerMapper">
+    <resultMap id="PrimaryEntity" type="com.todaysoft.ghealth.mybatis.model.PrimaryEntity">
+        <id column="ID" property="id" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATOR_NAME" property="creatorName" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="UPDATOR_NAME" property="updatorName" />
+        <result column="DELETED" property="deleted" />
+        <result column="DELETE_TIME" property="deleteTime" />
+        <result column="DELETOR_NAME" property="deletorName" />
+    </resultMap>
+
+    <resultMap id="CancerEntity" type="com.todaysoft.ghealth.mybatis.model.Cancer" extends="PrimaryEntity">
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="NAME" property="name"  />
+        <result column="RISK_MALE" property="riskmale"  />
+        <result column="RISK_FEMALE" property="riskfemale"  />
+        <result column="DESCRIPTION" property="description"  />
+    </resultMap>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="SearchFilters">
+        WHERE t.DELETED = 0
+        <if test="_parameter.cancerName != null and _parameter.cancerName != ''">
+            <bind name="cancerNamePattern" value="'%'+_parameter.cancerName + '%'" />
+            AND t.NAME LIKE #{cancerNamePattern}
+        </if>
+        <if test="_parameter.excludeKeys != null and _parameter.excludeKeys.size != 0">
+            <choose>
+                <when test="_parameter.excludeKeys.size == 1">
+                    AND t.ID !=
+                    <foreach collection="_parameter.excludeKeys" item="excludeKey" index="index" open="" close="" separator="">
+                        #{excludeKey}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND t.ID NOT IN
+                    <foreach collection="_parameter.excludeKeys" item="excludeKey" index="index" open="(" close=")" separator=",">
+                        #{excludeKey}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+    <select id="search" resultMap="CancerEntity" parameterType="com.todaysoft.ghealth.mybatis.searcher.CancerSearcher">
+        SELECT t.* FROM GHEALTH_CANCER t
+        <include refid="SearchFilters"></include> ORDER BY t.CREATE_TIME DESC
+        <include refid="SearchLimit"></include>
+    </select>
+
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.CancerSearcher">
+        SELECT COUNT(*) FROM GHEALTH_CANCER t
+        <include refid="SearchFilters"></include>
+    </select>
+
+
+    <select id="get" resultMap="CancerEntity" parameterType="java.lang.String">
+        SELECT t.* FROM GHEALTH_CANCER t
+        WHERE t.ID = #{id}
+    </select>
+
+
+    <update id="update" parameterType="com.todaysoft.ghealth.mybatis.model.Cancer">
+        UPDATE GHEALTH_CANCER
+        <set>
+            <if test="name != null">
+                NAME = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="riskmale != null">
+                RISK_MALE = #{riskmale,jdbcType=VARCHAR},
+            </if>
+            <if test="riskfemale != null">
+                RISK_FEMALE = #{riskfemale,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                DESCRIPTION = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME = #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME = #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                DELETED = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME = #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME = #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+
+    <insert id="insert" parameterType="com.todaysoft.ghealth.mybatis.model.Cancer">
+        insert into GHEALTH_CANCER
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="name != null">
+                NAME,
+            </if>
+            <if test="riskmale != null">
+                RISK_MALE,
+            </if>
+            <if test="riskfemale != null">
+                RISK_FEMALE,
+            </if>
+            <if test="description != null">
+                DESCRIPTION,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME,
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME,
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME,
+            </if>
+            <if test="deleted != null">
+                DELETED,
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME,
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="riskmale != null">
+                #{riskmale,jdbcType=VARCHAR},
+            </if>
+            <if test="riskfemale != null">
+                #{riskfemale,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=TINYINT},
+            </if>
+            <if test="deleteTime != null">
+                #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="countByName" resultType="int">
+        SELECT COUNT(*) FROM GHEALTH_CANCER  WHERE NAME = #{name, jdbcType=VARCHAR}
+    </select>
+
+    <select id="countByIdName" resultType="int">
+        SELECT COUNT(*) FROM GHEALTH_CANCER  WHERE  ID = #{id, jdbcType=VARCHAR} AND NAME = #{name, jdbcType=VARCHAR}
+    </select>
+</mapper>

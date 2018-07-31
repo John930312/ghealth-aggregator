@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>代理表单-代理机构</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/agency/list.jsp">代理机构</a>
+                        </li>
+                        <li class="active">
+                            <strong>
+                                <#if data??>修改代理
+                                    <#else>新增代理
+                                </#if>
+                            </strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5>
+                        <#if data??>修改代理
+                            <#else>新增代理
+                        </#if>
+                    </h5>
+                </div>
+                <div class="ibox-content">
+                    <#if data??>
+                        <#assign uri = "/agency/modify.jsp" />
+                        <#else>
+                            <#assign uri = "/agency/create.jsp" />
+                    </#if>
+                    <form class="form-horizontal m-t" action="${base}${uri}" method="post">
+                        <input type="hidden" name="id" value="${(data.id)!}"/>
+                        <input type="hidden" name="${(REPEAT_SUBMIT_TOKEN)!}" value="${(Request[REPEAT_SUBMIT_TOKEN])!}" />
+                        <fieldset>
+                            <#if data??>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label required-label">主账号：</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" readonly="readonly"
+                                               value="${(data.primaryUsername)!?html}"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">账号密码：</label>
+                                    <div class="col-sm-3">
+                                        <input type="password" class="form-control" id="password"
+                                               name="primaryAccountPassword"
+                                               placeholder="密码无修改留空即可"/>
+                                    </div>
+                                    <label class="col-sm-2 control-label">重复密码：</label>
+                                    <div class="col-sm-3">
+                                        <input type="password" class="form-control" data-rule-equalTo="#password"
+                                               data-msg="密码输入不一致，请重新输入"/>
+                                    </div>
+                                </div>
+                                <#else>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label required-label">主账号：</label>
+                                        <div class="col-sm-3">
+                                            <input type="text" class="form-control" name="primaryUsername"
+                                                   value="${(data.primaryUsername)!?html}"
+                                                   required data-msg-required="主账号不能为空"
+                                                   data-rule-remote="${base}/agency/username_unique.do"
+                                                   data-msg-remote="主账号已存在，请重新输入"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label required-label">账号密码：</label>
+                                        <div class="col-sm-3">
+                                            <input type="password" class="form-control" id="password"
+                                                   name="primaryAccountPassword" required
+                                                   data-msg="账号密码不能为空"/>
+                                        </div>
+                                        <label class="col-sm-2 control-label">重复密码：</label>
+                                        <div class="col-sm-3">
+                                            <input type="password" class="form-control" data-rule-equalTo="#password"
+                                                   data-msg="密码输入不一致，请重新输入"/>
+                                        </div>
+                                    </div>
+                            </#if>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">代理编号：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="code" value="${(data.code)!?html}"
+                                           required
+                                           data-msg-required="代理编号不能为空"
+                                           data-rule-remote="${base}/agency/code_unique.do?id=${(data.id)!?html}"
+                                           data-msg-remote="代理编号已存在，请重新输入"/>
+                                </div>
+                                <label class="col-sm-2 control-label required-label">代理简称：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="abbr" value="${(data.abbr)!?html}"
+                                           required data-msg="代理简称不能为空"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">联系人姓名：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="contactName"
+                                           value="${(data.contactName)!?html}" required
+                                           data-msg="联系人不能为空"/>
+                                </div>
+                                <label class="col-sm-2 control-label required-label">联系人电话：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="contactPhone"
+                                           value="${(data.contactPhone)!?html}" required
+                                           data-msg="联系人电话不能为空"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">机构名称：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="name" value="${(data.name)!?html}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">授权金额：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="authorizationAmount"
+                                           value="${(data.authorizationAmount)!?html}"/>
+                                </div>
+                                <label class="col-sm-2 control-label required-label">是否展示：</label>
+                                <div class="col-sm-3">
+                                    <div class="radio-inline i-checks">
+                                        <label><input type="radio" id="authorizationAmount_1" name="authorizationAmountFlag" value="1" checked="checked">是</label> <label  style="margin-left: 50px;"><input
+                                            type="radio" id="authorizationAmount_0" name="authorizationAmountFlag" value="0">否</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">所在地市：</label>
+                                <div class="col-sm-1">
+                                    <select class="form-control" name="province" data-value="${(data.province)!?html}"
+                                            onchange="selectOpt(this)">
+                                        <option value="">请选择</option>
+                                        <#if list?has_content>
+                                            <#list list as record>
+                                                <option value="${(record.id)!?html}">${(record.name)!?html}</option>
+                                            </#list>
+                                        </#if>
+                                    </select>
+                                </div>
+                                <div class="col-sm-1">
+                                    <select class="form-control" name="city" data-value="${(data.city)!?html}">
+                                        <option value="">请选择</option>
+                                        <#if province?has_content>
+                                            <#list province as record>
+                                                <option value="${(record.id)!?html}">${(record.name)!?html}</option>
+                                            </#list>
+                                        </#if>
+                                    </select>
+                                </div>
+                                <label class="col-sm-2 col-sm-offset-1 control-label">联系人邮箱：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="contactEmail"
+                                           value="${(data.contactEmail)!?html}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">联系地址：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="address"
+                                           value="${(data.address)!?html}" maxlength="30"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">备注：</label>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" rows="5" name="remark"
+                                              id="area">${(data.remark)!}</textarea>
+                                    <p>
+                                        字数限制：
+                                        <span id="text-count">200</span>
+                                        /200
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <button class="btn btn-primary" type="submit">保存</button>
+                                    <button class="btn btn-primary goback" type="button">返回</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/icheckbox/icheckbox.min.js"></script>
+<script src="${plugins}/validation/jquery.validate.min.js"></script>
+<script src="${plugins}/validation/additional-methods.min.js"></script>
+<script src="${plugins}/validation/localization/messages_zh.min.js"></script>
+<script src="${system_js}/system.js"></script>
+<script src="${system_js}/myValidate.js"></script>
+<script type="text/javascript">
+    <!--
+    $(function () {
+        $('[name="authorizationAmountFlag"]:radio').iCheck('uncheck');
+        <#if (data.authorizationAmountFlag)??>
+            $("#authorizationAmount_${(data.authorizationAmountFlag)?string('1','0')}").iCheck('check');
+        <#else>
+            $("#authorizationAmount_1").iCheck('check');
+        </#if>
+        $('form').validate({
+                rules: {
+                    contactEmail: {
+                        email: true
+                    },
+                    contactPhone: {
+                        isMobile: true
+                    },
+                    primaryUsername: {
+                        han: true
+                    },
+                    code: {
+                        tenlimit: true
+                    },
+                    abbr: {
+                        ten: true
+                    },
+                    contactName: {
+                        seven: true
+                    },
+                    name: {
+                        twenty: true,
+                        required: true
+                    },
+                    authorizationAmount:{
+                        pricelimit :true,
+                        required: true
+                    },
+                },
+                messages: {
+                    contactEmail: {
+                        email: "请输入正确邮箱地址"
+                    },
+                    contactPhone: {
+                        isMobile: "请输入正确手机号"
+                    },
+                    primaryUsername: {
+                        han: "不允许特殊字符,最长20位"
+                    },
+                    code: {
+                        tenlimit: "数字、字母均可，最长10位"
+                    },
+                    abbr: {
+                        ten: "请输入10位以内代理简称"
+                    },
+                    contactName: {
+                        seven: "请输入7位以内联系人姓名"
+                    },
+                    name: {
+                        twenty: "请输入20位以内机构名称",
+                        required: "机构名称不能为空"
+                    },
+                },
+                errorPlacement: function (error, element) {
+                    error.appendTo(element.parent());
+                }
+            }
+        );
+
+        //加载页面 显示限制字长数
+        _val = $("#area").val(), count = "";
+        count = 200 - $("#area").val().length;
+        $("#text-count").text(count);
+
+        $("#area").on("input propertychange", function () {
+            var $this = $(this), _val = $this.val(), count = "";
+            if (_val.length > 200) {
+                $this.val(_val.substring(0, 200));
+            }
+            count = 200 - $this.val().length;
+            $("#text-count").text(count);
+        });
+    });
+
+    //-->
+
+    function selectOpt(obj) {
+        var obj_ = $(obj).parents('.form-group').find('select[name="city"]');
+        obj_.empty();
+        obj_.append('<option value="">请选择</option>');
+        var obj_ = $('select[name="city"]');
+        $.ajax({
+            type: 'POST',
+            url: '${base}/agency/getAreas?parentId=' + $(obj).val(),
+            success: function (data) {
+
+                for (i in data) {
+                    obj_.append('<option value="' + data[i].id + '">' + data[i].name + '</option>');
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

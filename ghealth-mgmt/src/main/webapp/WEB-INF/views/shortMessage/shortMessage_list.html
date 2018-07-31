@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <title>代理管理-短信配置</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css?v=0.1" rel="stylesheet"></link>
+    <link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+    <link href="${plugins}/magicsuggest/magicsuggest-min.css" rel="stylesheet"></link>
+
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/shortMessage/list.jsp">短信配置</a>
+                        </li>
+                        <li class="active">
+                            <strong>短信配置列表</strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5>全局配置</h5>
+                </div>
+                <form action="${base}/shortMessage/modify.jsp" method="post" id="quanjuForm">
+                    <div class="ibox-content">
+                        <table class="table table-striped table-bordered table-hover">
+                            <tr>
+                                <th class="index">序号</th>
+                                <th>短信类型</th>
+                                <th>状态</th>
+                                <th>通知人群</th>
+                            </tr>
+                            <tr>
+                                <th>1</th>
+                                <th>收样短信</th>
+                                <th><input type="radio" id="notifyEnabled_sampleSigned_1"  onchange="test(this)" name="notifyEnabled_sampleSigned" value="1" >发送
+                                    <input type="radio" id="notifyEnabled_sampleSigned_0" onchange="test1(this)" name="notifyEnabled_sampleSigned" value="0">不发送</th>
+                                <th><input type="checkbox" id="notifyTarget_sampleSigned_1" name="notifyTarget_sampleSigned" value="1">代理商
+                                    <input type="checkbox" id="notifyTarget_sampleSigned_2" name="notifyTarget_sampleSigned" value="2">客户
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>2</th>
+                                <th>寄送短信</th>
+                                <th><input type="radio" id="notifyEnabled_sampleDelivered_1"  onchange="test(this)"  name="notifyEnabled_sampleDelivered" value="1" >发送
+                                    <input type="radio" id="notifyEnabled_sampleDelivered_0"  onchange="test1(this)" name="notifyEnabled_sampleDelivered" value="0">不发送</th>
+                                <th><input type="checkbox" id="notifyTarget_sampleDelivered_1"  name="notifyTarget_sampleDelivered" value="1">代理商
+                                    <input type="checkbox" id="notifyTarget_sampleDelivered_2"  name="notifyTarget_sampleDelivered" value="2">客户
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>3</th>
+                                <th>出报告短信</th>
+                                <th><input type="radio"  id="notifyEnabled_reportGenerated_1" onchange="test(this)" name="notifyEnabled_reportGenerated" value="1" >发送
+                                    <input type="radio"  id="notifyEnabled_reportGenerated_0" onchange="test1(this)" name="notifyEnabled_reportGenerated" value="0">不发送 </th>
+                                <th><input type="checkbox"  id="notifyTarget_reportGenerated_1" name="notifyTarget_reportGenerated" value="1">代理商
+                                    <input type="checkbox"  id="notifyTarget_reportGenerated_2" name="notifyTarget_reportGenerated" value="2">客户
+                                </th>
+                            </tr>
+                        </table>
+                        <table class="table table-striped table-bordered table-hover table-details">
+                            <tr>
+                                <th colspan="2">
+                                    <div class="col-sm-4 col-sm-offset-2">
+                                        <@security_resource resource = "/shortMessage/modify.jsp">
+                                        <button class="btn btn-success " type="button" onclick="subaa(this)">保存</button>
+                                    </@security_resource>
+                                    </div>
+                                </th>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <div class="col-lg-12">
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5>代理配置</h5>
+                    <@security_resource resource = "/shortMessage/create.jsp">
+                        <a class="btn btn-sm btn-success " onclick="openCreate()">
+                        <i class="fa fa-level-down"></i> 新增
+                    </a>
+                </@security_resource>
+                </div>
+                <div class="ibox-content">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th class="index">序号</th>
+                            <th>代理商</th>
+                            <th>收样短信</th>
+                            <th>寄送短信</th>
+                            <th>出报告短信</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <#if message?has_content> <#list message as record>
+                            <tr>
+                                <td>${record_index + 1}</td>
+                                <td>${record.agencyName!?html}</td>
+                                <td>
+                                    <#if (record.shortMessageCon.sampleSigned.notifyEnabled)=="1">通知:<#else>不通知</#if>
+                                    <#if (record.shortMessageCon.sampleSigned.notifyTarget)?has_content>
+                                        <#list (record.shortMessageCon.sampleSigned.notifyTarget) as data>
+                                            <#if data??>
+                                            <#if data =="1" >代理商<#if data_has_next>,</#if><#elseif data =="2">客户</#if>
+                                            </#if>
+                                        </#list>
+                                    </#if>
+                                </td>
+                                <td>
+                                    <#if (record.shortMessageCon.sampleDelivered.notifyEnabled)=="1">通知:<#else>不通知</#if>
+                                    <#if (record.shortMessageCon.sampleDelivered.notifyTarget)?has_content>
+                                        <#list (record.shortMessageCon.sampleDelivered.notifyTarget) as data>
+                                            <#if data??>
+                                                <#if data =="1" >代理商<#if data_has_next>,</#if><#elseif data =="2">客户</#if>
+                                            </#if>
+                                        </#list>
+                                    </#if>
+                                </td>
+                                <td>
+                                    <#if (record.shortMessageCon.reportGenerated.notifyEnabled)=="1">通知:<#else>不通知</#if>
+                                    <#if (record.shortMessageCon.reportGenerated.notifyTarget)?has_content>
+                                        <#list (record.shortMessageCon.reportGenerated.notifyTarget) as data>
+                                            <#if data??>
+                                                <#if data =="1" >代理商<#if data_has_next>,</#if><#elseif data =="2">客户</#if>
+                                            </#if>
+                                        </#list>
+                                    </#if>
+                                </td>
+                                <td><#if record.createTime??>${record.createTime!?string('yyyy-MM-dd HH:mm:ss')} </#if></td>
+                                <td class="flexible-btns" style="white-space: nowrap">
+                                    <@security_resource resource = "/shortMessage/modify.jsp">
+                                    <a class="btn btn-sm btn-success"
+                                       href="javascript:dealShedule('${(record.id)!?html}')">
+                                        <i class="fa fa-edit"></i> 修改
+                                    </a>
+                                </@security_resource>
+                                <@security_resource resource = "/shortMessage/delete.jsp">
+                                    <a href="${base}/shortMessage/delete.jsp?id=${record.id}" class="btn btn-sm btn-success layer-confirm" data-confirm-message="确定删除？">
+                                        <i class="fa fa-trash"></i> 删除
+                                    </a>
+                            </@security_resource>
+                                </td>
+                            </tr>
+
+                        </#list>
+                        </#if>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+</div>
+</div>
+
+<div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">新增</h4>
+            </div>
+            <div class="modal-body">
+
+
+                <form action="${base}/shortMessage/create.jsp" id="createForm" method="post">
+                    <input type="hidden" id="agencyId" name="agencyId">
+                    <div class="form-group">
+                        <input  id="agencyName" class="form-control" name="agencyName"  value=""
+                               placeholder="机构名称">
+                    </div>
+                    <div class="ibox-content">
+                        <table class="table table-striped table-bordered table-hover">
+
+                            <tr>
+                                <th>1</th>
+                                <th>收样短信</th>
+                                <th>
+                                    <input type="radio" id="notifyEnabled_sampleSigned1_1" onchange="test(this)" name="notifyEnabled_sampleSigned" value="1" >发送
+                                    <input type="radio" id="notifyEnabled_sampleSigned1_0" onchange="test1(this)" name="notifyEnabled_sampleSigned" value="0">不发送
+                                </th>
+                                <th><input type="checkbox" id="notifyTarget_sampleSigned1_1" name="notifyTarget_sampleSigned" value="1" >代理商
+                                    <input type="checkbox" id="notifyTarget_sampleSigned1_2" name="notifyTarget_sampleSigned" value="2" >客户
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>2</th>
+                                <th>寄送短信</th>
+                                <th>
+
+                                    <input type="radio" id="notifyEnabled_sampleDelivered1_1" onchange="test(this)" name="notifyEnabled_sampleDelivered" value="1" >发送
+                                    <input type="radio" id="notifyEnabled_sampleDelivered1_0" onchange="test1(this)" name="notifyEnabled_sampleDelivered" value="0">不发送
+
+                                 </th>
+                                <th>
+                                    <input type="checkbox" id="notifyTarget_sampleDelivered1_1" name="notifyTarget_sampleDelivered" value="1">代理商
+                                    <input type="checkbox" id="notifyTarget_sampleDelivered1_2"  name="notifyTarget_sampleDelivered" value="2" >客户
+                                </th>
+                            </tr>
+                           <tr>
+                                <th>3</th>
+                                <th>出报告短信</th>
+                                 <th>
+
+
+                                     <input type="radio" id="notifyEnabled_reportGenerated1_1" onchange="test(this)" name="notifyEnabled_reportGenerated" value="1" >发送
+                                     <input type="radio" id="notifyEnabled_reportGenerated1_0" onchange="test1(this)" name="notifyEnabled_reportGenerated" value="0">不发送
+                                 </th>
+                                <th><input type="checkbox"  id="notifyTarget_reportGenerated1_1" name="notifyTarget_reportGenerated" value="1" >代理商
+                                    <input type="checkbox"  id="notifyTarget_reportGenerated1_2" name="notifyTarget_reportGenerated" value="2">客户
+                                </th>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-4" style="float: right">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="aaa(this)">提交</button >
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="modal fade bs-example-modal-lg" id="createMyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel1">修改</h4>
+            </div>
+            <div class="modal-body">
+
+
+                <form action="${base}/shortMessage/modify.jsp" id="modifyForm" method="post">
+
+                    <input type="hidden" id="agencyId1" name="agencyId">
+                    <div class="form-group">
+                        <input type="text" id="agencyName1" class="form-control" name="agencyName"
+                               disabled="disabled">
+                    </div>
+                    <div class="ibox-content">
+                        <table class="table table-striped table-bordered table-hover">
+                            <tr>
+                                <th>1</th>
+                                <th>收样短信</th>
+                                <th><input type="radio" id="notifyEnabled_sampleSigned2_1" onchange="test(this)" name="notifyEnabled_sampleSigned" value="1" >发送
+                                    <input type="radio" id="notifyEnabled_sampleSigned2_0" onchange="test1(this)" name="notifyEnabled_sampleSigned" value="0">不发送</th>
+                                <th><input type="checkbox" id="notifyTarget_sampleSigned2_1" name="notifyTarget_sampleSigned" value="1">代理商
+                                    <input type="checkbox" id="notifyTarget_sampleSigned2_2" name="notifyTarget_sampleSigned" value="2">客户
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>2</th>
+                                <th>寄送短信</th>
+                                <th><input type="radio" id="notifyEnabled_sampleDelivered2_1" onchange="test(this)"  name="notifyEnabled_sampleDelivered" value="1" >发送
+                                    <input type="radio" id="notifyEnabled_sampleDelivered2_0" onchange="test1(this)" name="notifyEnabled_sampleDelivered" value="0">不发送</th>
+                                <th><input type="checkbox" id="notifyTarget_sampleDelivered2_1" name="notifyTarget_sampleDelivered" value="1">代理商
+                                    <input type="checkbox" id="notifyTarget_sampleDelivered2_2"  name="notifyTarget_sampleDelivered" value="2">客户
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>3</th>
+                                <th>出报告短信</th>
+                                <th><input type="radio"  id="notifyEnabled_reportGenerated2_1" onchange="test(this)" name="notifyEnabled_reportGenerated" value="1" >发送
+                                    <input type="radio"  id="notifyEnabled_reportGenerated2_0" onchange="test1(this)" name="notifyEnabled_reportGenerated" value="0">不发送 </th>
+                                <th><input type="checkbox"  id="notifyTarget_reportGenerated2_1" name="notifyTarget_reportGenerated" value="1">代理商
+                                    <input type="checkbox"  id="notifyTarget_reportGenerated2_2" name="notifyTarget_reportGenerated" value="2">客户
+                                </th>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-4" style="float: right">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="subaaaa(this)">提交</button >
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/pagination/jquery.pagination.js"></script>
+<script src="${system_js}/system.js?v=0.1"></script>
+<script src="${plugins}/magicsuggest/magicsuggest-min.js"></script>
+<script src="${plugins}/icheckbox/icheckbox.min.js"></script>
+<script src="${plugins}/layer/layer.min.js"></script>
+<script>
+
+    function test(e)
+    {
+        var $tr = $(e).closest('tr');
+        $tr.find('input:checkbox').attr('disabled',false);
+        $tr.find('input:checkbox').prop('checked',true);
+    }
+
+    function test1(e)
+    {
+        var $tr = $(e).closest('tr');
+        $tr.find('input:checkbox').prop('checked',false);
+        $tr.find('input:checkbox').attr('disabled',true);
+    }
+
+    function testCreate(obj) {
+        $(obj).val(($(obj).val()==0)?1:0)
+
+    }
+
+
+
+
+
+
+    var base = "${base}";
+    $(function()
+    {
+        var p = $('#agencyName').magicSuggest(
+            {
+                width : 190,
+                highlight : true,
+                data : '${base}/agency/json_list.do',
+                method : 'get',
+                queryParam : "name",
+                maxSelection : 1,
+                displayField : "name",
+                allowFreeEntries : false,
+                renderer : function(v)
+                {
+                    return '<div>' + '<div >' + '<div>' + v.name + '</div>' + '</div>'
+                        + '<div style="clear:both;"></div>';
+                }
+            });
+
+
+    <#if data?has_content><#list data as data>
+        $('[name="notifyEnabled_sampleSigned"]:radio').iCheck('uncheck');
+        $("#notifyEnabled_sampleSigned_${(data.shortMessageCon.sampleSigned.notifyEnabled)!'0'}").iCheck('check');
+       <#if (data.shortMessageCon.sampleSigned.notifyEnabled)=="0" >
+    $("#notifyTarget_sampleSigned_1").prop('disabled' ,true);
+        $("#notifyTarget_sampleSigned_2").prop('disabled' ,true);
+    </#if>
+        $('[name="notifyTarget_sampleSigned"]:checkbox').iCheck('uncheck');
+        <#if (data.shortMessageCon.sampleSigned.notifyTarget)?has_content><#list (data.shortMessageCon.sampleSigned.notifyTarget) as notifyTarget>
+        $('input[name="notifyTarget_sampleSigned"][id="notifyTarget_sampleSigned_${notifyTarget!?html}"]').prop('checked' ,true);
+        </#list>
+        </#if>
+        $('[name="notifyEnabled_sampleDelivered"]:radio').iCheck('uncheck');
+        $("#notifyEnabled_sampleDelivered_${(data.shortMessageCon.sampleDelivered.notifyEnabled)!'0'}").iCheck('check');
+    <#if (data.shortMessageCon.sampleDelivered.notifyEnabled)=="0" >
+    $("#notifyTarget_sampleDelivered_1").prop('disabled' ,true);
+        $("#notifyTarget_sampleDelivered_2").prop('disabled' ,true);
+    </#if>
+        $('[name="notifyEnabled_sampleDelivered"]:checkbox').iCheck('uncheck');
+    <#if (data.shortMessageCon.sampleDelivered.notifyTarget)?has_content><#list (data.shortMessageCon.sampleDelivered.notifyTarget) as notifyTarget>
+    $('input[name="notifyTarget_sampleDelivered"][id="notifyTarget_sampleDelivered_${notifyTarget!?html}"]').prop('checked' ,true);
+    </#list>
+    </#if>
+
+        $('[name="notifyEnabled_reportGenerated"]:radio').iCheck('uncheck');
+        $("#notifyEnabled_reportGenerated_${(data.shortMessageCon.reportGenerated.notifyEnabled)!'0'}").iCheck('check');
+
+    <#if (data.shortMessageCon.reportGenerated.notifyEnabled)=="0" >
+    $("#notifyTarget_reportGenerated_1").prop('disabled' ,true);
+        $("#notifyTarget_reportGenerated_2").prop('disabled' ,true);
+    </#if>
+        $('[name="notifyEnabled_reportGenerated"]:checkbox').iCheck('uncheck');
+    <#if (data.shortMessageCon.reportGenerated.notifyTarget)?has_content><#list (data.shortMessageCon.reportGenerated.notifyTarget) as notifyTarget>
+    $('input[name="notifyTarget_reportGenerated"][id="notifyTarget_reportGenerated_${notifyTarget!?html}"]').prop('checked' ,true);
+    </#list>
+    </#if>
+    </#list>
+    <#else>
+        $("#notifyEnabled_sampleSigned_0").prop('checked' ,true);
+        $("#notifyEnabled_sampleDelivered_0").prop('checked' ,true);
+        $("#notifyEnabled_reportGenerated_0").prop('checked' ,true);
+        $("#notifyTarget_sampleSigned_1").prop('disabled' ,true);
+        $("#notifyTarget_sampleSigned_2").attr('disabled' ,true);
+        $("#notifyTarget_sampleDelivered_1").prop('disabled' ,true);
+        $("#notifyTarget_sampleDelivered_2").attr('disabled' ,true);
+        $("#notifyTarget_reportGenerated_1").prop('disabled' ,true);
+        $("#notifyTarget_reportGenerated_2").attr('disabled' ,true);
+    </#if>
+
+
+
+
+    });
+
+    $('#myModal').on('hide.bs.modal', function(e) {
+        var p = $('#agencyName').magicSuggest();
+        if(typeof p.clear == 'function'){
+            p.clear();
+        }
+    });
+
+    $('#myModal').on('show.bs.modal', function(e) {
+        $('#agencyName').blur();
+    });
+    
+    function openCreate() {
+
+        $('#myModal').modal('show');
+        $("#notifyEnabled_sampleSigned1_0").prop('checked' ,true);
+        $("#notifyEnabled_sampleDelivered1_0").prop('checked' ,true);
+        $("#notifyEnabled_reportGenerated1_0").prop('checked' ,true);
+        $("#notifyTarget_sampleSigned1_1").prop('disabled' ,true);
+        $("#notifyTarget_sampleSigned1_2").attr('disabled' ,true);
+        $("#notifyTarget_sampleDelivered1_1").prop('disabled' ,true);
+        $("#notifyTarget_sampleDelivered1_2").attr('disabled' ,true);
+        $("#notifyTarget_reportGenerated1_1").prop('disabled' ,true);
+        $("#notifyTarget_reportGenerated1_2").attr('disabled' ,true);
+    }
+
+
+    function subaa(obj) {
+        if($('#notifyEnabled_sampleSigned_1').is(':checked')==true) {
+            if($('#notifyTarget_sampleSigned_1').is(':checked')==false&&$('#notifyTarget_sampleSigned_2').is(':checked')==false){
+                layer.alert('请选择收样短信的代理商或者客户', {
+                    title : "提示"
+                });
+                return false;
+            }
+
+        }
+        if($('#notifyEnabled_sampleDelivered_1').is(':checked')==true) {
+            if($('#notifyTarget_sampleDelivered_1').is(':checked')==false&&$('#notifyTarget_sampleDelivered_2').is(':checked')==false){
+                layer.alert('请选择寄送短信的代理商或者客户', {
+                    title : "提示"
+                });
+                return false;
+            }
+
+        }
+        if($('#notifyEnabled_reportGenerated_1').is(':checked')==true) {
+            if($('#notifyTarget_reportGenerated_1').is(':checked')==false&&$('#notifyTarget_reportGenerated_2').is(':checked')==false){
+                layer.alert('请选择出报告短信的代理商或者客户', {
+                    title : "提示"
+                });
+                return false;
+            }
+
+        }
+        $(obj).attr("disabled", true);
+            $('#quanjuForm').submit();
+
+
+
+
+
+
+    }
+
+    function aaa(obj) {
+        var agency = $('#agencyName').magicSuggest().getSelection()[0];
+        if (undefined != agency)
+        {
+            $('input[name="agencyId"]').val(agency.id);
+
+            if($('#notifyEnabled_sampleSigned1_1').is(':checked')==true) {
+                if($('#notifyTarget_sampleSigned1_1').is(':checked')==false&&$('#notifyTarget_sampleSigned1_2').is(':checked')==false){
+                    layer.alert('请选择收样短信的代理商或者客户', {
+                        title : "提示"
+                    });
+                    return false;
+                }
+
+            }
+            if($('#notifyEnabled_sampleDelivered1_1').is(':checked')==true) {
+                if($('#notifyTarget_sampleDelivered1_1').is(':checked')==false&&$('#notifyTarget_sampleDelivered1_2').is(':checked')==false){
+                    layer.alert('请选择寄送短信的代理商或者客户', {
+                        title : "提示"
+                    });
+                    return false;
+                }
+
+            }
+            if($('#notifyEnabled_reportGenerated1_1').is(':checked')==true) {
+                if($('#notifyTarget_reportGenerated1_1').is(':checked')==false&&$('#notifyTarget_reportGenerated1_2').is(':checked')==false){
+                    layer.alert('请选择出报告短信的代理商或者客户', {
+                        title : "提示"
+                    });
+                    return false;
+                }
+
+            }
+            var flag=0;
+            var agencyId = agency.id;
+            $.ajax({
+                type: "POST",
+                traditional: true,
+                async: false,
+                url: '${base}/shortMessage/getByAgencyId',
+                data: {
+                    agencyId: agencyId,
+                },
+                success: function (data) {
+                    console.log(data)
+                    if(data){
+                        layer.alert('已存在代理商 请重新选择', {
+                            title : "提示"
+                        });
+                    flag=1;
+                    }else {
+                        flag =0;
+                    }
+                }
+                });
+            console.log(flag)
+            if(flag ==0){
+
+                $('#createForm').submit();
+            }
+
+            $(obj).attr("disabled", true);
+
+            $('#myModal').modal("hide");
+
+        }else{
+
+            $('#myModal').modal("hide");
+            layer.alert('请选择代理商', {
+                title : "提示"
+            });
+
+        }
+
+
+
+
+    }
+
+    function subaaaa(obj) {
+
+
+
+
+
+        if($('#notifyEnabled_sampleSigned2_1').is(':checked')==true) {
+            if($('#notifyTarget_sampleSigned2_1').is(':checked')==false&&$('#notifyTarget_sampleSigned2_2').is(':checked')==false){
+                layer.alert('请选择收样短信的代理商或者客户', {
+                    title : "提示"
+                });
+                return false;
+            }
+
+        }
+        if($('#notifyEnabled_sampleDelivered2_1').is(':checked')==true) {
+            if($('#notifyTarget_sampleDelivered2_1').is(':checked')==false&&$('#notifyTarget_sampleDelivered2_2').is(':checked')==false){
+                layer.alert('请选择寄送短信的代理商或者客户', {
+                    title : "提示"
+                });
+                return false;
+            }
+
+        }
+        if($('#notifyEnabled_reportGenerated2_1').is(':checked')==true) {
+            if($('#notifyTarget_reportGenerated2_1').is(':checked')==false&&$('#notifyTarget_reportGenerated2_2').is(':checked')==false){
+                layer.alert('请选择出报告短信的代理商或者客户', {
+                    title : "提示"
+                });
+                return false;
+            }
+
+        }
+        $('#modifyForm').submit();
+        $(obj).attr("disabled", true);
+        $('#createMyModal').modal("hide");
+    }
+
+    function dealShedule(Id) {
+        $('#createMyModal').modal('show');
+        $('#agencyId1').val(agencyId);
+        $.ajax({
+            type: "POST",
+            traditional: true,
+            url: '${base}/shortMessage/get',
+            data: {
+                id: Id,
+            },
+            success: function (shortMessage) {
+                {
+                    $("#agencyName1").val(shortMessage.agencyName);
+                    $('#agencyId1').val(shortMessage.agencyId);
+                    $('[id="notifyEnabled_sampleSigned2_1"]:radio').iCheck('uncheck');
+                    $('[id="notifyEnabled_sampleSigned2_2"]:radio').iCheck('uncheck');
+                    $("#notifyEnabled_sampleSigned2_"+shortMessage.shortMessageCon.sampleSigned.notifyEnabled).iCheck('check');
+                    $('[id="notifyTarget_sampleSigned2_1"]:checkbox').iCheck('uncheck');
+                    $('[id="notifyTarget_sampleSigned2_2"]:checkbox').iCheck('uncheck');
+                    if(shortMessage.shortMessageCon.sampleSigned.notifyTarget!=null){
+                        $.each(shortMessage.shortMessageCon.sampleSigned.notifyTarget, function(e, ele) {
+                            $("#notifyTarget_sampleSigned2_"+ele).prop('checked' ,true);
+                        })
+                    }else {
+                        $("#notifyTarget_sampleSigned2_1").prop('disabled' ,true);
+                        $("#notifyTarget_sampleSigned2_2").attr('disabled' ,true);
+                    }
+
+
+                    $('[id="notifyEnabled_sampleDelivered2_1"]:radio').iCheck('uncheck');
+                    $('[id="notifyEnabled_sampleDelivered2_2"]:radio').iCheck('uncheck');
+                    $("#notifyEnabled_sampleDelivered2_"+shortMessage.shortMessageCon.sampleDelivered.notifyEnabled).iCheck('check');
+                    $('[id="notifyTarget_sampleDelivered2_1"]:checkbox').iCheck('uncheck');
+                    $('[id="notifyTarget_sampleDelivered2_1"]:checkbox').iCheck('uncheck');
+                    if(shortMessage.shortMessageCon.sampleDelivered.notifyTarget!=null) {
+                        $.each(shortMessage.shortMessageCon.sampleDelivered.notifyTarget, function (e, ele) {
+                            $("#notifyTarget_sampleDelivered2_" + ele).prop('checked', true);
+                        })
+                    }else {
+                        $("#notifyTarget_sampleDelivered2_1").prop('disabled' ,true);
+                        $("#notifyTarget_sampleDelivered2_2").attr('disabled' ,true);
+                    }
+
+
+                    $('[id="notifyEnabled_reportGenerated2_1"]:radio').iCheck('uncheck');
+                    $('[id="notifyEnabled_reportGenerated2_2"]:radio').iCheck('uncheck');
+                    $("#notifyEnabled_reportGenerated2_"+shortMessage.shortMessageCon.reportGenerated.notifyEnabled).iCheck('check');
+                    $('[id="notifyTarget_reportGenerated2_1"]:checkbox').iCheck('uncheck');
+                    $('[id="notifyTarget_reportGenerated2_1"]:checkbox').iCheck('uncheck');
+                    if(shortMessage.shortMessageCon.reportGenerated.notifyTarget!=null) {
+                        $.each(shortMessage.shortMessageCon.reportGenerated.notifyTarget, function (e, ele) {
+                            $("#notifyTarget_reportGenerated2_" + ele).prop('checked', true);
+                        })
+
+                    }else {
+                        $("#notifyTarget_reportGenerated2_1").prop('disabled' ,true);
+                        $("#notifyTarget_reportGenerated2_2").attr('disabled' ,true);
+                    }
+
+                }
+
+            },
+
+    })
+    }
+
+
+
+
+</script>
+</body>
+</html>

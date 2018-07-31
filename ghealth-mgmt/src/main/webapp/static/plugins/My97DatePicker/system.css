@@ -1,0 +1,181 @@
+body {
+    font-family: "微软雅黑";
+}
+
+table tr th {
+    text-align: center;
+}
+
+table tr td {
+    text-align: center;
+}
+
+table.table-details tr td {
+    text-align: left;
+}
+
+.table>tbody>tr>td {
+    padding: 4px;
+}
+
+.table.table-details>tbody>tr>td {
+    padding-left: 10px;
+}
+
+.table {
+    margin-bottom: 10px;
+}
+
+.table>thead>tr {
+    height: 42px; line-height: 42px;
+}
+
+.table>tbody>tr {
+    height: 39px; line-height: 39px;
+}
+
+th.index {
+    width: 60px;
+}
+
+.table-details th {
+    text-align: right; margin-right: 10px;
+}
+
+.table-details td {
+    text-align: left; margin-left: 10px;
+}
+
+.header {
+    border-bottom: solid 2px #2f4050; height: 60px;
+}
+
+.roll-right.J_tabExit {
+    background: #fff; height: 58px; line-height: 58px; width: 80px; outline: 0; display: block; float: right; text-align: center;
+    font-size: 16px;
+}
+
+.page-tabs a {
+    text-align: center;
+}
+
+.wrapper-content {
+    padding: 10px;
+}
+
+.ibox {
+    margin-bottom: 10px;
+}
+
+.ibox-table .ibox-title {
+    padding-top: 0; padding-bottom: 0; height: 40px;
+}
+
+.ibox-table .ibox-title h5 {
+    height: 30px; line-height: 30px; margin-top: 7px;
+}
+
+.ibox .ibox-title a.btn {
+    float: right; margin-right: 25px; margin-top: 7px;
+}
+
+.ibox-content {
+    padding: 10px;
+}
+
+.search-form {
+    margin-top: 5px;
+}
+
+.search-form .form-group {
+    margin-bottom: 10px;
+}
+
+.search-form .form-group .btn {
+    margin-top: 3px;
+}
+
+.pagination-wrap label {
+    float: right; height: 30px; line-height: 30px;
+}
+
+.pagination {
+    margin: 0; float: right; margin-right: 15px;
+}
+
+.pagination ul {
+    margin: 0 auto; overflow: hidden; zoom: 1; float: right;
+}
+
+.pagination ul li {
+    min-width: 20px; float: left; display: inline-block; height: 30px; line-height: 30px; padding: 0 10px; border: 1px solid #e2e4ff;
+    border-left: none; text-align: center;
+}
+
+.pagination ul li.disabled {
+    color: #ccc;
+}
+
+.pagination ul li:first-child {
+    border-left: 1px solid #e2e4ff;
+}
+
+.pagination ul li a {
+    display: block; width: 100%;
+}
+
+.required-label span {
+    color: #f00; font-weight: bold;
+}
+
+.flexible-btns-max {
+    width: 270px;
+}
+
+.flexible-btns-min {
+    width: 100px;
+}
+
+.flexible-btns-2 {
+    width: 150px;
+}
+
+.flexible-btns-3 {
+    width: 210px;
+}
+
+#pageSizeSelect {
+    height: 26px; line-height: 26px;
+}
+
+#gotoPageNo {
+    width: 50px; text-align: center; height: 26px; line-height: 26px;
+}
+
+#goto_button {
+    width: 50px; padding: 0;
+}
+
+.form-horizontal .form-group .tooltip-text {
+    padding-top: 7px; display: block; color: #bbb;
+}
+
+.group-queue-details {
+    overflow: hidden; zoom: 1;
+}
+
+.group-queue-details .row {
+    margin: 5px 0 5px 0;
+}
+
+.order-queue-details {
+    width: 50px; height: 50px; line-height: 50px; float: left; text-align: center; background: #d1dade; padding: 2px; margin-right: 5px;
+}
+
+.order-queued {
+    background: #1d84c6; color: #fff;
+}
+
+.order-current {
+    background: #24c6c8; color: #fff;
+}

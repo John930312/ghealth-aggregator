@@ -1,0 +1,14 @@
+<#if pagination??>
+<div class="row pagination-wrap">
+    <div class="pagination" data-page-no="${pagination.pageNo!1}" data-page-size="${pagination.pageSize!10}" data-count="${pagination.totalCount!0}"></div>
+    <label>共<span>${pagination.totalCount!0}</span>条记录 <select id="pageSizeSelect" data-value="${pagination.pageSize!10}">
+            <option value="10">10条/页</option>
+            <option value="20">20条/页</option>
+            <option value="50">50条/页</option>
+            <option value="100">100条/页</option>
+        </select> <span>第</span> <input id="gotoPageNo" type="text" value="${pagination.pageNo!1}" data-history-value="${pagination.pageNo!1}" />
+        <span>页</span>
+        <input id="goto_button" type="button" value="跳转" />
+    </label>
+</div>
+</#if>

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.EmailMapper">
+    <update id="modify" parameterType="com.todaysoft.ghealth.mybatis.model.Email">
+        UPDATE GHEALTH_EMAIL_SENDER
+        <set>
+            <if test="protocol != null">
+                PROTOCOL = #{protocol,jdbcType=VARCHAR},
+            </if>
+            <if test="serverHost != null">
+                SERVER_HOST = #{serverHost,jdbcType=VARCHAR},
+            </if>
+            <if test="serverPort != null">
+                SERVER_PORT = #{serverPort,jdbcType=VARCHAR},
+            </if>
+            <if test="username != null">
+                USERNAME = #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                PASSWORD = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="fromAddress != null">
+                FROM_ADDRESS = #{fromAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="fromPersonal != null">
+                FROM_PERSONAL = #{fromPersonal,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME = #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME = #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                DELETED = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME = #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME = #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+
+    <insert id="create" parameterType="com.todaysoft.ghealth.mybatis.model.Email">
+            insert into GHEALTH_EMAIL_SENDER
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="protocol != null">
+                PROTOCOL,
+            </if>
+            <if test="serverHost != null">
+                SERVER_HOST,
+            </if>
+            <if test="serverPort != null">
+                SERVER_PORT,
+            </if>
+            <if test="username != null">
+                USERNAME,
+            </if>
+            <if test="password != null">
+                PASSWORD,
+            </if>
+            <if test="fromAddress != null">
+                FROM_ADDRESS,
+            </if>
+            <if test="fromPersonal != null">
+                FROM_PERSONAL,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME,
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME,
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME,
+            </if>
+            <if test="deleted != null">
+                DELETED,
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME,
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="protocol != null">
+                #{protocol,jdbcType=VARCHAR},
+            </if>
+            <if test="serverHost != null">
+                #{serverHost,jdbcType=VARCHAR},
+            </if>
+            <if test="serverPort != null">
+                #{serverPort,jdbcType=VARCHAR},
+            </if>
+            <if test="username != null">
+                #{username,jdbcType=TINYINT},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=TINYINT},
+            </if>
+            <if test="fromAddress != null">
+                #{fromAddress,jdbcType=TINYINT},
+            </if>
+            <if test="fromPersonal != null">
+                #{fromPersonal,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=TINYINT},
+            </if>
+            <if test="deleteTime != null">
+                #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+
+    <resultMap id="PrimaryEntity" type="com.todaysoft.ghealth.mybatis.model.PrimaryEntity">
+        <id column="ID" property="id" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATOR_NAME" property="creatorName" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="UPDATOR_NAME" property="updatorName" />
+        <result column="DELETED" property="deleted" />
+        <result column="DELETE_TIME" property="deleteTime" />
+        <result column="DELETOR_NAME" property="deletorName" />
+    </resultMap>
+
+
+    <resultMap id="EmailEntity" type="com.todaysoft.ghealth.mybatis.model.Email" extends="PrimaryEntity">
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="PROTOCOL" property="protocol"  />
+        <result column="SERVER_HOST" property="serverHost"  />
+        <result column="SERVER_PORT" property="serverPort"  />
+        <result column="USERNAME" property="username"  />
+        <result column="PASSWORD" property="password"  />
+        <result column="FROM_ADDRESS" property="fromAddress"  />
+        <result column="FROM_PERSONAL" property="fromPersonal"  />
+    </resultMap>
+
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+    <sql id="SearchFilters">
+        WHERE t.DELETED = 0
+    </sql>
+
+    <select id="search" resultMap="EmailEntity" parameterType="com.todaysoft.ghealth.mybatis.searcher.EmailSearcher">
+        SELECT t.* FROM GHEALTH_EMAIL_SENDER t
+        <include refid="SearchFilters"></include> ORDER BY t.CREATE_TIME DESC
+        <include refid="SearchLimit"></include>
+    </select>
+
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.EmailSearcher">
+        SELECT COUNT(*) FROM GHEALTH_EMAIL_SENDER t
+        <include refid="SearchFilters"></include>
+    </select>
+
+
+    <select id="get" resultMap="EmailEntity" parameterType="java.lang.String">
+        SELECT t.* FROM GHEALTH_EMAIL_SENDER t
+        WHERE t.ID = #{id}
+    </select>
+
+
+    <select id="getList" resultMap="EmailEntity" parameterType="java.lang.String" >
+        select
+        *
+        from GHEALTH_EMAIL_SENDER t
+        WHERE t.DELETED = 0
+
+    </select>
+
+</mapper>

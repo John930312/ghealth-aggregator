@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <title>产品表单-检测产品</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+    <link href="${plugins}/multiselect/style.css" rel="stylesheet" type="text/css">
+    <link href="${system_css}/system.css" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/product/list.jsp">检测产品</a>
+                        </li>
+                        <li class="active">
+                            <strong><#if data??>修改产品<#else>新增产品</#if></strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5><#if data??>修改产品<#else>新增产品</#if></h5>
+                </div>
+                <div class="ibox-content">
+                    <#if data??> <#assign uri = "/product/modify.jsp" /> <#else> <#assign uri = "/product/create.jsp" /> </#if>
+                    <form class="form-horizontal m-t" action="${base}${uri}" method="post">
+                        <input type="hidden" name="id" value="${(data.id)!}" />
+                        <input type="hidden" name="${(REPEAT_SUBMIT_TOKEN)!}" value="${(Request[REPEAT_SUBMIT_TOKEN])!}" />
+                        <#if data??&&data.enabled??>
+                            <input type="hidden" name="enabled" value="${(data.enabled)?string('1','0')}" />
+                        </#if>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">产品编号：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="code" value="${(data.code)!?html}" required
+                                           data-msg-required="产品编号不能为空" data-rule-remote="${base}/product/code_unique.do?id=${(data.id)!?html}"
+                                           data-msg-remote="产品编号已存在，请重新输入" />
+                                </div>
+                                <label class="col-sm-2 control-label required-label">产品名称：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="name" value="${(data.name)!?html}" required data-msg="产品名称不能为空" />
+                                </div>
+                            </div>
+                            <div class="form-group sexRestraint">
+                                <label class="col-sm-2 control-label required-label">适用人群：</label>
+                                <div class="col-sm-3">
+                                    <div class="radio-inline i-checks">
+                                        <@dict_category category = "FIT_PEOPLE">
+                                            <#list entries as entry>
+                                                <label><input type="radio" id="sexRestraint_${(entry_index)!}" name="sexRestraint" value="${(entry.dictValue)!html}"
+                                                    <#if entry_index == 0>checked="checked"</#if>>${(entry.dictText)!html}</label>
+                                            </#list>
+                                        </@dict_category>
+                                    </div>
+                                </div>
+
+                                <label class="col-sm-2 control-label required-label">指导价格：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="guidingPrice" value="${(data.guidingPrice)!?html}" required data-msg="指导价格不能为空"/>
+                                </div>
+                            </div>
+                                <#if !data??>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label required-label">产品状态：</label>
+                                    <div class="col-sm-3">
+                                        <div class="radio-inline i-checks">
+                                            <@dict_category category = "IS_DISABLE">
+                                                <#list entries as entry>
+                                                    <label><input type="radio" id="enabled_${(entry_index)!}" name="enabled" value="${(entry.dictValue)!html}"
+                                                        <#if entry_index == 1>checked="checked"</#if>>${(entry.dictText)!html}</label>
+                                                </#list>
+                                            </@dict_category>
+                                        </div>
+                                    </div>
+                                </div>
+                                </#if>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">检测项目：</label>
+                                <div class="col-sm-2">
+                                    <select id="selectable_items" class="form-control" size="8" multiple="multiple">
+                                        <#if selectableItems?? && selectableItems?has_content> <#list selectableItems as item>
+                                            <option value="${item.id}" sex_restraint="${(item.sexRestraint)!}">${item.name!?html}</option>
+                                        </#list> </#if>
+                                    </select>
+                                </div>
+                                <div class="col-sm-1">
+                                    <button type="button" id="select_right_all" class="btn btn-block btn-sm">
+                                        <span class="fa fa-angle-double-right"></span>
+                                    </button>
+                                    <button type="button" id="select_right" class="btn btn-block btn-sm">
+                                        <i class="fa fa-angle-right"></i>
+                                    </button>
+                                    <button type="button" id="select_left" class="btn btn-block btn-sm">
+                                        <i class="fa fa-angle-left"></i>
+                                    </button>
+                                    <button type="button" id="select_left_all" class="btn btn-block btn-sm">
+                                        <i class="fa fa-angle-double-left"></i>
+                                    </button>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select name="testingItems" id="selected_items" class="form-control" size="8" multiple="multiple" required
+                                            data-msg="检测项目不能为空">
+                                        <#if selectedItems?? && selectedItems?has_content> <#list selectedItems as item>
+                                            <option value="${(item.id)!}" >${(item.name)!?html}</option>
+                                        </#list> </#if>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <button class="btn btn-primary" type="submit">保存</button>
+                                    <button class="btn btn-primary goback" type="button">返回</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/icheckbox/icheckbox.min.js"></script>
+<script src="${plugins}/validation/jquery.validate.min.js"></script>
+<script src="${plugins}/layer/layer.min.js"></script>
+<script src="${plugins}/validation/additional-methods.min.js"></script>
+<script src="${plugins}/validation/localization/messages_zh.min.js"></script>
+<script src="${plugins}/multiselect/multiselect.min.js" type="text/javascript"></script>
+<script src="${system_js}/system.js"></script>
+<script src="${system_js}/myValidate.js"></script>
+<script type="text/javascript">
+    <!--
+    $(function()
+    {
+    <#if data??>
+        $('[name="sexRestraint"]:radio').iCheck('uncheck');
+        $("#sexRestraint_${(data.sexRestraint)!'0'}").iCheck('check');
+    </#if>
+
+      var multiselect = $('#selectable_items').multiselect({
+            right: '#selected_items',
+            rightAll: '#select_right_all',
+            rightSelected: '#select_right',
+            leftSelected: '#select_left',
+            leftAll: '#select_left_all',
+            beforeMoveToRight: function($left, $right, $options)
+            {
+                var sex_restraint = $left.find("option:selected").attr("sex_restraint");
+                var sex = $("[name='sexRestraint']:checked ").attr("value");
+                if(sex == 1||sex == 2)
+                {
+                    if(sex_restraint == 0)
+                    {
+                        return true;
+                    }
+                    return sex_restraint == sex;
+                }
+                return true;
+            }
+        });
+
+        $('form').validate({
+            rules: {
+                code:{
+                    tenlimit:true
+                },
+                name:{
+                    ten:true
+                },
+                guidingPrice:{
+                    pricelimit:true
+                },
+            },
+            messages:{
+                code: {
+                    tenlimit: "数字、字母均可，最长10位"
+                },
+                name: {
+                    ten: "请输入10位以内产品名称"
+                },
+                guidingPrice: {
+                    pricelimit: "请输入正确的价格"
+                },
+            },
+            errorPlacement: function(error, element) {
+                error.appendTo(element.parent());
+            }
+        });
+        var html = $("#selectable_items").html();
+        $('[name="sexRestraint"]').on('ifChecked', function(event){
+            $("#selectable_items option").remove();
+            $("#selected_items option").remove();
+            $("#selectable_items").append(html);html
+        });
+    });
+
+    //-->
+</script>
+</body>
+</html>

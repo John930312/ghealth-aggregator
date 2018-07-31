@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <title>配置管理-消息推送</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css" rel="stylesheet"></link>
+    <link href="${system_css}/bootstrap-multiselect.css" rel="stylesheet"></link>
+    <link href="${system_css}/bootstrap-select.min.css" rel="stylesheet">
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/messageSend/list.jsp">消息推送</a>
+                        </li>
+                        <li class="active">
+                            <strong>发布推送</strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5>发布推送</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal m-t" action="${base}/messageSend/modify.jsp" method="post">
+                        <input type="hidden" name="${(REPEAT_SUBMIT_TOKEN)!}" value="${(Request[REPEAT_SUBMIT_TOKEN])!}" />
+                        <input type="hidden" name="id" value="${(data.id)!}" />
+                        <div class="form-group">
+                            <label  class="col-sm-2 control-label required-label">推送代理：</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" value="<#list data.agencyName as list> ${list!?html} <#if list_has_next>,</#if> </#list>" disabled="disabled">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label required-label">标题：</label>
+                            <div class="col-sm-3">
+                                <input type="text" class="form-control" name="title" maxlength="50" required
+                                       data-msg="标题不能为空" value="${(data.title)!?html}"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label required-label">正文：</label>
+                            <div class="col-sm-3">
+                                <textarea id="content" name="content" style="width: 800px; height: 400px; margin: 0 auto;" >
+                                    ${(data.content)!?html}
+                                </textarea>
+                            </div>
+                        </div>
+                        <#if data.address?has_content>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">文件：</label>
+                            <div class="col-sm-3">
+                                <input type="text" name="file"  class="form-control"  value=" ${(address)!?html}" disabled="disabled"  />
+                            </div>
+                        </div>
+                        </#if>
+
+                        <div class="form-group">
+                            <div class="col-sm-5 col-sm-offset-2">
+                                <button class=" btn btn-primary " type="button"  id="subBut" >提交</button>
+                                <button class=" btn btn-primary " type="button"
+                                        onclick="goBack()">返回</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/icheckbox/icheckbox.min.js"></script>
+<script src="${plugins}/validation/jquery.validate.min.js"></script>
+<script src="${plugins}/validation/additional-methods.min.js"></script>
+<script src="${plugins}/validation/localization/messages_zh.min.js"></script>
+<script src="${system_js}/system.js"></script>
+<script src="${system_js}/myValidate.js"></script>
+<script  src="${system_js}/bootstrap-multiselect.js"></script>
+<script src="${system_js}/bootstrap-select.js"></script>
+<script src="${system_js}/selectChecked.js"></script>
+<script src="${system_js}/uploadPreview.js"></script>
+<script type="text/javascript" charset="utf-8" src="${plugins}/utf8-jsp/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="${plugins}/utf8-jsp/ueditor.all.min.js"> </script>
+<script type="text/javascript" charset="utf-8" src="${plugins}/utf8-jsp/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript">
+
+
+    var ue = UE.getEditor("content");
+
+
+
+
+    function goBack() {
+        window.history.back(-1);
+    }
+
+
+    $("#subBut").click(function () {
+        $('form').validate({
+            rules: {
+                title: {
+                    fifty: true
+                },
+            },
+            messages:{
+                title: {
+                    fifty: "请输入50位"
+                },
+            },
+            errorPlacement: function(error, element) {
+                error.appendTo(element.parent());
+            }
+        });
+
+
+
+        $('form').submit();
+
+    })
+
+
+</script>
+</body>
+</html>

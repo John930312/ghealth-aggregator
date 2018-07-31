@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.DictMapper">
+    <resultMap id="DictEntity" type="com.todaysoft.ghealth.mybatis.model.Dict" >
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="NAME" property="name"  />
+        <result column="PARENT_ID" property="parentId"  />
+        <result column="CATEGORY" property="category"  />
+        <result column="DICT_TEXT" property="dictText"  />
+        <result column="DICT_VALUE" property="dictValue"  />
+        <result column="SORT" property="sort"  />
+        <result column="EDITABLE" property="editable"  />
+    </resultMap>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="SearchFilters">
+        WHERE t.PARENT_ID is NULL
+        <if test="_parameter.dictText != null and _parameter.dictText != ''">
+            <bind name="dictTextPattern" value="_parameter.dictText + '%'" />
+            AND t.DICT_TEXT LIKE #{dictTextPattern}
+        </if>
+
+        <if test="_parameter.category != null and _parameter.category != ''">
+            AND t.CATEGORY LIKE #{category}
+        </if>
+    </sql>
+
+    <select id="search" resultMap="DictEntity" parameterType="com.todaysoft.ghealth.mybatis.searcher.DictSearcher">
+        SELECT t.* FROM GHEALTH_DICT t
+        <include refid="SearchFilters"></include>
+        <include refid="SearchLimit"></include>
+    </select>
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.DictSearcher">
+        SELECT COUNT(*) FROM GHEALTH_DICT t
+        <include refid="SearchFilters"></include>
+    </select>
+
+    <select id="findList" resultMap="DictEntity" parameterType="com.todaysoft.ghealth.mybatis.searcher.DictSearcher">
+        SELECT t.* FROM GHEALTH_DICT t WHERE t.CATEGORY =#{category,jdbcType=VARCHAR} AND t.PARENT_ID is NOT NULL ORDER BY t.SORT ASC
+    </select>
+
+    <select id="findByCategoryAndValue" resultMap="DictEntity" parameterType="com.todaysoft.ghealth.mybatis.searcher.DictSearcher">
+        SELECT t.* FROM GHEALTH_DICT t
+        WHERE t.CATEGORY =#{category,jdbcType=VARCHAR}
+        AND t.DICT_VALUE = #{dictValue,jdbcType=VARCHAR}
+        AND t.PARENT_ID is NOT NULL ORDER BY t.SORT ASC
+    </select>
+
+    <select id="get" resultMap="DictEntity" parameterType="java.lang.String">
+        SELECT t.* FROM GHEALTH_DICT t
+        WHERE t.ID = #{id}
+    </select>
+
+    <insert id="create" parameterType="com.todaysoft.ghealth.mybatis.model.DictForm">
+        insert into GHEALTH_DICT
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="parentId != null">
+                PARENT_ID,
+            </if>
+            <if test="category != null">
+                CATEGORY,
+            </if>
+            <if test="dictText != null">
+                DICT_TEXT,
+            </if>
+            <if test="dictValue != null">
+                DICT_VALUE,
+            </if>
+            <if test="sort != null">
+                SORT,
+            </if>
+            <if test="editable != null">
+                EDITABLE,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null">
+                #{parentId,jdbcType=VARCHAR},
+            </if>
+            <if test="category != null">
+                #{category,jdbcType=VARCHAR},
+            </if>
+            <if test="dictText != null">
+                #{dictText,jdbcType=VARCHAR},
+            </if>
+            <if test="dictValue != null">
+                #{dictValue,jdbcType=TINYINT},
+            </if>
+            <if test="sort != null">
+                #{sort,jdbcType=TIMESTAMP},
+            </if>
+            <if test="editable != null">
+                #{editable,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteByCategory" parameterType="java.lang.String">
+        delete from GHEALTH_DICT
+        where CATEGORY = #{category,jdbcType=INTEGER} AND PARENT_ID IS NOT NULL
+    </delete>
+
+    <update id="update" parameterType="com.todaysoft.ghealth.mybatis.model.DictForm">
+        UPDATE GHEALTH_DICT
+        <set>
+            <if test="dictText != null">
+                DICT_TEXT = #{dictText,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+
+</mapper>

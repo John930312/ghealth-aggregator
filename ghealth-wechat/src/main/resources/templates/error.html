@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>错误页面</title>
+</head>
+<body>
+<h3>出问题了。。。错误信息：
+    <#if error_message??>${error_message}
+        <#else>${exception!""}
+    </#if>
+</h3>
+</body>
+</html>

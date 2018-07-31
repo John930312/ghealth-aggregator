@@ -1,0 +1,2 @@
+ALTER TABLE `ghealth_barcode`
+MODIFY COLUMN `CODE`  varchar(64) NOT NULL COMMENT '编码' AFTER `PREFIX_CODE`;

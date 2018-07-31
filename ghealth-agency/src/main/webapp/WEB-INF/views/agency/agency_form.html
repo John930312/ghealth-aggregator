@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>代理表单-代理机构</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/agency/list.jsp">代理机构</a>
+                        </li>
+                        <li class="active">
+                            <strong>修改代理</strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5>修改代理</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal m-t" action="${base}/agency/modify.jsp" method="post">
+                        <input type="hidden" name="id" value="${(data.id)!}"/>
+                        <input type="hidden" name="primaryAccount" value="true"/>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">代理编号：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="code" value="${(data.code)!?html}"
+                                           readonly/>
+                                </div>
+                                <label class="col-sm-2 control-label required-label">代理简称：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="abbr" value="${(data.abbr)!?html}"
+                                           required data-msg="代理简称不能为空"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">机构名称：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="name" value="${(data.name)!?html}"
+                                           required data-msg="机构名称不能为空"/>
+                                </div>
+                                <label class="col-sm-2 control-label required-label">联系人姓名：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="contactName"
+                                           value="${(data.contactName)!?html}" required data-msg="联系人不能为空"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">联系人电话：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="contactPhone" required data-msg="联系人电话不能为空"
+                                           value="${(data.contactPhone)!?html}"/>
+                                </div>
+                                <label class="col-sm-2  control-label">联系人邮箱：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="contactEmail"
+                                           data-rule-email="true"
+                                           data-msg-email="邮箱的格式不正确"
+                                           value="${(data.contactEmail)!?html}"/>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">所在地市：</label>
+                                <div class="col-sm-3">
+                                    <select class="form-control" name="province" data-value="${(data.province)!?html}"
+                                            onchange="selectOpt(this)">
+                                        <option value="">请选择</option>
+                                        <#if list?has_content>
+                                            <#list list as record>
+                                                <option value="${(record.id)!?html}">${(record.name)!?html}</option>
+                                            </#list>
+                                        </#if>
+                                    </select>
+                                    <select class="form-control" name="city" data-value="${(data.city)!?html}" onchange="selectCountyOpt(this)">
+                                        <option value="">请选择</option>
+                                        <#if province?has_content>
+                                            <#list province as record>
+                                                <option value="${(record.id)!?html}">${(record.name)!?html}</option>
+                                            </#list>
+                                        </#if>
+                                    </select>
+                                </div>
+                                <label class="col-sm-2 control-label">联系地址：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="address"
+                                           value="${(data.address)!?html}" maxlength="30"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">备注：</label>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" rows="5" name="remark" id="area">${(data.remark)!}</textarea>
+                                    <p>字数限制：<span id="text-count">200</span>/200</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <button class="btn btn-primary" type="submit">保存</button>
+                                    <button class="btn btn-primary goback" type="button">返回</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/icheckbox/icheckbox.min.js"></script>
+<script src="${plugins}/validation/jquery.validate.min.js"></script>
+<script src="${plugins}/validation/additional-methods.min.js"></script>
+<script src="${plugins}/validation/localization/messages_zh.min.js"></script>
+<script src="${system_js}/system.js"></script>
+<script src="${system_js}/myValidate.js"></script>
+<script type="text/javascript">
+    <!--
+    $(function () {
+        $('form').validate({
+            rules: {
+                contactEmail: {
+                    email: true
+                },
+                contactPhone: {
+                    isMobile: true
+                },
+                primaryUsername: {
+                    twentylimit: true
+                },
+                code: {
+                    tenlimit: true
+                },
+                abbr: {
+                    ten: true
+                },
+                contactName: {
+                    seven: true
+                },
+                name: {
+                    twenty: true,
+                    required: true
+                },
+            },
+            messages: {
+                contactEmail: {
+                    email: "请输入正确邮箱地址"
+                },
+                contactPhone: {
+                    isMobile: "请输入正确手机号"
+                },
+                primaryUsername: {
+                    twentylimit: "数字、字母均可，最长20位"
+                },
+                code: {
+                    tenlimit: "数字、字母均可，最长10位"
+                },
+                abbr: {
+                    ten: "请输入10位以内代理简称"
+                },
+                contactName: {
+                    seven: "请输入7位以内联系人姓名"
+                },
+                name: {
+                    twenty: "请输入20位以内机构名称",
+                    required: "机构名称不能为空"
+                },
+
+            },
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent());
+            }
+        }
+
+
+        );
+
+            $("#area").on("input propertychange", function() {
+            var $this = $(this),
+                _val = $this.val(),
+                count = "";
+            if (_val.length > 200) {
+                $this.val(_val.substring(0, 200));
+            }
+            count = 200 - $this.val().length;
+            $("#text-count").text(count);
+        })
+
+    });
+
+    function selectOpt(obj){
+        $(obj).next().empty();
+        $(obj).next().next().empty();
+        $(obj).next().next().append('<option value="">请选择</option>');
+        var obj_ = $('select[name="city"]');
+
+        $.ajax({
+            type:'POST',
+            url:'${base}/customer/getAreas?parentId='+$(obj).val(),
+            success:function(data){
+
+                for(i in data){
+                    obj_.append(
+                        '<option value="'+data[i].id+'">'+data[i].name+'</option>'
+                    );
+                }
+            }
+        });
+    }
+    //-->
+</script>
+</body>
+</html>

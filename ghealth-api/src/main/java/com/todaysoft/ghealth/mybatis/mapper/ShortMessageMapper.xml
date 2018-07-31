@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.ShortMessageMapper">
+    <resultMap id="PrimaryEntity" type="com.todaysoft.ghealth.mybatis.model.PrimaryEntity">
+        <id column="ID" property="id" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATOR_NAME" property="creatorName" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="UPDATOR_NAME" property="updatorName" />
+        <result column="DELETED" property="deleted" />
+        <result column="DELETE_TIME" property="deleteTime" />
+        <result column="DELETOR_NAME" property="deletorName" />
+    </resultMap>
+
+    <resultMap id="ShortMessageEntity" type="com.todaysoft.ghealth.mybatis.model.ShortMessage" extends="PrimaryEntity">
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="CONFIG_DETAILS" property="configDetails"  />
+        <result column="AGENCY_CUSTOMIZED" property="agencyCustomized"  />
+        <result column="AGENCY_ID" property="agencyId"  />
+    </resultMap>
+
+
+    <select id="countIsExist" resultType="int" >
+        SELECT COUNT(*) FROM GHEALTH_EVENT_NOTIFY_CONFIG t WHERE t.AGENCY_CUSTOMIZED = 0
+    </select>
+
+    <insert id="create" parameterType="com.todaysoft.ghealth.mybatis.model.ShortMessage">
+        insert into GHEALTH_EVENT_NOTIFY_CONFIG
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="configDetails != null">
+                CONFIG_DETAILS,
+            </if>
+            <if test="agencyCustomized != null">
+                AGENCY_CUSTOMIZED,
+            </if>
+            <if test="agencyId != null">
+                AGENCY_ID,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME,
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME,
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME,
+            </if>
+            <if test="deleted != null">
+                DELETED,
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME,
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="configDetails != null">
+                #{configDetails,jdbcType=VARCHAR},
+            </if>
+            <if test="agencyCustomized != null">
+                #{agencyCustomized,jdbcType=VARCHAR},
+            </if>
+            <if test="agencyId != null">
+                #{agencyId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=TINYINT},
+            </if>
+            <if test="deleteTime != null">
+                #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="update" parameterType="com.todaysoft.ghealth.mybatis.model.ShortMessage">
+        UPDATE GHEALTH_EVENT_NOTIFY_CONFIG
+        <set>
+            <if test="id != null">
+                ID = #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="configDetails != null">
+                CONFIG_DETAILS = #{configDetails,jdbcType=VARCHAR},
+            </if>
+            <if test="agencyId != null">
+                AGENCY_ID = #{agencyId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME = #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME = #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                DELETED = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME = #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME = #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="getShortMessage" resultMap="ShortMessageEntity" parameterType="com.todaysoft.ghealth.mybatis.model.ShortMessage">
+        SELECT t.*  FROM GHEALTH_EVENT_NOTIFY_CONFIG t
+         WHERE
+        t.AGENCY_CUSTOMIZED = #{agencyCustomized,jdbcType=VARCHAR} AND  t.DELETED = 0
+    </select>
+
+    <select id="get" resultMap="ShortMessageEntity" parameterType="java.lang.String">
+        SELECT t.* FROM GHEALTH_EVENT_NOTIFY_CONFIG  t
+        WHERE t.ID = #{id} AND t.DELETED = 0
+    </select>
+
+    <select id="getByAgencyId" resultMap="ShortMessageEntity" parameterType="java.lang.String">
+        SELECT t.* FROM GHEALTH_EVENT_NOTIFY_CONFIG  t
+        WHERE t.AGENCY_ID = #{agencyId} AND t.DELETED = 0
+    </select>
+
+
+    <select id="getMessage" resultMap="ShortMessageEntity" parameterType="java.lang.String">
+        SELECT t.* FROM GHEALTH_EVENT_NOTIFY_CONFIG  t
+        WHERE t.AGENCY_ID = #{agencyId} AND t.DELETED = 0
+    </select>
+
+</mapper>

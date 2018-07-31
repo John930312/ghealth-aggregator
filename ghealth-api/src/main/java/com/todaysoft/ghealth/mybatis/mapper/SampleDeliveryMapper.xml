@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.SampleDeliveryMapper" >
+  <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.mybatis.model.SampleDelivery" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="SAMPLE_COUNT" property="sampleCount" jdbcType="INTEGER" />
+    <result column="OPERATOR_NAME" property="operatorName" jdbcType="VARCHAR" />
+    <result column="OPERATE_TIME" property="operateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SELECT
+    *
+    FROM
+    ghealth_sample_delivery
+  </sql>
+  <select id="getByBeliveryRecordId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    <include refid="Base_Column_List" />
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+
+
+  <insert id="create" parameterType="com.todaysoft.ghealth.mybatis.model.SampleDelivery" >
+    insert into ghealth_sample_delivery
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="sampleCount != null" >
+        SAMPLE_COUNT,
+      </if>
+      <if test="operatorName != null" >
+        OPERATOR_NAME,
+      </if>
+      <if test="operateTime != null" >
+        OPERATE_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="sampleCount != null" >
+        #{sampleCount,jdbcType=INTEGER},
+      </if>
+      <if test="operatorName != null" >
+        #{operatorName,jdbcType=VARCHAR},
+      </if>
+      <if test="operateTime != null" >
+        #{operateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="modify" parameterType="com.todaysoft.ghealth.mybatis.model.SampleDelivery" >
+    update ghealth_sample_delivery
+    <set >
+      <if test="sampleCount != null" >
+        SAMPLE_COUNT = #{sampleCount,jdbcType=INTEGER},
+      </if>
+      <if test="operatorName != null" >
+        OPERATOR_NAME = #{operatorName,jdbcType=VARCHAR},
+      </if>
+      <if test="operateTime != null" >
+        OPERATE_TIME = #{operateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>华生健康服务平台</title>
+<link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+<link href="${system_css}/system.css" rel="stylesheet"></link>
+    <script type="text/javascript">
+        (function (w, d, s, i, v, j, b) {
+            w[i] = w[i] || function () {
+                (w[i].v = w[i].v || []).push(arguments)
+            };
+            j = d.createElement(s),
+                b = d.getElementsByTagName(s)[0];
+            j.async = true;
+            j.charset = "UTF-8";
+            j.src = "https://www.v5kf.com/155011/v5kf.js";
+            b.parentNode.insertBefore(j, b);
+        })(window, document, "script", "V5CHAT");
+    </script>
+    <style>
+        #side-menu .fa-cny {
+            font-size: 17px;
+            width: 12.5px;
+        }
+    </style>
+</head>
+<body class="fixed-sidebar full-height-layout gray-bg" style="overflow: hidden">
+    <div id="wrapper">
+        <nav class="navbar-default navbar-static-side" role="navigation">
+            <div class="nav-close">
+                <i class="fa fa-times-circle"></i>
+            </div>
+            <div class="sidebar-collapse">
+                <ul class="nav" id="side-menu">
+                    <li class="nav-header">
+                        <div class="logo-element">M+</div>
+                    </li>
+                    <#list menus as menu>
+                    <li id="menu_${menu.id!?html}">
+                        <#if menu.submenus?has_content>
+                        <a class="menu" href="#">
+                            <i class="fa ${menu.icon!?html}"></i>
+                            <span class="nav-label">${menu.name!?html}</span>
+                            <span class="fa arrow"></span>
+                        </a>
+                        <ul class="nav nav-second-level">
+                            <#list menu.submenus as submenu>
+                            <li id="menu_${submenu.id!?html}">
+                                <#if submenu.submenus?has_content>
+                                <a class="menu">
+                                    <#else>
+                                    <a class="menu" href="${base}${submenu.uri}" target="mainIframe">
+                                        </#if> <i class="fa ${submenu.icon!?html}"></i>${submenu.name!?html} <#if submenu.submenus?has_content>
+                                        <span class="fa arrow"></span>
+                                        </#if>
+                                    </a>
+                                    <#if submenu.submenus?has_content>
+                                    <ul class="nav nav-third-level">
+                                        <#list submenu.submenus as thirdmenu>
+                                        <li id="menu_${thirdmenu.id!?html}">
+                                            <a class="menu" href="${base}${thirdmenu.uri}" target="mainIframe">
+                                                <i class="fa ${thirdmenu.icon!?html}"></i>${thirdmenu.name!?html}
+                                            </a>
+                                        </li>
+                                        </#list>
+                                    </ul>
+                                    </#if> 
+                            </li>
+                            </#list>
+                        </ul>
+                        <#else>
+                        <a class="menu" href="${base}${menu.uri!}" target="mainIframe">
+                            <i class="fa ${menu.icon!?html}"></i>
+                            <span class="nav-label">${menu.name!?html}</span>
+                            <span class="fa arrow"></span>
+                        </a>
+                            <ul class="nav nav-second-level">
+
+                            </ul>
+                        </#if>
+                    </li>
+                    </#list>
+                </ul>
+            </div>
+        </nav>
+        <!--左侧导航结束-->
+        <!--右侧部分开始-->
+        <div id="page-wrapper" class="gray-bg dashbard-1">
+            <div class="row header">
+                <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                    <div class="navbar-header">
+                        <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#">
+                            <i class="fa fa-bars"></i>
+                        </a>
+                    </div>
+                    <ul class="nav navbar-top-links navbar-right">
+                        <li>
+                            <div class="dropdown" style="margin-top: 12px;">
+                                <button type="button" class="btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+                                    <i class="fa fa-user"></i> ${account_name!?html}
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" id="menu1">
+                                    <li role="presentation">
+                                        <@security_resource resource = "/agency/modifyPassword.jsp">
+                                        <a role="menuitem" tabindex="-1" href="javascript:modifyPassword('${agencyId!?html}','${username!?html}','${primaryAccount?string("true","flase")}')">
+                                            <i class="fa fa-gear"></i> 修改密码
+                                        </a>
+                                    </@security_resource>
+                                        <@security_resource resource = "/datahide/show">
+                                        <a role="menuitem" tabindex="-1" href="${base}/agency/modify.jsp?agencyId=${agencyId!?html}&&primaryAccount=${primaryAccount?string('true','flase')}">
+                                            <i class="fa fa-gear"></i> 修改资料
+                                        </a>
+                                        </@security_resource>
+                                        <a role="menuitem" tabindex="-1" href="${base}/logout.jsp">
+                                            <i class="fa fa-sign-out"></i> 退出
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="row J_mainContent" id="content-main">
+                <iframe class="J_iframe" name="mainIframe" width="100%" height="100%" src="${base}${(defaultMenu.uri)!?html}" frameborder="0" seamless></iframe>
+            </div>
+            <div class="footer">
+                <div class="pull-right"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="report_model" tabindex="-1" role="dialog"
+         aria-labelledby="report_ModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-hidden="true">&times;
+                    </button>
+                    <h4 class="modal-title" id="report_ModalLabel">修改密码</h4>
+                </div>
+
+                <form id="modifyForm" method="post" action="${base}/agency/modifyPassword.jsp" name="modifyForm" >
+                    <input type="hidden" name="id" id="agencyId">
+                    <input type="hidden" name="primaryAccount" id="primaryAccount">
+                    <input type="hidden" name="primaryUsername" id="username">
+                    <div class="modal-body">
+                        <div class="form-group ">
+                            <label class="col-sm-3 control-label">账号密码：</label>
+                            <div class="col-sm-3">
+                                <input type="password" class="form-control" id="password"
+                                       name="primaryAccountPassword"/>
+                            </div>
+                            <label class="col-sm-3 control-label">重复密码：</label>
+                            <div class="col-sm-3">
+                                <input type="password" class="form-control" id="password1"/>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <div class="col-lg-4" style="float: right">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            <button type="button" class="btn btn-primary" onclick="ccSub()">提交</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <#if loginStatus == 1> <#include "./inc/instructions.html">
+    </#if>
+    <script src="${plugins}/jquery/jquery.min.js"></script>
+    <script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+    <script src="${plugins}/metisMenu/jquery.metisMenu.js"></script>
+    <script src="${plugins}/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="${plugins}/layer/layer.min.js"></script>
+    <script src="${plugins}/hplus/hplus.min.js"></script>
+    <script src="${plugins}/hplus/contabs.min.js"></script>
+    <script src="${plugins}/pace/pace.min.js"></script>
+    <script src="${system_js}/system.js"></script>
+    <script src="${plugins}/validation/jquery.validate.min.js"></script>
+    <script src="${plugins}/validation/additional-methods.min.js"></script>
+    <script src="${plugins}/validation/localization/messages_zh.min.js"></script>
+
+    <#if (defaultMenu.uri)??>
+    <script type="text/javascript">
+                <!--
+                    var $li = $('#menu_${defaultMenu.id!?html}');
+                    $li.addClass('active');
+                    $li.parents('li').addClass('active');
+
+                $(window).on('load',function (e) {
+                    $('#side-menu a').unbind('click');
+
+                    $('#side-menu li').on('click',function (e) {
+                        $(this).addClass('active').siblings().removeClass('active');
+                    })
+
+                });
+
+                function modifyPassword(Id,username,primaryAccount) {
+
+                    $('#report_model').modal("show");
+                    $('#agencyId').val(Id);
+                    $('#primaryAccount').val(primaryAccount);
+                    $('#username').val(username);
+                    console.log(typeof(primaryAccount));
+                }
+
+
+                function ccSub() {
+                    var a=$('#password').val();
+                    var b= $('#password1').val();
+                    if(a!==""&&b!==""){
+                        if (a==b){
+                            $('#modifyForm').submit();
+                        }else {
+                            alert("密码不一致！")
+                        }
+                    }else {
+                        alert("请输入密码")
+                    }
+                }
+                //-->
+                </script>
+    </#if>
+</body>
+</html>

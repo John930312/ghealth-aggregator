@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>条码列表-条码管理</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/customer/list.jsp">条码管理</a>
+                        </li>
+                        <li class="active">
+                            <strong>新增条码</strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5>新增条码</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal m-t" action="${base}/barcode/create.jsp" method="post" id="barcode_form">
+                        <fieldset>
+                            <input type="hidden" id="numWidth" name="numWidth" max ="6" value="6"/>
+                            <input type="hidden" id="beginNum" name="beginNum" />
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">区号：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="areaCode" id="areaCode"/>
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">是否免费：</label>
+                                <div class="col-sm-3">
+                                    <select id="freeOfCharge" class="form-control" name="freeOfCharge">
+                                        <option value="0" selected="selected">否</option>
+                                        <option value="Z">是</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">生产个数：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="count" id="count"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+
+                                <label class="col-sm-2 control-label" for="codePreview">条形码预览</label>
+                                <div class="col-sm-3" id="codePreview" name="codePreview">
+                                    <p></p>
+                                    <p></p>
+                                    <p></p>
+                                    <p></p>
+                                    <p></p>
+                                    <p></p>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <button type="button" id="create" class="btn btn-primary">生成</button>
+                                    <button type="button" id="print" class="btn btn-primary">打印</button>
+                                    <button type="button" class="btn goback">返回</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/validation/jquery.validate.min.js"></script>
+<script src="${plugins}/validation/additional-methods.min.js"></script>
+<script src="${plugins}/validation/localization/messages_zh.min.js"></script>
+<script src="${system_js}/system.js"></script>
+<script src="${system_js}/LodopFuncs.js"></script>
+<script src="${system_js}/barcode.form.js"></script>
+<script type="text/javascript">
+    <!--
+    $(function()
+    {
+        $.init('${base}');
+    });
+    -->
+</script>
+</body>
+</html>

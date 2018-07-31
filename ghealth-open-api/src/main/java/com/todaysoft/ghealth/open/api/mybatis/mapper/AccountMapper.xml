@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.open.api.mybatis.mapper.AccountMapper">
+
+    <resultMap id="AccountEntity" type="com.todaysoft.ghealth.open.api.mybatis.model.Account">
+        <id column="ID" property="id" />
+        <result column="NAME" property="name" />
+        <result column="PASSWORD" property="password" />
+        <result column="ENABLED" property="enabled" />
+        <result column="AGENCY" property="agency" />
+        <result column="AGENCY_ID" property="agencyId" />
+    </resultMap>
+    
+    <select id="getManageAccount" resultMap="AccountEntity"  parameterType="java.lang.String">
+        SELECT t.ID, t.NAME, t.PASSWORD, t.ENABLED FROM GHEALTH_USER t WHERE t.DELETED = '0' AND t.USERNAME = #{username}
+    </select>
+    
+    <select id="getAgencyAccount" resultMap="AccountEntity"  parameterType="java.lang.String">
+        SELECT t.ID, t.NAME, t.PASSWORD, t.ENABLED, t.AGENCY_ID, 1 AS AGENCY FROM GHEALTH_AGENCY_ACCOUNT t WHERE t.DELETED = '0' AND t.USERNAME = #{username}
+    </select>
+</mapper>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.OrderHistoryMapper" >
+  <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.mybatis.model.OrderHistory" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+    <result column="TITLE" property="title" jdbcType="VARCHAR" />
+    <result column="EVENT_TYPE" property="eventType" jdbcType="VARCHAR" />
+    <result column="EVENT_DETAILS" property="eventDetails" jdbcType="VARCHAR" />
+    <result column="EVENT_TIME" property="eventTime" jdbcType="TIMESTAMP" />
+    <result column="OPERATOR_NAME" property="operatorName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+   SELECT
+   *
+   from ghealth_order_history
+  </sql>
+  <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    <include refid="Base_Column_List" />
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="delete" parameterType="java.lang.String" >
+    delete from ghealth_order_history
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+
+  <delete id="deleteByOrderId" parameterType="java.lang.String" >
+    delete from ghealth_order_history
+    where ORDER_ID = #{id,jdbcType=VARCHAR}
+  </delete>
+
+  <insert id="create" parameterType="com.todaysoft.ghealth.mybatis.model.OrderHistory" >
+    insert into ghealth_order_history
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID,
+      </if>
+      <if test="title != null" >
+        TITLE,
+      </if>
+      <if test="eventType != null" >
+        EVENT_TYPE,
+      </if>
+      <if test="eventDetails != null" >
+        EVENT_DETAILS,
+      </if>
+      <if test="eventTime != null" >
+        EVENT_TIME,
+      </if>
+      <if test="operatorName != null" >
+        OPERATOR_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="eventType != null" >
+        #{eventType,jdbcType=VARCHAR},
+      </if>
+      <if test="eventDetails != null" >
+        #{eventDetails,jdbcType=VARCHAR},
+      </if>
+      <if test="eventTime != null" >
+        #{eventTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operatorName != null" >
+        #{operatorName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="modify" parameterType="com.todaysoft.ghealth.mybatis.model.OrderHistory" >
+    update ghealth_order_history
+    <set >
+      <if test="orderId != null" >
+        ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="eventType != null" >
+        EVENT_TYPE = #{eventType,jdbcType=VARCHAR},
+      </if>
+      <if test="eventDetails != null" >
+        EVENT_DETAILS = #{eventDetails,jdbcType=VARCHAR},
+      </if>
+      <if test="eventTime != null" >
+        EVENT_TIME = #{eventTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operatorName != null" >
+        OPERATOR_NAME = #{operatorName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="getOrderHistoriesByOrderId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    <include refid="Base_Column_List" />
+    where ORDER_ID = #{orderId,jdbcType=VARCHAR}
+    ORDER BY EVENT_TIME;
+  </select>
+
+  <select id="getOrderHistories" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    <include refid="Base_Column_List" />
+    where EVENT_TYPE = #{name,jdbcType=VARCHAR} AND
+    YEAR(EVENT_TIME)=#{year,jdbcType=VARCHAR} AND
+    MONTH(EVENT_TIME)=#{month,jdbcType=VARCHAR}
+  </select>
+
+
+  <select id="getOrderHistoryLists" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    <include refid="Base_Column_List" />
+    where EVENT_TYPE = #{name,jdbcType=VARCHAR} AND
+    YEAR(EVENT_TIME)=#{year,jdbcType=VARCHAR} AND
+    MONTH(EVENT_TIME)=#{month,jdbcType=VARCHAR} AND
+    DAY (EVENT_TIME)=#{day,jdbcType=VARCHAR}
+  </select>
+
+
+  <sql id="SearchFilters">
+    WHERE 1 = 1
+    <if test="_parameter.title != null and _parameter.title != ''">
+      AND EVENT_TYPE = #{title}
+    </if>
+    <if test="_parameter.startTime != null">
+      <bind name="startTimePattern" value="_parameter.startTime" />
+      <![CDATA[   and DATE_FORMAT(EVENT_TIME, '%Y-%m-%d %H:%M:%S')>=  DATE_FORMAT(#{startTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
+    </if>
+    <if test="_parameter.endTime != null">
+      <bind name="endTimePattern" value="_parameter.endTime" />
+      <![CDATA[   and DATE_FORMAT(EVENT_TIME, '%Y-%m-%d %H:%M:%S') <  DATE_FORMAT(#{endTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
+    </if>
+  </sql>
+
+  <select id="getOrderHistory" resultMap="BaseResultMap" parameterType="com.todaysoft.ghealth.mybatis.searcher.StatisticsSearcher" >
+    <include refid="Base_Column_List" />
+    <include refid="SearchFilters"></include>
+  </select>
+
+  <select id="getOrderIds" resultType="String" parameterType="com.todaysoft.ghealth.mybatis.searcher.StatisticsSearcher" >
+    SELECT
+    ORDER_ID
+    from ghealth_order_history
+    <include refid="SearchFilters"></include>
+  </select>
+
+
+
+</mapper>

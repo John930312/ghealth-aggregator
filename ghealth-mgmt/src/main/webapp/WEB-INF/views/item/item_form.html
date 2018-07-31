@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>项目表单-检测项目</title>
+<link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+<link href="${plugins}/magicsuggest/magicsuggest-min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+<link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+<link href="${system_css}/system.css" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <ol class="breadcrumb">
+                            <li>
+                                <a href="${base}/item/list.jsp">检测项目</a>
+                            </li>
+                            <li class="active">
+                                <strong><#if data??>修改项目<#else>新增项目</#if></strong>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="ibox ibox-table">
+                    <div class="ibox-title">
+                        <h5><#if data??>修改项目<#else>新增项目</#if></h5>
+                    </div>
+                    <div class="ibox-content">
+                        <#if data??> <#assign uri = "/item/modify.jsp" /> <#else> <#assign uri = "/item/create.jsp" /> </#if>
+                        <form class="form-horizontal m-t" action="${base}${uri}" method="post">
+                            <input type="hidden" name="id" value="${(data.id)!}" />
+                            <input type="hidden" name="${(REPEAT_SUBMIT_TOKEN)!}" value="${(Request[REPEAT_SUBMIT_TOKEN])!}" />
+                            <#if data??&&data.enabled??>
+                                <input type="hidden" name="enabled" value="${(data.enabled)?string('1','0')}" />
+                            </#if>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label required-label">项目编号：</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" name="code" value="${(data.code)!?html}" required
+                                            data-msg-required="项目编号不能为空" data-rule-remote="${base}/item/code_unique.do?id=${(data.id)!?html}"
+                                            data-msg-remote="项目编号已存在，请重新输入" />
+                                    </div>
+                                    <label class="col-sm-2 control-label required-label">项目名称：</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" name="name" value="${(data.name)!?html}" required data-msg="项目名称不能为空" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label required-label">项目类型：</label>
+                                    <div class="col-sm-3">
+                                        <select class="form-control" name="category" id="category" data-value="${(data.category)!?html}"  required
+                                            data-msg="项目类型不能为空">
+                                            <option value="">请选择</option>
+                                            <@dict_category category = "ITEM_TYPE">
+                                                <#list entries as entry>
+                                                    <option value="${(entry.dictValue)!?html}">${(entry.dictText)!?html}</option>
+                                                </#list>
+                                            </@dict_category>
+                                        </select>
+                                    </div>
+
+                                    <div id="cancer">
+                                    <label class="col-sm-2 control-label ">肿瘤类别：</label>
+                                    <div class="col-sm-3">
+                                        <div class="form-control" id="cancerName" placeholder="肿瘤类别" ></div>
+                                        <input type="hidden" name="categoryMapping"/>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label required-label">适用人群：</label>
+                                    <div class="col-sm-3">
+                                        <div class="radio-inline i-checks">
+                                            <@dict_category category = "FIT_PEOPLE">
+                                            <#list entries as entry>
+                                                <label><input type="radio" id="sexRestraint_${(entry_index)!}" name="sexRestraint" value="${(entry.dictValue)!html}"
+                                                    <#if entry_index == 0>checked="checked"</#if>>${(entry.dictText)!html}</label>
+                                            </#list>
+                                        </@dict_category>
+                                        </div>
+                                    </div>
+                                <#if !data??>
+                                    <label class="col-sm-2 control-label required-label">项目状态：</label>
+                                    <div class="col-sm-3">
+                                        <div class="radio-inline i-checks">
+                                            <@dict_category category = "IS_DISABLE">
+                                            <#list entries as entry>
+                                                <label><input type="radio" id="enabled_${(entry_index)!}" name="enabled" value="${(entry.dictValue)!html}"
+                                                    <#if entry_index == 1>checked="checked"</#if>>${(entry.dictText)!html}</label>
+                                            </#list>
+                                        </@dict_category>
+                                        </div>
+                                    </div>
+                                </div>
+                                </#if>
+                                <div class="form-group">
+                                    <div class="col-sm-4 col-sm-offset-2">
+                                        <button class="btn btn-primary" type="button" id="subBut">保存</button>
+                                        <button class="btn btn-primary goback" type="button">返回</button>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="${plugins}/jquery/jquery.min.js"></script>
+    <script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+    <script src="${plugins}/magicsuggest/magicsuggest-min.js"></script>
+    <script src="${plugins}/icheckbox/icheckbox.min.js"></script>
+    <script src="${plugins}/validation/jquery.validate.min.js"></script>
+    <script src="${plugins}/validation/additional-methods.min.js"></script>
+    <script src="${plugins}/validation/localization/messages_zh.min.js"></script>
+    <script src="${system_js}/system.js"></script>
+    <script src="${system_js}/myValidate.js"></script>
+    <script type="text/javascript">
+
+        $(function () {
+
+
+                var a =$("#category").val();
+                if (a ==2||a ==3||a==4||a==5||a==6){
+                    $("#cancer").hide();
+                }else {
+                    $("#cancer").show();
+                }
+
+
+
+
+                var p = $('#cancerName').magicSuggest(
+                    {
+                        width: 190,
+                        highlight: true,
+                        data: '${base}/cancer/json_list.do',
+                        method: 'get',
+                        queryParam: "cancerName",
+                        maxSelection: 1,
+                        displayField: "name",
+                        allowFreeEntries: false,
+                        renderer: function (v) {
+                            return '<div>' + '<div >' + '<div>'
+                                + v.name + '</div>' + '</div>'
+                                + '<div style="clear:both;"></div>';
+                        }
+                    });
+
+
+            $("#category").change(function(){
+                if($(this).val()==2||$(this).val()==3||$(this).val()==4||$(this).val()==5||$(this).val()==6){
+                    $("#cancer").hide();
+                    p.clear()
+                }else {
+                    $("#cancer").show();
+                }
+            })
+            <#if cancer??>
+            $("#cancerName").magicSuggest().setSelection(${cancer});
+            </#if>
+            $("#subBut").click(function () {
+
+
+                var a =$("#category").val();
+                var b = $("#categoryMapping").val();
+                if(a==1){
+                    var cancer = p.getSelection()[0];
+                    console.log(cancer)
+                    if (undefined != cancer) {
+                        $('input[name="categoryMapping"]').val(cancer.id);
+                        $('form').submit();
+                    }
+                 else {alert("请选择肿瘤类型");}
+                }else { $('form').submit();}
+
+            });
+
+            $(function()
+            {
+            <#if data??>
+                $('[name="sexRestraint"]:radio').iCheck('uncheck');
+                $("#sexRestraint_${(data.sexRestraint)!'0'}").iCheck('check');
+            </#if>
+                $('form').validate({
+                    rules: {
+                        code:{
+                            fiftylimit:true
+                        },
+                        name:{
+                            twenty:true
+                        },
+                    },
+                    messages:{
+                        code: {
+                            fiftylimit: "数字、字母均可，最长50位"
+                        },
+                        name: {
+                            twenty: "请输入20位以内项目名称"
+                        },
+                    },
+                    errorPlacement: function(error, element) {
+                        error.appendTo(element.parent());
+                    }
+
+                });
+            });
+
+            })
+
+
+
+
+                </script>
+</body>
+</html>

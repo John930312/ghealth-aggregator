@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.SampleSignDetailsMapper" >
+  <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.mybatis.model.SampleSignDetails" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="SIGN_RECORD_ID" property="signRecordId" jdbcType="VARCHAR" />
+    <result column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SELECT  *
+    FROM ghealth_sample_sign_details
+  </sql>
+  <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    <include refid="Base_Column_List" />
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getByOrderId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    <include refid="Base_Column_List" />
+    where order_id = #{orderId,jdbcType=VARCHAR}
+  </select>
+
+  <insert id="create" parameterType="com.todaysoft.ghealth.mybatis.model.SampleSignDetails" >
+    insert into ghealth_sample_sign_details
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="signRecordId != null" >
+        SIGN_RECORD_ID,
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="signRecordId != null" >
+        #{signRecordId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="modify" parameterType="com.todaysoft.ghealth.mybatis.model.SampleSignDetails" >
+    update ghealth_sample_sign_details
+    <set >
+      <if test="signRecordId != null" >
+        SIGN_RECORD_ID = #{signRecordId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

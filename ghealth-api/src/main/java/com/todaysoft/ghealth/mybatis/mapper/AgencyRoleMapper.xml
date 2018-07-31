@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.AgencyRoleMapper">
+    <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.mybatis.model.AgencyRole">
+        <id column="ID" property="id"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="CREATOR_NAME" property="creatorName"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <result column="UPDATOR_NAME" property="updatorName"/>
+        <result column="DELETED" property="deleted"/>
+        <result column="DELETE_TIME" property="deleteTime"/>
+        <result column="DELETOR_NAME" property="deletorName"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="AGENCY_ID" property="agencyId" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        select
+        *
+        from ghealth_agency_role
+    </sql>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.AgencyRoleSearcher">
+        SELECT COUNT(*) FROM ghealth_agency_role
+        <include refid="SearchFilters"></include>
+    </select>
+
+    <select id="search" resultMap="BaseResultMap" parameterType="com.todaysoft.ghealth.mybatis.searcher.AgencyRoleSearcher">
+        <include refid="Base_Column_List"></include>
+        <include refid="SearchFilters"></include>  ORDER BY CREATE_TIME DESC
+        <include refid="SearchLimit"></include>
+    </select>
+
+    <sql id="SearchFilters">
+        WHERE DELETED = 0
+        <if test="_parameter.name != null and _parameter.name != ''">
+            <choose>
+                <when test="_parameter.nameExactMatches">AND name = #{name}</when>
+                <otherwise>
+                    <bind name="namePattern" value="_parameter.name + '%'"/>
+                    AND name LIKE #{namePattern}
+                </otherwise>
+            </choose>
+        </if>
+        <if test="_parameter.agencyId != null">
+            AND AGENCY_ID = #{agencyId}
+        </if>
+        <if test="_parameter.excludeKeys != null and _parameter.excludeKeys.size != 0">
+            <choose>
+                <when test="_parameter.excludeKeys.size == 1">
+                    AND id !=
+                    <foreach collection="_parameter.excludeKeys" item="excludeKey" index="index" open="" close="" separator="">
+                        #{excludeKey}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND id NOT IN
+                    <foreach collection="_parameter.excludeKeys" item="excludeKey" index="index" open="(" close=")" separator=",">
+                        #{excludeKey}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+
+    </sql>
+
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String">
+        <include refid="Base_Column_List"/>
+        where ID = #{id,jdbcType=INTEGER}
+    </select>
+
+
+
+    <insert id="insert" parameterType="com.todaysoft.ghealth.mybatis.model.AgencyRole">
+        insert into ghealth_agency_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="name != null">
+                NAME,
+            </if>
+            <if test="agencyId != null">
+                AGENCY_ID,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME,
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME,
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME,
+            </if>
+            <if test="deleted != null">
+                DELETED,
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME,
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="agencyId != null">
+                #{agencyId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null">
+                #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+
+
+    <update id="update" parameterType="com.todaysoft.ghealth.mybatis.model.Role">
+        update ghealth_agency_role
+        <set>
+            <if test="name != null">
+                NAME = #{name,jdbcType=VARCHAR},
+            </if>
+
+            <if test="createTime != null" >
+                CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null" >
+                CREATOR_NAME = #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null" >
+                UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null" >
+                UPDATOR_NAME = #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null" >
+                DELETED = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null" >
+                DELETE_TIME = #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null" >
+                DELETOR_NAME = #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

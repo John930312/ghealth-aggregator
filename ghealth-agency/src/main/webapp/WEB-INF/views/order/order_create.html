@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>新增项目</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css?v=0.1" rel="stylesheet"></link>
+    <script src="${plugins}/jquery/jquery.min.js"></script>
+    <script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+    <script src="${system_js}/bootstrap-suggest.js"></script>
+    <script src="${plugins}/layer/layer.min.js"></script>
+    <script src="${plugins}/pagination/jquery.pagination.js"></script>
+    <script src="${system_js}/system.js?v=0.2"></script>
+    <script src="${system_js}/bootstrap-suggest.js"></script>
+    <script type="text/javascript" src="${plugins}/validation/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="${plugins}/validation/additional-methods.min.js"></script>
+    <script type="text/javascript" src="${plugins}/validation/localization/messages_zh.min.js"></script>
+    <script src="${system_js}/myValidate.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+
+            var flag = true
+            <@security_resource resource = "/money/show">
+                flag = false;
+            </@security_resource>
+            if (flag) {
+                $("#canShow").hide();
+            }
+
+            var isModify = false;
+            <#if data??>
+                isModify = true;
+            </#if>
+
+            //表单验证提交
+            $("#createform").validate({
+                submitHandler: function (form) {
+                    form.submit();
+                },
+                rules: {
+                    code: {
+                        required: true,
+                        isLet: true,
+                        remote: {
+                            url: "${base}/order/validateCode.do?id=" + $("[name='id']").val() + "&code?" + $("#code").val()
+                        }
+                    },
+                    customerName: {
+                        required: true,
+                    },
+                    productName: {
+                        required: true,
+                    },
+                    messages: {
+                        code: {
+                            remote: "采样盒编号已存在"
+                        }
+                    },
+                },
+                errorPlacement: function (error, element) {
+                    error.appendTo(element.parent());
+                }
+            });
+
+            var initBsSuggest = function (opts) {
+                var $source = opts.source;
+                var $target = opts.target;
+                var $url = opts.url;
+                var $effectiveFields = opts.effectiveFields;
+                var $keyField = opts.keyField;
+                $source.bsSuggest('init', {
+                    url: $url,
+                    getDataMethod: "url",
+                    idField: "id",
+                    keyField: $keyField,
+                    effectiveFields: $effectiveFields,
+                    effectiveFieldsAlias: {name: "姓名", phone: "手机号码"}
+                }).on('onDataRequestSuccess', function (e, result) {
+                }).on('onSetSelectValue', function (e, keyword, data) {
+                    if ("productName" == e.currentTarget.id) {
+                        $target.val(data.productId);
+                        if (!data.productEnabled) {
+                            layer.alert("该产品已被禁用！", {title: "提示"});
+                            p.clear();
+                        }
+                        var pId = data.productId;
+                        var id = data.id;
+                        $.ajax({
+                            url: "${base}/order/getAgencyProductById.do",
+                            data: {id: id, productId: pId},
+                            type: 'POST',
+                            success: function (data) {
+                                setValue(data);
+                            }
+                        })
+                    } else {
+                        $target.val(data.id);
+                    }
+                }).on('onUnsetSelectValue', function () {
+                });
+            }
+
+            var productOpts = {
+                source: $("#productName"),
+                target: $('[name="product.id"]'),
+                url: "${base}/product/getSelectList.do?productId=" + $("#productId").val() + "&name=",
+                effectiveFields: ["productName"],
+                keyField: "productName",
+            };
+            var customerOpts = {
+                source: $("#customerName"),
+                target: $('[name="customer.id"]'),
+                url: "${base}/customer/getSelectList.do?name=",
+                effectiveFields: ["name","phone"],
+                keyField: "name",
+            };
+            initBsSuggest(productOpts);
+            initBsSuggest(customerOpts);
+            if (isModify) {
+                $("#customerName").bsSuggest("disable");
+            }
+
+        });
+
+        function getRealVal(val) {
+            if (0 == val) {
+                return "通用";
+            } else if (1 == val) {
+                return "男";
+            } else {
+                return "女";
+            }
+        }
+
+        function beforeSub(value, url, obj) {
+            var customerName = $("#customerName").attr("data-id");
+            var productName = $("#productName").attr("data-id");
+            var flagss = true;
+            if (value == 1 || value == 2) {
+                if (customerName == "" || customerName == undefined) {
+                    layer.alert("客户姓名请选择！", {
+                        title: "提示"
+                    });
+                    flagss = false;
+                }
+                if (productName == "" || productName == undefined) {
+                    layer.alert("产品名请选择！", {
+                        title: "提示"
+                    });
+                    flagss = false;
+                }
+            }
+
+            if (flagss) {
+                var createform = $("#createform");
+                var agencyAccountAmount = parseFloat($("#agencyAccountAmount").val());
+                var agencyAuthorizationAmount = parseFloat($("#agencyAuthorizationAmount").val());
+                var agencyPrice = parseFloat($("#agencyPrice").val());
+                var historyAgencyPrice = parseFloat($("#price").val());
+                $("#createform").attr("action", url);
+                if (value == 1) {
+                    $('#status').val("0");
+                    createform.submit();
+                    $(obj).attr("disabled", true);
+                    return;
+                }
+                if (value == 2) {
+                    $('#status').val("1");
+                    if (agencyAccountAmount - agencyPrice + agencyAuthorizationAmount < 0) {
+                        layer.alert("账户余额不足，请充值！", {
+                            title: "提示"
+                        });
+                        return;
+                    }
+                }
+                if ($("#status").val() > 0 && agencyAccountAmount - agencyPrice + agencyAuthorizationAmount + historyAgencyPrice < 0) {
+                    layer.alert("账户余额不足，请充值！", {
+                        title: "提示"
+                    });
+                    return;
+                }
+
+                createform.submit();
+                $(obj).attr("disabled", true);
+            }
+
+
+        }
+
+        function setValue(data) {
+
+            if (!data.productEnabled) {
+                $("#productCode").val("");
+                $("#productSexRestraintText").val("")
+                $("#agencyPrice").val("");
+                $("#agencyAccountAmount").val("");
+                $("#testingItems").val("");
+                $("#productId").val("");
+                $("#agencyAuthorizationAmount").val("");
+            }
+            else {
+                $("#productCode").val(data.productCode);
+                $("#productSexRestraintText").val(getRealVal(data.productSexRestraint));
+                if (data.inGracePeriod) {
+                    $("#agencyPrice").val(data.discountPrice);
+                    $("#actualPrice").val(data.discountPrice);
+                } else {
+                    $("#agencyPrice").val(data.agencyPrice);
+                    $("#actualPrice").val(data.agencyPrice);
+                }
+                $("#agencyAccountAmount").val(data.agencyAccountAmount);
+                $("#agencyAuthorizationAmount").val(data.agencyAuthorizationAmount);
+                var arr = data.testingItems;
+                var itemNames = '';
+                for (var i = 0; i < arr.length; i++) {
+
+                    if (i == arr.length - 1) {
+                        itemNames += arr[i].name;
+                    } else {
+                        itemNames += arr[i].name + ",";
+                    }
+
+                }
+                $("#testingItems").val(itemNames);
+                if (itemNames.length > 30) {
+                    $("#testingItems").attr("title", itemNames);
+                }
+                else {
+                    $("#testingItems").removeAttr("title");
+                }
+            }
+        }
+    </script>
+</head>
+<body class="gray-bg">
+
+<div class="wrapper wrapper-content animated kv-main">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>订单管理</li>
+                        <div style="float: right;">
+                            <a href="${base}/order/list.jsp" target="_self"
+                               style="padding: 0px; position: relative; right: 16px; float: right">
+                                <img src="${system_images}/backbtn.png" style="height: 24px;"/>
+                            </a>
+                        </div>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5 style="font-weight: bold;">新增订单</h5>
+                </div>
+                <div class="ibox-content">
+                    <form id="createform" name="createform" class="form-horizontal m-t"
+                          action=""
+                          method="post" enctype='application/json'>
+                        <input type="hidden" name="${(REPEAT_SUBMIT_TOKEN)!}"
+                               value="${(Request[REPEAT_SUBMIT_TOKEN])!}"/>
+                        <input type="hidden" name="id" value="${(data.id)!?html}"/>
+                        <input type="hidden" name="agency.id" value="${(data.agency.id)!?html}"/>
+                        <input type="hidden" name="status" id="status" value="${(data.status)!?html}"/>
+                        <input type="hidden" name="accountAmount" value="${(agency.accountAmount)!?html}"/>
+                        <input type="hidden" name="actualPrice" id="actualPrice" value=""/>
+                        <input type="hidden" id="price" name="price" value="${(data.actualPrice)!?html}"/>
+                        <input type="hidden" id="productId" value="${(data.product.id)!?html}"/>
+                        <div class="panel-group" id="accordion">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" href="#collapseOne"> 用户信息 </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseOne" class="panel-collapse collapse in">
+
+                                    <div class="ibox-content">
+                                        <div class="form-group">
+
+                                            <label class="col-sm-2 control-label control-required required-label">客户：</label>
+                                            <div class="col-sm-3">
+                                                <div class="input-append input-group"
+                                                     style="white-space: nowrap; vertical-align: middle;">
+                                                    <input name="customer.id" type="hidden"
+                                                           value="${(data.customer.id)!?html}"/>
+                                                    <input type="text" class="form-control" id="customerName"
+                                                           name='customerName' placeholder="请输入客户"
+                                                           value="${(data.customer.name)!?html}">
+                                                    <div class="btn-group"
+                                                         style="display: inline-block; margin-left: -1px; vertical-align: middle;">
+                                                        <button type="button" class="btn btn-default dropdown-toggle"
+                                                                data-toggle="dropdown">
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="col-sm-2 control-label required-label">条码编号：</label>
+                                                <div class="col-sm-3">
+                                                    <input type="text" class="form-control" name="code"
+                                                           id="code" value="${(data.code)!?html}"/>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <label class="col-sm-2 control-label required-label">纸质报告：</label>
+                                            <div class="col-sm-3">
+                                                <select class="form-control" name="reportPrintRequired"
+                                                        id="reportPrintRequired">
+                                                    <@dict_category category = "REPORT_PRINT_REQUIRED">
+                                                    <#list entries as entry>
+                                                        <option
+                                                        <#if data??&&data.reportPrintRequired == entry.dictValue?number>
+                                                            selected
+                                                        </#if>
+                                                        value="${(entry.dictValue)!?html}">
+                                                        ${(entry.dictText)!?html}
+                                                        </option>
+                                                    </#list>
+                                                </@dict_category>
+                                                </select>
+                                            </div>
+
+                                            <label class="col-sm-2 control-label required-label">标本类型：</label>
+                                            <div class="col-sm-3">
+                                                <select class="form-control" name="sampleType" id="sampleType">
+                                                    <@dict_category category = "SAMPLE_TYPE">
+                                                    <#list entries as entry>
+                                                        <option
+                                                        <#if data??&&data.sampleType == entry.dictValue>
+                                                            selected
+                                                        </#if>
+                                                        value="${(entry.dictValue)!?html}">
+                                                        ${(entry.dictText)!?html}
+                                                        </option>
+                                                    </#list>
+                                                </@dict_category>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-group" id="taocan">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <a data-toggle="collapse" href="#collapseOne"> 套餐信息 </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseTwo" class="panel-collapse collapse in">
+
+                                    <div class="ibox-content">
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label required-label">套餐（项目）：</label>
+                                            <div class="col-sm-3">
+                                                <div class="input-append input-group"
+                                                     style="white-space: nowrap; vertical-align: middle;">
+                                                    <input name="product.id" type="hidden"
+                                                           value="${(data.product.id)!?html}"/>
+                                                    <input type="text" class="form-control" id="productName"
+                                                           name='productName' placeholder="请输入套餐"
+                                                           value="${(data.product.name)!?html}">
+                                                    <div class="btn-group"
+                                                         style="display: inline-block; margin-left: -1px; vertical-align: middle;">
+                                                        <button type="button" class="btn btn-default dropdown-toggle"
+                                                                data-toggle="dropdown">
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">产品编码：</label>
+                                            <div class="col-sm-3">
+                                                <input type="text" class="form-control" name="productCode"
+                                                       id="productCode" readonly="readonly"
+                                                       value="${(data.product.code)!?html}"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label ">检测项目：</label>
+                                            <div class="col-sm-3">
+                                                <#assign itemListString><#if data??> <#if (data.product.testingItems)?has_content><#list data.product.testingItems as item><#if item_index == 0>${(item.name)!?html}<#else>,${(item.name)!?html}</#if></#list></#if></#if></#assign>
+                                                <input type="text" class="form-control" name="testingItems"
+                                                       id="testingItems" readonly="readonly"
+                                                <#if itemListString?length gt 30>title="${itemListString}"</#if>value="${itemListString}"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label ">适应人群：</label>
+                                            <div class="col-sm-3">
+                                                <input type="text" class="form-control" name="productSexRestraintText"
+                                                       id="productSexRestraintText" readonly="readonly"
+                                                       value="<@dict_category_value category='FIT_PEOPLE' value = (data.product.sexRestraint)!''/>"/>
+                                            </div>
+                                        </div>
+
+                                        <div id="canShow">
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label ">价格：</label>
+                                            <div class="col-sm-3">
+                                                <input type="text" class="form-control"
+                                                       id="agencyPrice" readonly="readonly"
+                                                       value="${(data.actualPrice)!?html}"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label ">余额：</label>
+                                            <div class="col-sm-3">
+                                                <input type="text" class="form-control" name="agencyAccountAmount"
+                                                       id="agencyAccountAmount" readonly="readonly"
+                                                       value="${(data.agency.accountAmount)!?html}"/>
+                                            </div>
+                                        </div>
+
+                                            <div <#if !(agency.authorizationAmountFlag)> style="display:none"</#if>>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label ">授权金额：</label>
+                                                <div class="col-sm-3">
+                                                    <input type="text" class="form-control"
+                                                           name="agencyAuthorizationAmount"
+                                                           id="agencyAuthorizationAmount" readonly="readonly"
+                                                           value="${(data.agency.authorizationAmount)!?html}"/>
+                                                </div>
+                                            </div>
+                                            </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="form-group" style="margin-top: 20px;">
+
+                    <div class="col-sm-4 col-sm-offset-2">
+                        <#if data??>
+                            <button class="btn btn-primary"
+                                    onclick="beforeSub('3','${base}/order/modify.jsp',this)"
+                                    type="button">保存
+                            </button>
+                            <#else>
+                                <button class="btn btn-primary" type="button"
+                                        onclick="beforeSub('1','${base}/order/create.jsp',this)">草稿
+                                </button>
+                                <button class="btn btn-primary"
+                                        onclick="beforeSub('2','${base}/order/place.jsp',this)" type="button">下单
+                                </button>
+                                <button class="btn btn-primary"
+                                        onclick="beforeSub('2','${base}/order/redirectCreate.jsp',this)"
+                                        type="button">下单并继续添加
+                                </button>
+                        </#if>
+                    </div>
+                    <div class="col-sm-4 col-sm-offset-2"></div>
+                    <div class="col-sm-4 col-sm-offset-2"></div>
+                </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

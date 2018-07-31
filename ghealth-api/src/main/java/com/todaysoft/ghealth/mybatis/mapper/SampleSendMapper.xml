@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.SampleSendMapper" >
+    <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.mybatis.model.Order" extends="PrimaryEntity">
+        <id column="ID" property="id"/>
+        <result column="PRODUCT_ID" property="product.id"/>
+        <result column="PRODUCT_NAME" property="product.name"/>
+        <result column="PRODUCT_CODE" property="product.code"/>
+        <result column="PRODUCT_GUIDING_PRICE" property="product.guidingPrice"/>
+        <result column="CUSTOMER_ID" property="customer.id"/>
+        <result column="CUSTOMER_NAME" property="customer.name"/>
+        <result column="CUSTOMER_PHONE" property="customer.phone"/>
+        <result column="CUSTOMER_SEX" property="customer.sex"/>
+        <result column="AGENCY_ID" property="agency.id"/>
+        <result column="AGENCY_NAME" property="agency.name"/>
+        <result column="CODE" property="code"/>
+        <result column="ACTUAL_PRICE" property="actualPrice"/>
+        <result column="STATUS" property="status"/>
+        <result column="SUBMIT_TIME" property="submitTime"/>
+        <result column="CREATOR_NAME" property="creatorName"/>
+        <result column="SAMPLE_TYPE" property="sampleType"/>
+        <result column="REPORT_PRINT_REQUIRED" property="reportPrintRequired"/>
+
+
+    </resultMap>
+    <resultMap id="PrimaryEntity" type="com.todaysoft.ghealth.mybatis.model.PrimaryEntity">
+        <id column="ID" property="id"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="CREATOR_NAME" property="creatorName"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <result column="UPDATOR_NAME" property="updatorName"/>
+        <result column="DELETED" property="deleted"/>
+        <result column="DELETE_TIME" property="deleteTime"/>
+        <result column="DELETOR_NAME" property="deletorName"/>
+    </resultMap>
+    <sql id="Base_Column_List" >
+
+        select
+        gOrder.ID AS ID,
+        gOrder.CODE AS CODE,
+        gOrder.STATUS AS STATUS,
+        gOrder.REPORT_PRINT_REQUIRED AS REPORT_PRINT_REQUIRED,
+        gOrder.SAMPLE_TYPE AS SAMPLE_TYPE,
+        gOrder.CREATE_TIME AS  CREATE_TIME,
+        gOrder.CREATOR_NAME AS  CREATOR_NAME,
+        gOrder.ACTUAL_PRICE AS ACTUAL_PRICE,
+        gOrder.SUBMITOR_NAME AS SUBMITOR_NAME,
+        gOrder.SUBMIT_TIME AS submitTime,
+        gCustomer.ID AS CUSTOMER_ID,
+        gCustomer.NAME AS CUSTOMER_NAME,
+        gCustomer.PHONE AS CUSTOMER_PHONE,
+        gCustomer.SEX AS CUSTOMER_SEX,
+        gAgency.ID AS AGENCY_ID,
+        gAgency.NAME AS AGENCY_NAME,
+        gtProduct.ID AS PRODUCT_ID,
+        gtProduct.NAME AS PRODUCT_NAME,
+        gtProduct.CODE AS PRODUCT_CODE,
+        gtProduct.GUIDING_PRICE AS PRODUCT_GUIDING_PRICE
+        FROM ghealth_order gOrder
+        LEFT JOIN ghealth_customer gCustomer ON gOrder.CUSTOMER_ID = gCustomer.ID
+        LEFT JOIN ghealth_agency gAgency ON gOrder.AGENCY_ID = gAgency.ID
+        LEFT JOIN ghealth_testing_product gtProduct ON gOrder.PRODUCT_ID = gtProduct.ID
+
+
+    </sql>
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        <include refid="Base_Column_List"></include>
+        where gOrder.ID = #{id,jdbcType=VARCHAR}
+        AND gOrder.DELETED = 0
+    </select>
+
+
+
+    <update id="modifyStatus" parameterType="com.todaysoft.ghealth.mybatis.model.Order" >
+        update ghealth_order
+        set
+        STATUS = #{status,jdbcType=VARCHAR},
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+        UPDATOR_NAME = #{updatorName,jdbcType=VARCHAR}
+        where CODE = #{code,jdbcType=VARCHAR} AND STATUS = 2
+    </update>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="SearchFilters">
+        WHERE gOrder.DELETED = 0
+        <if test="_parameter.agencyName != null and _parameter.agencyName != ''">
+            <bind name="agencyNamePattern" value="_parameter.agencyName + '%'" />
+            AND gAgency.NAME LIKE #{agencyNamePattern}
+        </if>
+        <if test="_parameter.agencyId != null and _parameter.agencyId != ''">
+            AND gAgency.ID = #{agencyId}
+        </if>
+        <if test="_parameter.customerName != null and _parameter.customerName != ''">
+            <bind name="customerNamePattern" value="_parameter.customerName + '%'" />
+            AND gCustomer.NAME LIKE #{customerNamePattern}
+        </if>
+        <if test="_parameter.status != null and _parameter.status != ''">
+            <bind name="statePattern" value="_parameter.status" />
+            AND gOrder.STATUS = #{statePattern}
+        </if>
+        <if test="_parameter.orderCode != null and _parameter.orderCode != ''">
+            <choose>
+                <when test="_parameter.orderCodeExactMatches">AND gOrder.CODE = #{orderCode}</when>
+                <otherwise>
+                    <bind name="orderCodePattern" value="_parameter.orderCode + '%'" />
+                    AND gOrder.CODE LIKE #{orderCodePattern}
+                </otherwise>
+            </choose>
+
+        </if>
+        <if test="_parameter.customerId != null and _parameter.customerId != ''">
+            AND gCustomer.ID = #{customerId}
+        </if>
+        <if test="_parameter.productId != null and _parameter.productId != ''">
+            AND gtProduct.ID = #{productId}
+        </if>
+        <if test="_parameter.productName != null and _parameter.productName != ''">
+            AND gtProduct.NAME = #{productName}
+        </if>
+        <if test="_parameter.startCreateTime != null">
+            <bind name="startCreateTimePattern" value="_parameter.startCreateTime" />
+            <![CDATA[   and DATE_FORMAT(gOrder.CREATE_TIME, '%Y-%m-%d %H:%M:%S')>=  DATE_FORMAT(#{startCreateTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
+        </if>
+        <if test="_parameter.endStartTime != null">
+            <bind name="endStartTimePattern" value="_parameter.endStartTime" />
+            <![CDATA[   and DATE_FORMAT(gOrder.CREATE_TIME, '%Y-%m-%d %H:%M:%S') <  DATE_FORMAT(#{endStartTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
+        </if>
+    </sql>
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.OrderSearcher">
+        SELECT COUNT(*)
+        FROM ghealth_order gOrder
+        LEFT JOIN ghealth_customer gCustomer ON gOrder.CUSTOMER_ID = gCustomer.ID
+        LEFT JOIN ghealth_agency gAgency ON gOrder.AGENCY_ID = gAgency.ID
+        LEFT JOIN ghealth_testing_product gtProduct ON gOrder.PRODUCT_ID = gtProduct.ID
+        <include refid="SearchFilters"></include> AND  (gOrder.status =2 )
+    </select>
+
+    <select id="search" resultMap="BaseResultMap" parameterType="com.todaysoft.ghealth.mybatis.searcher.OrderSearcher">
+        <include refid="Base_Column_List"></include>
+        <include refid="SearchFilters"></include> AND  (gOrder.status =2 ) ORDER BY gOrder.SUBMIT_TIME asc
+        <include refid="SearchLimit"></include>
+    </select>
+
+
+    <select id="getCodes" resultType="String">
+        SELECT t.code
+        FROM ghealth_order t
+        WHERE t.deleted = 0
+    </select>
+
+
+    <select id="getInformation" resultMap="BaseResultMap" >
+        <include refid="Base_Column_List"></include> WHERE gOrder.DELETED = 0 AND gOrder.code =#{orderCode,jdbcType=VARCHAR} AND gOrder.status=1 AND gOrder.deleted = 0
+    </select>
+
+    <select id="getInfo" resultMap="BaseResultMap" >
+        <include refid="Base_Column_List"></include> WHERE gOrder.DELETED = 0 AND gOrder.code =#{orderCode,jdbcType=VARCHAR} AND gOrder.status=3 AND gOrder.deleted = 0
+    </select>
+
+    <insert id="createOperate" parameterType="com.todaysoft.ghealth.mybatis.model.OrderSignIn" >
+
+        insert into GHEALTH_SAMPLE_DELIVERY
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="operatorName != null">
+                OPERATOR_NAME,
+            </if>
+            <if test="operateTime != null">
+                OPERATE_TIME,
+            </if>
+            <if test="sampleCount != null">
+                SAMPLE_COUNT,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="operatorName != null">
+                #{operatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="operateTime != null">
+                #{operateTime,jdbcType=VARCHAR},
+            </if>
+            <if test="sampleCount != null">
+                #{sampleCount,jdbcType=VARCHAR},
+            </if>
+        </trim>
+
+    </insert>
+
+
+
+    <insert id="createOrderDetails" parameterType="com.todaysoft.ghealth.mybatis.model.OrderDetails" >
+
+        insert into GHEALTH_SAMPLE_DELIVERY_DETAILS
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="operateId != null">
+                DELIVERY_RECORD_ID,
+            </if>
+            <if test="orderId != null">
+                ORDER_ID,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="operateId != null">
+                #{operateId,jdbcType=VARCHAR},
+            </if>
+            <if test="orderId != null">
+                #{orderId,jdbcType=VARCHAR},
+            </if>
+        </trim>
+
+    </insert>
+
+
+</mapper>

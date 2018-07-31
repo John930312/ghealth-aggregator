@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.AgencyBillMapper" >
+  <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.mybatis.model.AgencyBill" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="AGENCY_ID" property="agency.id" jdbcType="VARCHAR" />
+    <result column="AGENCY_NAME" property="agency.name" jdbcType="VARCHAR" />
+    <result column="ACCOUNT_AMOUNT" property="agency.accountAmount" jdbcType="VARCHAR" />
+    <result column="TITLE" property="title" jdbcType="VARCHAR" />
+    <result column="INCREASED" property="increased" jdbcType="BIT" />
+    <result column="BILL_TYPE" property="billType" jdbcType="VARCHAR" />
+    <result column="RECHARGE_TYPE" property="rechargeType" jdbcType="VARCHAR" />
+    <result column="EVENT_DETAILS" property="eventDetails" jdbcType="VARCHAR" />
+    <result column="AMOUNT_BEFORE" property="amountBefore" jdbcType="DECIMAL" />
+    <result column="AMOUNT_AFTER" property="amountAfter" jdbcType="DECIMAL" />
+    <result column="BILL_TIME" property="billTime" jdbcType="TIMESTAMP" />
+    <result column="OPERATE_NAME" property="operateName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    select
+    B.ID AS ID,
+    B.INCREASED AS INCREASED,
+    B.TITLE AS TITLE,
+    B.OPERATE_NAME AS OPERATE_NAME,
+    B.BILL_TIME AS BILL_TIME,
+    B.BILL_TYPE AS BILL_TYPE,
+    B.RECHARGE_TYPE AS RECHARGE_TYPE,
+    b.AMOUNT_BEFORE AS AMOUNT_BEFORE,
+    b.AMOUNT_AFTER AS AMOUNT_AFTER,
+    b.EVENT_DETAILS AS EVENT_DETAILS,
+    A.NAME AS AGENCY_NAME,
+    A.ACCOUNT_AMOUNT AS ACCOUNT_AMOUNT
+    FROM ghealth_agency_bill b
+    LEFT JOIN ghealth_agency a ON a.ID = b.AGENCY_ID
+  </sql>
+  <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    <include refid="Base_Column_List" />
+    where b.ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="delete" parameterType="java.lang.String" >
+    delete from ghealth_agency_bill
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+
+  <insert id="create" parameterType="com.todaysoft.ghealth.mybatis.model.AgencyBill" >
+    insert into ghealth_agency_bill
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="agency.id != null" >
+        AGENCY_ID,
+      </if>
+      <if test="title != null" >
+        TITLE,
+      </if>
+      <if test="increased != null" >
+        INCREASED,
+      </if>
+      <if test="billType != null" >
+        BILL_TYPE,
+      </if>
+      <if test="rechargeType != null" >
+        RECHARGE_TYPE,
+      </if>
+      <if test="eventDetails != null" >
+        EVENT_DETAILS,
+      </if>
+      <if test="amountBefore != null" >
+        AMOUNT_BEFORE,
+      </if>
+      <if test="amountAfter != null" >
+        AMOUNT_AFTER,
+      </if>
+      <if test="billTime != null" >
+        BILL_TIME,
+      </if>
+      <if test="operateName != null" >
+        OPERATE_NAME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="agency.id != null" >
+        #{agency.id,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="increased != null" >
+        #{increased,jdbcType=BIT},
+      </if>
+      <if test="billType != null" >
+        #{billType,jdbcType=VARCHAR},
+      </if>
+      <if test="rechargeType != null" >
+        #{rechargeType,jdbcType=VARCHAR},
+      </if>
+      <if test="eventDetails != null" >
+        #{eventDetails,jdbcType=VARCHAR},
+      </if>
+      <if test="amountBefore != null" >
+        #{amountBefore,jdbcType=DECIMAL},
+      </if>
+      <if test="amountAfter != null" >
+        #{amountAfter,jdbcType=DECIMAL},
+      </if>
+      <if test="billTime != null" >
+        #{billTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operateName != null" >
+        #{operateName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="com.todaysoft.ghealth.mybatis.model.AgencyBill" >
+    update ghealth_agency_bill
+    <set >
+      <if test="agency.id != null" >
+        AGENCY_ID = #{agencyId,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        TITLE = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="increased != null" >
+        INCREASED = #{increased,jdbcType=BIT},
+      </if>
+      <if test="billType != null" >
+        BILL_TYPE = #{billType,jdbcType=VARCHAR},
+      </if>
+      <if test="eventDetails != null" >
+        EVENT_DETAILS = #{eventDetails,jdbcType=VARCHAR},
+      </if>
+      <if test="amountBefore != null" >
+        AMOUNT_BEFORE = #{amountBefore,jdbcType=DECIMAL},
+      </if>
+      <if test="amountAfter != null" >
+        AMOUNT_AFTER = #{amountAfter,jdbcType=DECIMAL},
+      </if>
+      <if test="billTime != null" >
+        BILL_TIME = #{billTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+
+
+  <sql id="SearchLimit">
+    <if test="_parameter.offset != null and _parameter.limit != null">
+      LIMIT #{_parameter.offset}, #{_parameter.limit}
+    </if>
+  </sql>
+
+  <sql id="SearchFilters">
+    WHERE 1 = 1
+    <if test="_parameter.agencyId != null and _parameter.agencyId != ''">
+      AND b.AGENCY_ID = #{agencyId}
+    </if>
+    <if test="_parameter.agencyName != null and _parameter.agencyName != ''">
+      <bind name="agencyNamePattern" value="'%' + _parameter.agencyName + '%'" />
+      AND a.NAME LIKE #{agencyNamePattern}
+    </if>
+    <if test="_parameter.productName != null and _parameter.productName != ''">
+      <bind name="productNamePattern" value="'%' + _parameter.productName + '%'" />
+      AND EXISTS (select o.id FROM ghealth_order o LEFT JOIN ghealth_testing_product p ON o.PRODUCT_ID = p.ID
+      WHERE o.id = (SELECT substring_index(b.EVENT_DETAILS, "-", 1)) AND p.NAME LIKE #{productNamePattern} AND o.DELETED = 0)
+    </if>
+    <if test="_parameter.orderCode != null and _parameter.orderCode != ''">
+      <bind name="orderCodePattern" value="'%' + _parameter.orderCode + '%'" />
+      AND EXISTS (select o.id FROM ghealth_order o
+      WHERE o.id = (SELECT substring_index(b.EVENT_DETAILS, "-", 1))
+      AND o.CODE  LIKE #{orderCodePattern})
+    </if>
+    <if test="_parameter.startTime != null">
+      <bind name="startTimePattern" value="_parameter.startTime" />
+      <![CDATA[   and DATE_FORMAT(b.BILL_TIME, '%Y-%m-%d %H:%M:%S')>=  DATE_FORMAT(#{startTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
+    </if>
+    <if test="_parameter.endTime != null">
+      <bind name="endTimePattern" value="_parameter.endTime" />
+      <![CDATA[   and DATE_FORMAT(b.BILL_TIME, '%Y-%m-%d %H:%M:%S') <  DATE_FORMAT(#{endTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
+    </if>
+    ORDER BY b.BILL_TIME DESC
+  </sql>
+
+  <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.AgencyBillSearcher">
+    SELECT COUNT(*) FROM ghealth_agency_bill b
+    LEFT JOIN ghealth_agency a ON a.ID = b.AGENCY_ID
+    <include refid="SearchFilters"></include>
+  </select>
+
+  <select id="search" resultMap="BaseResultMap" parameterType="com.todaysoft.ghealth.mybatis.searcher.AgencyBillSearcher">
+    <include refid="Base_Column_List"></include>
+    <include refid="SearchFilters"></include>
+    <include refid="SearchLimit"></include>
+  </select>
+
+</mapper>

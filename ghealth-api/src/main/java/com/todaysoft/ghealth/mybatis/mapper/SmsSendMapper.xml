@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.SmsSendMapper">
+    <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.mybatis.model.SmsSend">
+        <result column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="AGENCY_ID" property="agencyId" jdbcType="VARCHAR"/>
+        <result column="STATUS" property="status" jdbcType="VARCHAR"/>
+        <result column="PHONE" property="phone" jdbcType="VARCHAR"/>
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="TEMPLATE_ID" property="templateId" jdbcType="VARCHAR"/>
+        <result column="SENDED" property="sended" jdbcType="BIT"/>
+    </resultMap>
+
+    <insert id="create" parameterType="com.todaysoft.ghealth.mybatis.model.SmsSend">
+        insert into ghealth_sms_send
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="agencyId != null">
+                AGENCY_ID,
+            </if>
+            <if test="status != null">
+                STATUS,
+            </if>
+            <if test="phone != null">
+                PHONE,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="templateId != null">
+                TEMPLATE_ID,
+            </if>
+            <if test="sended != null">
+                SENDED,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="agencyId != null">
+                #{agencyId,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="templateId != null">
+                #{templateId,jdbcType=VARCHAR},
+            </if>
+            <if test="sended != null">
+                #{sended,jdbcType=BIT},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="modify" parameterType="java.lang.String">
+        UPDATE ghealth_sms_send SET SENDED = true WHERE id = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="getDatasInTime" resultMap="BaseResultMap" parameterType="com.todaysoft.ghealth.mybatis.searcher.SmsSendSearcher">
+        SELECT * FROM ghealth_sms_send WHERE SENDED = false AND CREATE_TIME &gt;= #{before} AND CREATE_TIME &lt; #{after}
+    </select>
+</mapper>

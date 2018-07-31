@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.ProductItemMapper">
+
+    <resultMap id="ProductItemEntity" type="com.todaysoft.ghealth.mybatis.model.ProductItem" >
+        <result column="productId" property="productId" />
+        <result column="testingItemId" property="testingItemId" />
+    </resultMap>
+
+   <insert id="insertSelective" parameterType="com.todaysoft.ghealth.mybatis.model.ProductItem" >
+    insert into GHEALTH_PRODUCT_ITEM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="productId != null" >
+        PRODUCT_ID,
+      </if>
+      <if test="testingItemId != null" >
+        TESTING_ITEM_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="productId != null" >
+        #{productId,jdbcType=VARCHAR},
+      </if>
+   
+      <if test="testingItemId != null" >
+        #{testingItemId,jdbcType=VARCHAR},
+      </if>
+    
+    </trim>
+  </insert>
+  
+   <select id="getItemsByProductId" resultType="java.lang.String">
+        SELECT
+            TESTING_ITEM_ID testingItemId
+        FROM
+            GHEALTH_PRODUCT_ITEM
+        WHERE
+            PRODUCT_ID = #{id}
+    </select>
+
+    <select id="getProductIdByItemId" resultType="java.lang.String">
+        SELECT
+        PRODUCT_ID productId
+        FROM
+        GHEALTH_PRODUCT_ITEM
+        WHERE
+        TESTING_ITEM_ID = #{id}
+    </select>
+  
+  
+  
+  <delete id="deleteItemsByProductId" parameterType="java.lang.String" >
+    delete from GHEALTH_PRODUCT_ITEM
+    where PRODUCT_ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  
+  
+    
+</mapper>

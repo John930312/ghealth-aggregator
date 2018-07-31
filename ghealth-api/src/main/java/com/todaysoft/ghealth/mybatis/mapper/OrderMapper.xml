@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.OrderMapper">
+    <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.mybatis.model.Order" extends="PrimaryEntity">
+        <id column="ID" property="id"/>
+        <result column="PRODUCT_ID" property="product.id"/>
+        <result column="PRODUCT_NAME" property="product.name"/>
+        <result column="PRODUCT_CODE" property="product.code"/>
+        <result column="PRODUCT_GUIDING_PRICE" property="product.guidingPrice"/>
+        <result column="CUSTOMER_ID" property="customer.id"/>
+        <result column="CUSTOMER_NAME" property="customer.name"/>
+        <result column="CUSTOMER_PHONE" property="customer.phone"/>
+        <result column="CUSTOMER_SEX" property="customer.sex"/>
+        <result column="CUSTOMER_EMAIL" property="customer.email"/>
+        <result column="AGENCY_ID" property="agency.id"/>
+        <result column="AGENCY_NAME" property="agency.name"/>
+        <result column="AGENCY_CONTACT_PHONE" property="agency.contactPhone"/>
+        <result column="CODE" property="code"/>
+        <result column="ACTUAL_PRICE" property="actualPrice"/>
+        <result column="STATUS" property="status"/>
+        <result column="SUBMIT_TIME" property="submitTime"/>
+        <result column="CREATOR_NAME" property="creatorName"/>
+        <result column="SAMPLE_TYPE" property="sampleType"/>
+        <result column="REPORT_PRINT_REQUIRED" property="reportPrintRequired"/>
+        <result column="REPORT_GENERATE_TASK" property="reportGenerateTaskId"/>
+        <result column="REPORT_GENERATE_TIME" property="reportGenerateTime"/>
+        <result column="REPORT_DOWULOAD_COUNT" property="reportDownloadCount"/>
+        <result column="SUBMITOR_NAME" property="submitorName"/>
+
+    </resultMap>
+    <resultMap id="PrimaryEntity" type="com.todaysoft.ghealth.mybatis.model.PrimaryEntity">
+        <id column="ID" property="id"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="CREATOR_NAME" property="creatorName"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <result column="UPDATOR_NAME" property="updatorName"/>
+        <result column="DELETED" property="deleted"/>
+        <result column="DELETE_TIME" property="deleteTime"/>
+        <result column="DELETOR_NAME" property="deletorName"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        select
+        gOrder.ID AS ID,
+        gOrder.CODE AS CODE,
+        gOrder.STATUS AS STATUS,
+        gOrder.SAMPLE_TYPE AS SAMPLE_TYPE,
+        gOrder.CREATE_TIME AS CREATE_TIME,
+        gOrder.CREATOR_NAME AS CREATOR_NAME,
+        gOrder.ACTUAL_PRICE AS ACTUAL_PRICE,
+        gOrder.SUBMITOR_NAME AS SUBMITOR_NAME,
+        gOrder.SUBMIT_TIME AS SUBMIT_TIME,
+        gOrder.UPDATOR_NAME AS UPDATOR_NAME,
+        gCustomer.ID AS CUSTOMER_ID,
+        gOrder.REPORT_GENERATE_TIME AS REPORT_GENERATE_TIME,
+        gOrder.REPORT_PRINT_REQUIRED AS REPORT_PRINT_REQUIRED,
+        gOrder.REPORT_DOWNLOAD_COUNT AS REPORT_DOWULOAD_COUNT,
+        gCustomer.NAME AS CUSTOMER_NAME,
+        gCustomer.PHONE AS CUSTOMER_PHONE,
+        gCustomer.SEX AS CUSTOMER_SEX,
+        gCustomer.EMAIL AS CUSTOMER_EMAIL,
+        gAgency.ID AS AGENCY_ID,
+        gAgency.NAME AS AGENCY_NAME,
+        gAgency.CONTACT_PHONE AS AGENCY_CONTACT_PHONE,
+        gtProduct.ID AS PRODUCT_ID,
+        gtProduct.NAME AS PRODUCT_NAME,
+        gtProduct.CODE AS PRODUCT_CODE,
+        gtProduct.GUIDING_PRICE AS PRODUCT_GUIDING_PRICE,
+        gOrder.REPORT_GENERATE_TASK AS REPORT_GENERATE_TASK
+        FROM ghealth_order gOrder
+        LEFT JOIN ghealth_customer gCustomer ON gOrder.CUSTOMER_ID =
+        gCustomer.ID
+        LEFT JOIN ghealth_agency gAgency ON gOrder.AGENCY_ID = gAgency.ID
+        LEFT JOIN ghealth_testing_product gtProduct ON gOrder.PRODUCT_ID
+        = gtProduct.ID
+        LEFT JOIN ghealth_order_report_generate_task gTask ON gOrder.REPORT_GENERATE_TASK = gTask.ID
+    </sql>
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String">
+        <include refid="Base_Column_List"></include>
+        where gOrder.ID = #{id,jdbcType=VARCHAR}
+--         AND gOrder.DELETED = 0
+    </select>
+
+    <select id="getOrderDataByTaskId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        <include refid="Base_Column_List"></include>
+        WHERE gOrder.REPORT_GENERATE_TASK = #{taskId,jdbcType=VARCHAR}
+        AND gOrder.DELETED = 0
+    </select>
+
+    <select id="getOrderByTaskId" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT * FROM ghealth_order o WHERE o.REPORT_GENERATE_TASK = #{taskId,jdbcType=VARCHAR} AND o.DELETED = 0
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete from ghealth_order
+        where ID = #{id,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insert" parameterType="com.todaysoft.ghealth.mybatis.model.Order">
+        insert into ghealth_order (ID, PRODUCT_ID, CUSTOMER_ID,
+        AGENCY_ID, CODE, ACTUAL_PRICE,
+        STATUS, SUBMIT_TIME,
+        SUBMITOR_NAME,
+        CREATE_TIME, CREATOR_NAME,
+        REPORT_GENERATE_TIME,UPDATE_TIME,
+        UPDATOR_NAME, DELETED, DELETE_TIME,
+        DELETOR_NAME)
+        values (#{id,jdbcType=VARCHAR},
+        #{product.id,jdbcType=VARCHAR}, #{customer.id,jdbcType=VARCHAR},
+        #{agency.id,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR},
+        #{actualPrice,jdbcType=DECIMAL},
+        #{status,jdbcType=VARCHAR}, #{submitTime,jdbcType=TIMESTAMP}, #{submitorName,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP}, #{creatorName,jdbcType=VARCHAR}, #{reportGenerateTime,jdbcType=TIMESTAMP},
+        #{updateTime,jdbcType=TIMESTAMP},
+        #{updatorName,jdbcType=VARCHAR},
+        #{deleted,jdbcType=BIT}, #{deleteTime,jdbcType=TIMESTAMP},
+        #{deletorName,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.todaysoft.ghealth.mybatis.model.Order">
+        INSERT INTO GHEALTH_ORDER
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="product.id != null">
+                PRODUCT_ID,
+            </if>
+            <if test="customer.id != null">
+                CUSTOMER_ID,
+            </if>
+            <if test="agency.id != null">
+                AGENCY_ID,
+            </if>
+            <if test="code != null">
+                CODE,
+            </if>
+            <if test="actualPrice != null">
+                ACTUAL_PRICE,
+            </if>
+            <if test="status != null">
+                STATUS,
+            </if>
+            <if test="submitTime != null">
+                SUBMIT_TIME,
+            </if>
+            <if test="submitorName != null">
+                SUBMITOR_NAME,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME,
+            </if>
+            <if test="reportGenerateTime != null">
+                REPORT_GENERATE_TIME,
+            </if>
+            <if test="reportDownloadCount != null">
+                REPORT_DOWNLOAD_COUNT,
+            </if>
+            <if test="deleted != null">
+                DELETED,
+            </if>
+            <if test="reportPrintRequired != null">
+                REPORT_PRINT_REQUIRED,
+            </if>
+            <if test="sampleType != null">
+                SAMPLE_TYPE,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="product.id != null">
+                #{product.id,jdbcType=VARCHAR},
+            </if>
+            <if test="customer.id != null">
+                #{customer.id,jdbcType=VARCHAR},
+            </if>
+            <if test="agency.id != null">
+                #{agency.id,jdbcType=VARCHAR},
+            </if>
+            <if test="code != null">
+                #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="actualPrice != null">
+                #{actualPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="submitTime != null">
+                #{submitTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="submitorName != null">
+                #{submitorName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="reportGenerateTime != null">
+                #{reportGenerateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="reportDownloadCount != null">
+                #{reportDownloadCount,jdbcType=INTEGER},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=BIT},
+            </if>
+            <if test="reportPrintRequired != null">
+                #{reportPrintRequired,jdbcType=BIT},
+            </if>
+            <if test="sampleType != null">
+                #{sampleType,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="modify" parameterType="com.todaysoft.ghealth.mybatis.model.Order">
+        UPDATE GHEALTH_ORDER
+        <set>
+            <if test="product != null and product.id != null">
+                PRODUCT_ID = #{product.id,jdbcType=VARCHAR},
+            </if>
+            <if test="customer != null and customer.id != null">
+                CUSTOMER_ID = #{customer.id,jdbcType=VARCHAR},
+            </if>
+            <if test="agency != null and agency.id != null">
+                AGENCY_ID = #{agency.id,jdbcType=VARCHAR},
+            </if>
+            <if test="code != null">
+                CODE = #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="actualPrice != null">
+                ACTUAL_PRICE = #{actualPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="status != null">
+                STATUS = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="submitTime != null">
+                SUBMIT_TIME = #{submitTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="submitorName != null">
+                SUBMITOR_NAME = #{submitorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME = #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                DELETED = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME = #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME = #{deletorName,jdbcType=VARCHAR},
+            </if>
+            <if test="reportGenerateTaskId != null">
+                REPORT_GENERATE_TASK = #{reportGenerateTaskId},
+            </if>
+            <if test="reportGenerateTime != null">
+                REPORT_GENERATE_TIME = #{reportGenerateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="reportPrintRequired != null">
+                REPORT_PRINT_REQUIRED = #{reportPrintRequired,jdbcType=BIT},
+            </if>
+            <if test="reportDownloadCount != null">
+                REPORT_DOWNLOAD_COUNT = #{reportDownloadCount, jdbcType=INTEGER},
+            </if>
+            <if test="sampleType != null">
+                SAMPLE_TYPE = #{sampleType,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+    <update id="modifyState" parameterType="com.todaysoft.ghealth.mybatis.model.Order">
+        update ghealth_order
+        set
+        STATUS = #{status,jdbcType=VARCHAR},
+        UPDATE_TIME =
+        #{updateTime,jdbcType=TIMESTAMP},
+        UPDATOR_NAME = #{updatorName,jdbcType=VARCHAR}
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="SearchFilters">
+        WHERE gOrder.DELETED = 0
+        <if test="_parameter.agencyName != null and _parameter.agencyName != ''">
+            <bind name="agencyNamePattern" value="'%' + _parameter.agencyName + '%'"/>
+            AND gAgency.NAME LIKE #{agencyNamePattern}
+        </if>
+        <if test="_parameter.createName != null and _parameter.createName != ''">
+            <bind name="createNamePattern" value="'%' + _parameter.createName + '%'"/>
+            AND gOrder.CREATOR_NAME LIKE #{createNamePattern}
+        </if>
+        <if test="_parameter.agencyId != null and _parameter.agencyId != ''">
+            AND gAgency.ID = #{agencyId}
+        </if>
+        <if test="_parameter.customerName != null and _parameter.customerName != ''">
+            <bind name="customerNamePattern" value="'%' + _parameter.customerName + '%'"/>
+            AND gCustomer.NAME LIKE #{customerNamePattern}
+        </if>
+        <if test="_parameter.customerPhone != null and _parameter.customerPhone != ''">
+            <bind name="customerPhonePattern" value="'%' + _parameter.customerPhone + '%'"/>
+            AND gCustomer.PHONE LIKE #{customerPhonePattern}
+        </if>
+        <if test="_parameter.primaryUsername != null and _parameter.primaryUsername != ''">
+            <bind name="primaryUsernameNamePattern" value="'%' + _parameter.primaryUsername + '%'"/>
+            AND gAgency.PRIMARY_USERNAME LIKE #{primaryUsernameNamePattern}
+        </if>
+        <if test="_parameter.status != null and _parameter.status != ''">
+            <bind name="statePattern" value="_parameter.status"/>
+            AND gOrder.STATUS = #{statePattern}
+        </if>
+        <if test="_parameter.orderCode != null and _parameter.orderCode != ''">
+            <choose>
+                <when test="_parameter.orderCodeExactMatches">AND gOrder.CODE = #{orderCode} AND gOrder.status != 6
+                </when>
+                <otherwise>
+                    <bind name="orderCodePattern" value="'%' + _parameter.orderCode + '%'"/>
+                    AND gOrder.CODE LIKE #{orderCodePattern}
+                </otherwise>
+            </choose>
+        </if>
+
+        <if test="_parameter.id != null and _parameter.id != ''">
+            AND gOrder.ID != #{id}
+        </if>
+
+        <if test="_parameter.customerId != null and _parameter.customerId != ''">
+            AND gCustomer.ID = #{customerId} AND gOrder.status BETWEEN 1 AND 6
+        </if>
+        <if test="_parameter.productId != null and _parameter.productId != ''">
+            AND gtProduct.ID = #{productId}
+        </if>
+        <if test="_parameter.productName != null and _parameter.productName != ''">
+            <bind name="productNamePattern" value="'%' + _parameter.productName + '%'"/>
+            AND gtProduct.NAME LIKE #{productNamePattern}
+        </if>
+        <if test="_parameter.startCreateTime != null">
+            <bind name="startCreateTimePattern" value="_parameter.startCreateTime"/>
+            <![CDATA[   and DATE_FORMAT(gOrder.SUBMIT_TIME, '%Y-%m-%d %H:%M:%S')>=  DATE_FORMAT(#{startCreateTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
+        </if>
+        <if test="_parameter.endStartTime != null">
+            <bind name="endStartTimePattern" value="_parameter.endStartTime"/>
+            <![CDATA[   and DATE_FORMAT(gOrder.SUBMIT_TIME, '%Y-%m-%d %H:%M:%S') <  DATE_FORMAT(#{endStartTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
+        </if>
+
+        <if test="_parameter.startReportTime != null">
+            <bind name="startReportTimePattern" value="_parameter.startReportTime"/>
+            <![CDATA[   and DATE_FORMAT(gOrder.REPORT_GENERATE_TIME, '%Y-%m-%d %H:%M:%S')>=  DATE_FORMAT(#{startReportTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
+        </if>
+        <if test="_parameter.endReportTime != null">
+            <bind name="endReportTimePattern" value="_parameter.endReportTime"/>
+            <![CDATA[   and DATE_FORMAT(gOrder.REPORT_GENERATE_TIME, '%Y-%m-%d %H:%M:%S') <  DATE_FORMAT(#{endReportTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
+        </if>
+    </sql>
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.OrderSearcher">
+        SELECT COUNT(*)
+        FROM ghealth_order gOrder
+        LEFT JOIN ghealth_customer gCustomer ON gOrder.CUSTOMER_ID = gCustomer.ID
+        LEFT JOIN ghealth_agency
+        gAgency ON gOrder.AGENCY_ID = gAgency.ID
+        LEFT JOIN ghealth_testing_product gtProduct ON gOrder.PRODUCT_ID = gtProduct.ID
+        <include refid="SearchFilters"></include>
+    </select>
+
+    <select id="search" resultMap="BaseResultMap" parameterType="com.todaysoft.ghealth.mybatis.searcher.OrderSearcher">
+        <include refid="Base_Column_List"></include>
+        <include refid="SearchFilters"></include>
+        ORDER BY gOrder.CREATE_TIME DESC
+        <include refid="SearchLimit"></include>
+    </select>
+
+    <select id="getOrdersByCodes" resultMap="BaseResultMap" parameterType="java.util.Set">
+        SELECT t.ID, t.CODE, t.STATUS FROM GHEALTH_ORDER t
+        <choose>
+            <when test="codes == null or codes.size == 0">
+                WHERE 1 = 2
+            </when>
+            <when test="codes.size == 1">
+                WHERE t.CODE =
+                <foreach collection="codes" item="code" index="index" open="" close="" separator="">
+                    #{code}
+                </foreach>
+            </when>
+            <otherwise>
+                WHERE t.CODE IN
+                <foreach collection="codes" item="code" index="index" open="(" close=")" separator=",">
+                    #{code}
+                </foreach>
+            </otherwise>
+        </choose>
+        AND t.STATUS BETWEEN 3 AND 5
+        AND t.DELETED = 0
+    </select>
+
+    <select id="getCodes" resultType="String">
+        SELECT code
+        FROM ghealth_order
+        WHERE DELETED = 0
+    </select>
+
+    <select id="getByCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+        <include refid="Base_Column_List"></include>
+        where gOrder.CODE = #{code,jdbcType=VARCHAR} AND gOrder.STATUS!=6 AND gOrder.DELETED = 0
+    </select>
+
+    <select id="getDataDetails" resultType="String">
+        SELECT DATA_DETAILS FROM ghealth_order_testing_data WHERE ORDER_ID=#{orderId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="orderIdList" resultType="String" parameterType="com.todaysoft.ghealth.mybatis.searcher.OrderSearcher">
+        select gOrder.Id
+        FROM ghealth_order gOrder
+        WHERE gOrder.AGENCY_ID = #{agencyId,jdbcType=VARCHAR}
+        AND gOrder.DELETED = 0
+        ORDER BY gOrder.CREATE_TIME DESC
+    </select>
+
+    <select id="getOrdersByCustomerPhone" resultMap="BaseResultMap" parameterType="java.lang.String">
+        <include refid="Base_Column_List"></include>
+        WHERE EXISTS ( SELECT c.ID FROM `ghealth_customer` c WHERE gOrder.CUSTOMER_ID = c.ID
+        AND gOrder.DELETED = 0 AND gCustomer.DELETED = 0
+        AND c.PHONE =
+        #{phone,jdbcType=VARCHAR})
+    </select>
+
+    <resultMap id="ObjectStorageEntity" type="com.todaysoft.ghealth.mybatis.model.ObjectStorage">
+        <id column="ID" property="id" />
+        <result column="STORAGE_TYPE" property="storageType" />
+        <result column="STORAGE_DETAILS" property="storageDetails" />
+    </resultMap>
+
+    <select id="getPdfReportUrl" resultMap="ObjectStorageEntity" parameterType="java.lang.String">
+    SELECT
+	  s.STORAGE_DETAILS,
+	  s.STORAGE_TYPE,
+	  s.ID
+    FROM
+        ghealth_order o
+    LEFT JOIN ghealth_order_report_generate_task t
+    INNER JOIN ghealth_object_storage s ON t.PDF_FILE_URL = s.ID
+    ON o.REPORT_GENERATE_TASK = t.ID
+    WHERE o.id = #{orderId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getDocReportUrl" resultMap="ObjectStorageEntity" parameterType="java.lang.String">
+    SELECT
+	  s.STORAGE_DETAILS,
+	  s.STORAGE_TYPE,
+	  s.ID
+    FROM
+        ghealth_order o
+    LEFT JOIN ghealth_order_report_generate_task t
+    INNER JOIN ghealth_object_storage s ON t.WORD_FILE_URL = s.ID
+    ON o.REPORT_GENERATE_TASK = t.ID
+    WHERE o.id = #{orderId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getLoci" resultType="String" parameterType="java.lang.String">
+        SELECT DISTINCT l.`NAME`
+        FROM ghealth_order o
+        LEFT JOIN ghealth_product_item p ON p.PRODUCT_ID = o.PRODUCT_ID
+        LEFT JOIN ghealth_testing_item_locus item ON item.TESTING_ITEM_ID = p.TESTING_ITEM_ID
+        LEFT JOIN ghealth_locus l ON l.ID = item.LOCUS_ID
+        WHERE o.DELETED = '0' AND l.DELETED = '0'
+        AND o.ID = #{orderId,jdbcType=VARCHAR}
+    </select>
+</mapper>

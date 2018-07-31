@@ -1,0 +1,3 @@
+
+ALTER TABLE `ghealth_agency_bill`
+MODIFY COLUMN `EVENT_DETAILS`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '账单事件详情' AFTER `BILL_TYPE`;

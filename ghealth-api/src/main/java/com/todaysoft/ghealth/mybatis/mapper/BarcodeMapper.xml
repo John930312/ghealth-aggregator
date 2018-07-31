@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.BarcodeMapper">
+    <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.mybatis.model.Barcode">
+        <id column="ID" property="id" jdbcType="INTEGER"/>
+        <result column="PREFIX_CODE" property="prefixCode" jdbcType="VARCHAR"/>
+        <result column="CODE" property="code" jdbcType="INTEGER"/>
+        <result column="BAR_CODE_COMPLETE" property="barCodeComplete" jdbcType="VARCHAR"/>
+        <result column="IS_FREE" property="isFree" jdbcType="VARCHAR"/>
+        <result column="IS_DELETE" property="isDelete" jdbcType="INTEGER"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        SELECT *
+        FROM ghealth_barcode
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        <include refid="Base_Column_List"/>
+        where ID = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <insert id="insert" parameterType="com.todaysoft.ghealth.mybatis.model.Barcode">
+        insert into ghealth_barcode
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="prefixCode != null">
+                PREFIX_CODE,
+            </if>
+            <if test="code != null">
+                CODE,
+            </if>
+            <if test="barCodeComplete != null">
+                BAR_CODE_COMPLETE,
+            </if>
+            <if test="isFree != null">
+                IS_FREE,
+            </if>
+            <if test="isDelete != null">
+                IS_DELETE,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="prefixCode != null">
+                #{prefixCode,jdbcType=VARCHAR},
+            </if>
+            <if test="code != null">
+                #{code,jdbcType=INTEGER},
+            </if>
+            <if test="barCodeComplete != null">
+                #{barCodeComplete,jdbcType=VARCHAR},
+            </if>
+            <if test="isFree != null">
+                #{isFree,jdbcType=VARCHAR},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.BarcodeSearcher">
+        SELECT COUNT(*)
+        from ghealth_barcode
+        <include refid="SearchFilters"></include>
+    </select>
+
+    <select id="getMaxCodeByPrefixCode" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.BarcodeSearcher">
+        select max(code) from ghealth_barcode
+        <if test="_parameter.prefixCode != null and _parameter.prefixCode != ''">
+            WHERE PREFIX_CODE = #{prefixCode}
+        </if>
+        <if test="_parameter.barCodeComplete != null and _parameter.barCodeComplete != ''">
+            AND BAR_CODE_COMPLETE = #{barCodeComplete}
+        </if>
+    </select>
+
+    <select id="search" resultMap="BaseResultMap"
+            parameterType="com.todaysoft.ghealth.mybatis.searcher.BarcodeSearcher">
+        <include refid="Base_Column_List"></include>
+        <include refid="SearchFilters"></include>
+        <include refid="SearchLimit"></include>
+    </select>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="SearchFilters">
+        WHERE 1=1
+        <if test="_parameter.prefixCode != null and _parameter.prefixCode != ''">
+            <bind name="prefixCodePattern" value="_parameter.prefixCode + '%'"/>
+            AND PREFIX_CODE LIKE #{prefixCodePattern}
+        </if>
+        <if test="_parameter.barCodeComplete != null and _parameter.barCodeComplete != ''">
+            <bind name="barCodeCompletePattern" value="_parameter.barCodeComplete + '%'"/>
+            AND BAR_CODE_COMPLETE LIKE #{barCodeCompletePattern}
+        </if>
+        <if test="_parameter.isFree != null and _parameter.isFree != ''">
+            AND IS_FREE = #{isFree}
+        </if>
+        ORDER BY create_time DESC
+    </sql>
+    <select id="getEarliestCode" resultType="java.util.Date">
+        select max(CREATE_TIME) from ghealth_barcode
+    </select>
+</mapper>

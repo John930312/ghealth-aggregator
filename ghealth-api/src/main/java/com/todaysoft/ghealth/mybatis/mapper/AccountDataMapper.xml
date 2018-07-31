@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.AccountDataMapper">
+    <resultMap id="accountData" type="com.todaysoft.ghealth.mybatis.model.AccountData">
+        <id column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="PHONE" property="phone" jdbcType="VARCHAR"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="OPENID" property="openid" jdbcType="VARCHAR"/>
+        <result column="ENABLED" property="enabled" jdbcType="BIT"/>
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="CREATOR_NAME" property="creatorName" jdbcType="VARCHAR"/>
+        <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="UPDATOR_NAME" property="updatorName" jdbcType="VARCHAR"/>
+        <result column="DELETED" property="deleted" jdbcType="BIT"/>
+        <result column="DELETE_TIME" property="deleteTime" jdbcType="TIMESTAMP"/>
+        <result column="DELETOR_NAME" property="deletorName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="accountToken" type="com.todaysoft.ghealth.mybatis.model.AccountToken">
+        <id column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="ACCOUNT_ID" property="accountId" jdbcType="VARCHAR"/>
+        <result column="TOKEN" property="token" jdbcType="VARCHAR"/>
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="EXPIRE_TIME" property="expireTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="createAccountToken" parameterType="com.todaysoft.ghealth.mybatis.model.AccountToken">
+        insert into ghealth_customer_account_token
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="accountId != null">
+                ACCOUNT_ID,
+            </if>
+            <if test="token != null">
+                TOKEN,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="expireTime != null">
+                EXPIRE_TIME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="accountId != null">
+                #{accountId,jdbcType=VARCHAR},
+            </if>
+            <if test="token != null">
+                #{token,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expireTime != null">
+                #{expireTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="createAccount" parameterType="com.todaysoft.ghealth.mybatis.model.AccountData">
+        insert into ghealth_customer_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="phone != null">
+                PHONE,
+            </if>
+            <if test="name != null">
+                NAME,
+            </if>
+            <if test="openid != null">
+                OPENID,
+            </if>
+            <if test="enabled != null">
+                ENABLED,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME,
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME,
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME,
+            </if>
+            <if test="deleted != null">
+                DELETED,
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME,
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="openid != null">
+                #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="enabled != null">
+                #{enabled,jdbcType=BIT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null">
+                #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="modifyAccount" parameterType="com.todaysoft.ghealth.mybatis.model.AccountData">
+        update ghealth_customer_account
+        <set>
+            <if test="phone != null">
+                PHONE = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                NAME = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="openid != null">
+                OPENID = #{openid,jdbcType=VARCHAR},
+            </if>
+            <if test="enabled != null">
+                ENABLED = #{enabled,jdbcType=BIT},
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME = #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME = #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                DELETED = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME = #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME = #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <update id="modifyAccountToken" parameterType="com.todaysoft.ghealth.mybatis.model.AccountToken">
+        update ghealth_customer_account_token
+        <set>
+            <if test="accountId != null">
+                ACCOUNT_ID = #{accountId,jdbcType=VARCHAR},
+            </if>
+            <if test="token != null">
+                TOKEN = #{token,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="expireTime != null">
+                EXPIRE_TIME = #{expireTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="getAccountById" resultMap="accountData" parameterType="java.lang.String">
+        SELECT
+        *
+        FROM ghealth_customer_account
+        where ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getAccountToken" resultMap="accountToken"
+            parameterType="com.todaysoft.ghealth.mybatis.searcher.AccountTokenSearcher">
+        SELECT *
+        FROM ghealth_customer_account_token
+        WHERE 1 = 1
+        <if test="accountId != null and accountId != ''">
+            AND ACCOUNT_ID = #{accountId,jdbcType=VARCHAR}
+        </if>
+        <if test="token != null and token !=''">
+            AND TOKEN = #{token,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <select id="findAccountData" resultMap="accountData"
+            parameterType="com.todaysoft.ghealth.mybatis.searcher.AccountDataSearcher">
+        SELECT *
+        FROM ghealth_customer_account
+        WHERE DELETED = 0
+        <if test="phone != null and phone != ''">
+            AND PHONE = #{phone,jdbcType=VARCHAR}
+        </if>
+        <if test="openid != null and openid != ''">
+            AND OPENID = #{openid,jdbcType=VARCHAR}
+        </if>
+        <if test="enabled">
+            AND ENABLED = #{enabled,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+</mapper>

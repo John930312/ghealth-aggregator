@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <title>代理管理-代理产品</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css?v=0.1" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/agency/list.jsp">代理管理</a>
+                        </li>
+                        <li>
+                            <a href="${base}/agency/list.jsp">代理商列表</a>
+                        </li>
+                        <li class="active">
+                            <strong>${(data.abbr)!?html}</strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5>代理产品</h5>
+                    <a class="btn btn-sm btn-success"   href="javascript:batchDelete('${(data.id)!?html}')"  style="float: right">
+                        <i class="fa fa-trash"></i> 批量删除
+                    </a>
+                    <a class="btn btn-sm btn-success"   href="javascript:add('${(data.id)!?html}')"  style="float: right">
+                        <i class="fa fa-plus"></i> 增加
+                    </a>
+
+                </div>
+            </div>
+            <div class="ibox-content">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th><input type="checkbox" class="check-controller"/></th>
+                        <th class="index">序号</th>
+                        <th>产品编号</th>
+                        <th>产品名称值</th>
+                        <th>指导价格</th>
+                        <th>代理价格</th>
+                        <th class="flexible-btns" >操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <#if (data.agentProducts)?? && (data.agentProducts)?has_content> <#list data.agentProducts as record>
+                        <tr>
+                            <td><input type="checkbox" class="check-instance"
+                                       value="${record.productId}"/></td>
+                            <td>${(record_index+1)!?html}</td>
+                            <td>${(record.productCode)!?html}</td>
+                            <td>${(record.productName)!?html}</td>
+                            <td>${(record.guidingPrice)!?html}</td>
+                            <td>${(record.agencyPrice)!?html}</td>
+                            <td class="flexible-btns" style="white-space: nowrap">
+                                <a class="btn btn-sm btn-success" href="${base}/agency/oldPriceDetails.do?testingProductIds=${record.productId}&&agencyId=${(data.id)!?html}">
+                                    <i class="fa fa-file-text-o"></i> 修改记录
+                                </a>
+                                <a class="btn btn-sm btn-success" href="javascript:changePrice('${(record.productId)!?html}','${(data.id)!?html}','${(record.guidingPrice)!?html}')">
+                                    <i class="fa fa-edit"></i> 修改价格
+                                </a>
+                                <a class="btn btn-sm btn-success layer-confirm" href="${base}/agency/deleteProduct.do?testingProductIds=${record.productId}&&agencyId=${(data.id)!?html}" data-confirm-message="确定删除该产品？">
+                                    <i class="fa fa-trash"></i> 删除
+                                </a>
+
+                            </td>
+                        </tr>
+                    </#list><#else>
+                        <tr>
+                            <td colspan="7">暂无代理产品</td>
+                        </tr>
+                    </#if>
+                    </tbody>
+                </table>
+                <#include "../inc/pagination.html" />
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="modal fade" id="changePrice" tabindex="-1" role="dialog"
+     aria-labelledby="report_ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">&times;
+                </button>
+                <h4 class="modal-title" id="report_ModalLabel">调整价格</h4>
+            </div>
+
+            <form id="modifyForm" method="post" action="${base}/agency/modifyPrice.do" name="modifyForm" >
+                <input type="hidden" name="agencyIds" id="agencyId">
+                <input type="hidden" name="testingProductId" id="productId">
+                <input type="hidden" name="agencyId"  value="${(data.id)!?html}">
+                <input type="hidden" id="price" name="price" >
+                <div class="modal-body">
+                    <div class="form-group ">
+                        <label class="control-label required-label">代理价格：</label>
+                        <input type="text" class="form-control" name="agencyPrice" id="prices"
+                               >
+                    </div>
+                    <div class="form-group ">
+                        <label class="control-label required-label">修改备注：</label>
+                        <textarea class="form-control" rows="5" name="detail" id="detail"></textarea>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-4" style="float: right">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" onclick="ccSub()">提交</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addProduct" tabindex="-1" role="dialog"
+     aria-labelledby="report_ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">&times;
+                </button>
+                <h4 class="modal-title" id="addProducts">增加代理产品</h4>
+            </div>
+
+            <form id="addProductForm" method="post" action="${base}/agency/addPro.do" name="addProductForm" >
+                <input type="hidden" name="agencyId" id="agencyId1" value="${(data.id)!?html}">
+                <input type="hidden" name="testingProductIds" id="productId1">
+                <div class="modal-body">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox" class="check-controller"/></th>
+                            <th class="index">序号</th>
+                            <th>产品编号</th>
+                            <th>产品名称值</th>
+                            <th>指导价格</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <#if datas?? && datas?has_content> <#list datas as record>
+                            <tr>
+                                <td><input type="checkbox" class="check-instance"
+                                           value="${record.id}"/></td>
+                                <td>${(record_index+1)!?html}</td>
+                                <td>${(record.code)!?html}</td>
+                                <td>${(record.name)!?html}</td>
+                                <td>${(record.guidingPrice)!?html}</td>
+                            </tr>
+                        </#list><#else>
+                            <tr>
+                                <td colspan="5">暂无代理产品</td>
+                            </tr>
+                        </#if>
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-4" style="float: right">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" onclick="addPro()">提交</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/pagination/jquery.pagination.js"></script>
+<script src="${system_js}/system.js?v=0.1"></script>
+<script src="${system_js}/selectChecked.js"></script>
+<script src="${plugins}/layer/layer.min.js"></script>
+<script src="${system_js}/myValidate.js"></script>
+<script src="${plugins}/validation/jquery.validate.min.js"></script>
+<script src="${plugins}/validation/additional-methods.min.js"></script>
+<script src="${plugins}/validation/localization/messages_zh.min.js"></script>
+<script>
+
+    function changePrice(productId,agencyId,guidingPrice) {
+        $('#changePrice').modal('show');
+        $('#productId').val(productId);
+        $('#agencyId').val(agencyId);
+        $('#price').val(guidingPrice);
+        $('#prices').val('');
+        $('#detail').val('');
+    }
+
+    function ccSub()
+    {
+        var productPrice = $('#price').val();
+        var qq =  $("#prices").val();
+        var modiftyDetail = $("#detail").val();
+
+            if(qq - productPrice > 0)
+            {
+                alert("代理价格不能大于产品价格！！！")
+                return false;
+            }else if(!modiftyDetail.trim().length>0){
+                alert("备注信息不能为空")
+                return false;
+            }else {
+
+                    var guize =/^[0-9]+([.]{1}[0-9]{1,2})?$/
+                };
+
+                if(qq.match(guize)== null){
+                    alert("代理价格为正数，小数点后2位")
+                    return false;
+                }else {
+                    $('#modifyForm').submit();
+
+                    $('#changePrice').modal("hide");
+                }
+
+    }
+
+
+
+    function add() {
+        $('#addProduct').modal('show');
+    }
+
+
+    function addPro() {
+        var ids = "";
+        $(".check-instance:checkbox").each(function (i, v) {
+            if ($(this).prop("checked")) {
+                ids += $(this).val() + "-"
+            }
+        });
+        if (ids != '') {
+            $('#productId1').val(ids);
+            $('#addProductForm').submit();
+        }else {
+            layer.alert('选项不符合条件', {
+                title: "提示"
+            });
+        }
+    }
+
+
+
+    function batchDelete(Id) {
+        var ids = "";
+        $(".check-instance:checkbox").each(function (i, v) {
+            if ($(this).prop("checked")) {
+                ids += $(this).val() + "-"
+            }
+        });
+        if (ids != '') {
+            $.ajax({
+                type: "POST",
+                traditional: true,
+                async: false,
+                url: '${base}/agency/delete.do',
+                data: {
+                    testingProductIds: ids,
+                    agencyId:Id,
+                },
+                success: function (data) {
+                    window.location.href="${base}/agency/addProduct.do?id="+Id;
+                },
+            });
+        }
+        else {
+            layer.alert('选项不符合条件', {
+                title: "提示"
+            });
+        }
+    }
+
+
+
+
+</script>
+</body>
+</html>

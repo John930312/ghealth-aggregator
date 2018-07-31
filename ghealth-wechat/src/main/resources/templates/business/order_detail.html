@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="format-detection" content="telephone=no,email=no">
+    <meta http-equiv="Cache-Control" content="no-store"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="0"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="HandheldFriendly" content="true">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.0/css/jquery-weui.min.css">
+    <!--<link rel="stylesheet" href="https://cdn.bootcss.com/animate.css/3.5.2/animate.min.css">-->
+    <link rel="stylesheet" href="${base}/static/system/css/common.css">
+    <link rel="stylesheet" href="${base}/static/system/css/styles.css">
+</head>
+<body>
+<div class="page-wrap">
+    <div class="page-content ub-con ub ub-ver">
+        <header class="order-detail-wrap">
+            <div class="detail-card trans-crad">
+                <div class="detail-card-hd">
+                    <span class="white-column-icon"></span><h3 class="detail-card-name">${(data.product.name)!?html}</h3>
+                    <#if data.existContents>
+                        <a href="${base}/static/plugin/pdfjs/generic/web/viewer.html?file=${base}/order/preview.jsp/${(data.code)!?html}"class="weui-btn weui-btn_preview">报告预览</a>
+                    </#if>
+                </div>
+                <div class="detail-card-bd">
+                    <div class="order-detial-itmes-box">
+                        <p class=""><strong class="ft_normal">订单编号：</strong>${(data.code)!?html}</p>
+                        <p class=""><strong class="ft_normal">纸质报告:</strong>${(data.reportPrintRequiredText)!?html}</p>
+                        <p class=""><strong class="ft_normal">下单时间:</strong><#if data.submitTime??>${data.submitTime!?string('yyyy-MM-dd HH:mm:ss')}</#if></p>
+                        <div class="mr_t10">
+                            <button type="button" class="weui-btn trans-btn">${(data.statusText)!?html}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="ub-f1 cot_srolling">
+            <div class="orders-box">
+                <div class="detail-card">
+                    <div class="detail-card-hd">
+                        <h3 class="detail-card-name default-txt">检测人信息</h3>
+                    </div>
+                    <div class="detail-card-bd">
+                        <div class="order-detail-info-box">
+                            <p class="default-txt"><strong class="secondary-txt ft_normal">姓    名:</strong>${(data.customer.name)!?html}</p>
+                            <p class="default-txt"><strong class="secondary-txt ft_normal">性    别:</strong>${(data.customer.sexText)!?html}</p>
+                            <p class="default-txt"><strong class="secondary-txt ft_normal">联系电话:</strong>${(data.customer.phone)!?html}</p>
+                            <p class="default-txt"><strong class="secondary-txt ft_normal">样本类型:</strong>${(data.sampleTypeText)!?html}</p>
+                            <p class="default-txt"><strong class="secondary-txt ft_normal">条码编号:</strong> ${(data.code)!?html}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-card-hd">
+                        <h3 class="detail-card-name default-txt">检测项目</h3>
+                    </div>
+                    <div class="detail-card-bd">
+                        <div class="order-detail-info-box default-txt">
+                            <#if data.product??&&data.product.testingItems?has_content>
+                                <#list data.product.testingItems as record>
+                                    <p>${record_index + 1} ${(record.name)!?html}</p>
+                                </#list>
+                            </#if>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-card">
+                    <div class="detail-card-hd">
+                        <h3 class="detail-card-name default-txt">订单日志</h3>
+                    </div>
+                    <div class="detail-card-bd">
+                        <div class="order-detail-info-box default-txt">
+                            <#if data.orderHistoryList??&&data.orderHistoryList?has_content>
+                                <#list data.orderHistoryList as record>
+                                    <p class="secondary-txt"><#if record.eventTime??>${record.eventTime!?string('yyyy-MM-dd HH:mm:ss')}</#if>&nbsp;&nbsp;&nbsp;<span class="default-txt">${(record.title)!?html}</span></p>
+                                </#list>
+                            </#if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/jquery-weui.min.js"></script>
+<script type="text/javascript">
+
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>系统错误</title>
+<link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+<link href="${system_css}/system.css" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+    <div class="middle-box text-center animated fadeInDown">
+        <h3 class="font-bold">系统错误</h3>
+        <div class="error-desc">
+            <#if error_code??>${error_code!?html}：${error_message!?html}<#else>系统好像出错了...</#if><br />
+            <a href="javascript:window.history.go(-1)" class="btn btn-primary m-t">返回</a>
+        </div>
+    </div>
+    <script src="${plugins}/jquery/jquery.min.js"></script>
+    <script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+</body>
+</html>

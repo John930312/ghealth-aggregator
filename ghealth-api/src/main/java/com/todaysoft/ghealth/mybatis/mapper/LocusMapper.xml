@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.LocusMapper">
+    <!-- start Mapper映射方法 -->
+    <insert id="create" parameterType="com.todaysoft.ghealth.mybatis.model.Locus">
+        INSERT INTO GHEALTH_LOCUS
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="name != null">
+                NAME,
+            </if>
+            <if test="geneId != null">
+                GENE_ID,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME,
+            </if>
+            <if test="deleted != null">
+                DELETED,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="geneId != null">
+                #{geneId, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName, jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="modify" parameterType="com.todaysoft.ghealth.mybatis.model.Locus">
+        UPDATE GHEALTH_LOCUS
+        <set>
+            <if test="name != null">
+                NAME = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="geneId != null">
+                GENE_ID = #{geneId, jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME = #{updatorName, jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                DELETED = #{deleted, jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME = #{deleteTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME = #{deletorName, jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE ID = #{id, jdbcType=VARCHAR}
+    </update>
+
+    <select id="get" resultMap="LocusEntity" parameterType="java.lang.String">
+        <include refid="recordSearchSQL" />
+        WHERE locus.ID = #{id, jdbcType=VARCHAR}
+    </select>
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.LocusSearcher">
+        <include refid="countSearchSQL" />
+        <include refid="SearchFilters"></include>
+    </select>
+
+    <select id="search" resultMap="LocusEntity" parameterType="com.todaysoft.ghealth.mybatis.searcher.LocusSearcher">
+        <include refid="recordSearchSQL"></include>
+        <include refid="SearchFilters"></include>
+        ORDER BY locus.CREATE_TIME DESC
+        <include refid="SearchLimit"></include>
+    </select>
+
+    <select id="getLocusByNames" resultMap="LocusEntity" parameterType="java.util.Set">
+        SELECT t.ID, t.NAME FROM GHEALTH_LOCUS t WHERE t.DELETED = 0
+        <choose>
+            <when test="names == null or names.size == 0">
+                AND 1 = 2
+            </when>
+            <when test="names.size == 1">
+                AND t.NAME =
+                <foreach collection="names" item="name" index="index" open="" close="" separator="">
+                    #{name}
+                </foreach>
+            </when>
+            <otherwise>
+                AND t.NAME IN
+                <foreach collection="names" item="name" index="index" open="(" close=")" separator=",">
+                    #{name}
+                </foreach>
+            </otherwise>
+        </choose>
+    </select>
+    <!-- end Mapper映射方法 -->
+
+    <!-- start 内部定义 -->
+    <sql id="countSearchSQL">
+        SELECT COUNT(*) FROM GHEALTH_LOCUS locus LEFT JOIN GHEALTH_GENE gene ON locus.GENE_ID = gene.ID
+    </sql>
+
+    <sql id="recordSearchSQL">
+        SELECT locus.*, gene.symbol AS GENE_SYMBOL
+        FROM GHEALTH_LOCUS locus LEFT JOIN GHEALTH_GENE gene ON locus.GENE_ID = gene.ID
+    </sql>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="SearchFilters">
+        WHERE locus.DELETED = 0
+        <if test="_parameter.name != null and _parameter.name != ''">
+            <choose>
+                <when test="_parameter.nameExactMatches">AND locus.NAME = #{name}</when>
+                <otherwise>
+                    <bind name="namePattern" value="'%' + _parameter.name + '%'" />
+                    AND locus.NAME LIKE #{namePattern}
+                </otherwise>
+            </choose>
+        </if>
+        <if test="_parameter.geneName != null and _parameter.geneName != ''">
+            <bind name="geneNamePattern" value="'%' + _parameter.geneName + '%'" />
+            AND gene.SYMBOL LIKE #{geneNamePattern}
+        </if>
+        <if test="_parameter.excludeKeys != null and _parameter.excludeKeys.size != 0">
+            <choose>
+                <when test="_parameter.excludeKeys.size == 1">
+                    AND locus.ID !=
+                    <foreach collection="_parameter.excludeKeys" item="excludeKey" index="index" open="" close="" separator="">
+                        #{excludeKey}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND locus.ID NOT IN
+                    <foreach collection="_parameter.excludeKeys" item="excludeKey" index="index" open="(" close=")" separator=",">
+                        #{excludeKey}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+    <resultMap id="PrimaryEntity" type="com.todaysoft.ghealth.mybatis.model.PrimaryEntity">
+        <id column="ID" property="id" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATOR_NAME" property="creatorName" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="UPDATOR_NAME" property="updatorName" />
+        <result column="DELETED" property="deleted" />
+        <result column="DELETE_TIME" property="deleteTime" />
+        <result column="DELETOR_NAME" property="deletorName" />
+    </resultMap>
+
+    <resultMap id="LocusEntity" type="com.todaysoft.ghealth.mybatis.model.Locus" extends="PrimaryEntity">
+        <result column="NAME" property="name" jdbcType="VARCHAR" />
+        <result column="GENE_ID" property="geneId" jdbcType="VARCHAR" />
+        <result column="GENE_SYMBOL" property="geneName" jdbcType="VARCHAR" />
+    </resultMap>
+    <!-- end 内部定义 -->
+</mapper>

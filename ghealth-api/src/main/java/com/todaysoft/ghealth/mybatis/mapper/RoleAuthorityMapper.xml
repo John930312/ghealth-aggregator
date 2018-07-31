@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.RoleAuthorityMapper">
+    <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.mybatis.model.RoleAuthority">
+        <result column="ROLE_ID" jdbcType="VARCHAR" property="role.id" />
+        <result column="ROLE_NAME" jdbcType="VARCHAR" property="role.name" />
+        <result column="AUTHORITY_ID" jdbcType="VARCHAR" property="authority.id" />
+        <result column="AUTHORITY_NAME" jdbcType="VARCHAR" property="authority.name" />
+    </resultMap>
+
+    <resultMap id="authority" type="com.todaysoft.ghealth.base.response.model.Authority" >
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="PARENT_ID" property="parentId" jdbcType="VARCHAR" />
+        <result column="NAME" property="name" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        SELECT
+        a.ID AS ID,
+        a.PARENT_ID AS PARENT_ID,
+        a.NAME AS AUTHORITY_NAME
+        FROM ghealth_role_authority ra
+        LEFT JOIN ghealth_authority a ON ra.AUTHORITY_ID = a.ID
+    </sql>
+
+  <insert id="insert" parameterType="com.todaysoft.ghealth.mybatis.model.RoleAuthority">
+    insert into ghealth_role_authority
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="role.id != null">
+        ROLE_ID,
+      </if>
+      <if test="authority.id != null">
+        AUTHORITY_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="role.id != null">
+        #{role.id,jdbcType=VARCHAR},
+      </if>
+      <if test="authority.id != null">
+        #{authority.id,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+    <select id="search" parameterType="com.todaysoft.ghealth.mybatis.searcher.RoleAuthoritySearcher" resultMap="authority">
+        <include refid="Base_Column_List" />
+        <include refid="SearchFilters" />
+    </select>
+
+    <sql id="SearchFilters">
+        WHERE 1 = 1
+        <if test="_parameter.roleId != null and _parameter.roleId != ''">
+            AND ra.ROLE_ID = #{roleId}
+        </if>
+        <if test="_parameter.authorityId != null and _parameter.authorityId != ''">
+            AND ra.AUTHORITY_ID = #{authorityId}
+        </if>
+    </sql>
+
+    <delete id="deleteRoleAuthority" parameterType="java.lang.String">
+        delete from ghealth_role_authority
+        where ROLE_ID = #{roleId,jdbcType=INTEGER}
+    </delete>
+
+</mapper>

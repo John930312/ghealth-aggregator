@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.AccountRoleRelationMapper">
+    <select id="countByRoleId" resultType="int" >
+        SELECT COUNT(*) FROM GHEALTH_AGENCY_ACCOUNT_ROLE t
+        WHERE t.ROLE_ID =#{id}
+    </select>
+
+    <delete id="deleteAccountRoleByRoleId" parameterType="java.lang.String">
+        delete from GHEALTH_AGENCY_ACCOUNT_ROLE
+        where ROLE_ID = #{roleId,jdbcType=INTEGER}
+    </delete>
+
+    <delete id="deleteAccountRoleByUserId" parameterType="java.lang.String">
+        delete from GHEALTH_AGENCY_ACCOUNT_ROLE
+        where USER_ID = #{userId,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.todaysoft.ghealth.mybatis.model.UserRoleRelation" >
+        insert into ghealth_agency_account_role
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="userId != null" >
+                USER_ID,
+            </if>
+            <if test="roleId != null" >
+                ROLE_ID,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="userId != null" >
+                #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="roleId != null" >
+                #{roleId,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.todaysoft.ghealth.mybatis.model.UserRoleRelation" >
+        update ghealth_agency_account_role
+        <set>
+            <if test="roleId != null" >
+                ROLE_ID = #{roleId,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where USER_ID = #{userId,jdbcType=VARCHAR}
+    </update>
+
+    <resultMap id="role" type="com.todaysoft.ghealth.mybatis.model.AgencyRole">
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="NAME" property="name" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+    <sql id="A_List">
+        SELECT
+        a.*
+        FROM ghealth_agency_account_role ur
+        LEFT JOIN ghealth_agency_role a ON ur.ROLE_ID = a.id
+    </sql>
+
+
+    <select id="getRoles" parameterType="com.todaysoft.ghealth.mybatis.searcher.UserRoleSearcher" resultMap="role">
+        <include refid="A_List" />
+        <include refid="SearchFilters" />
+    </select>
+
+
+
+    <resultMap id="account" type="com.todaysoft.ghealth.mybatis.model.AgencyAccount">
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="USERNAME" property="username" jdbcType="VARCHAR" />
+        <result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+        <result column="ENABLED" property="enabled" jdbcType="BIT" />
+        <result column="PRIMARY_ACCOUNT" property="primaryAccount" jdbcType="BIT" />
+        <result column="NAME" property="name" jdbcType="VARCHAR" />
+        <result column="PHONE" property="phone" jdbcType="VARCHAR" />
+    </resultMap>
+
+
+    <sql id="SearchFilters">
+        WHERE 1 = 1
+        <if test="_parameter.roleId != null and _parameter.roleId != ''">
+            AND ur.ROLE_ID = #{roleId}
+        </if>
+        <if test="_parameter.userId != null and _parameter.userId != ''">
+            AND ur.USER_ID = #{userId}
+        </if>
+    </sql>
+
+
+    <select id="getAccount" parameterType="com.todaysoft.ghealth.mybatis.searcher.UserRoleSearcher" resultMap="account">
+        <include refid="Base_Column_List" />
+        <include refid="SearchFilters" />
+    </select>
+
+
+    <sql id="Base_Column_List">
+        SELECT
+        u.*
+        FROM ghealth_agency_account_role ur
+        LEFT JOIN ghealth_agency_account u ON ur.USER_ID = u.id
+    </sql>
+
+
+    <insert id="insertAccountRole" parameterType="com.todaysoft.ghealth.mybatis.model.AgencyAccountRole" >
+        insert into ghealth_agency_account_role
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="agencyAccount.id != null" >
+                USER_ID,
+            </if>
+            <if test="agencyRole.id != null" >
+                ROLE_ID,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="agencyAccount.id != null" >
+                #{agencyAccount.id,jdbcType=VARCHAR},
+            </if>
+            <if test="agencyRole.id != null" >
+                #{agencyRole.id,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+</mapper>
+
+
+
+
+

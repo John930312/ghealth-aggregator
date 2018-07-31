@@ -1,0 +1,32 @@
+ .idiv {
+    float: left;
+    border: 1px solid #dfdfdf;
+    width: 200px;
+    height: 100px;
+}
+.idiv img {
+    width: 200px;
+    height: 100px;
+}
+.file-box {
+    position: relative;
+    width: 70px;
+    float: left;
+    margin-left: 5px;
+    margin-top: 76px;
+}
+.file-box input {
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+}
+.file {
+    position: absolute;
+    top: 0;
+    left: 0px;
+    height: 24px;
+    filter: alpha(opacity:0);
+    opacity: 0;
+    width: 60px;
+    border: 1px solid red;
+}

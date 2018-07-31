@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.ReportGenerateTaskMapper">
+
+    <!-- start 映射方法 -->
+    <select id="get" resultMap="ReportGenerateTaskEntity" parameterType="java.lang.String">
+        SELECT * FROM GHEALTH_ORDER_REPORT_GENERATE_TASK WHERE ID = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.todaysoft.ghealth.mybatis.model.ReportGenerateTask">
+        INSERT INTO GHEALTH_ORDER_REPORT_GENERATE_TASK
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="status != null">
+                STATUS,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME,
+            </if>
+            <if test="wordFileUrl != null">
+                WORD_FILE_URL,
+            </if>
+            <if test="pdfFileUrl != null">
+                PDF_FILE_URL,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=BIT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="wordFileUrl != null">
+                #{wordFileUrl},
+            </if>
+            <if test="pdfFileUrl != null">
+               #{pdfFileUrl},
+            </if>
+        </trim>
+    </insert>
+    
+    <update id="update" parameterType="com.todaysoft.ghealth.mybatis.model.ReportGenerateTask">
+        UPDATE GHEALTH_ORDER_REPORT_GENERATE_TASK
+        <set>
+            <if test="status != null">
+                STATUS = #{status},
+            </if>
+            <if test="finishTime != null">
+                FINISH_TIME = #{finishTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="errorCode != null">
+                ERROR_CODE = #{errorCode},
+            </if>
+            <if test="errorMessage != null">
+                ERROR_MESSAGE = #{errorMessage},
+            </if>
+            <if test="wordFileUrl != null">
+                WORD_FILE_URL = #{wordFileUrl},
+            </if>
+            <if test="pdfFileUrl != null">
+                PDF_FILE_URL = #{pdfFileUrl},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM GHEALTH_ORDER_REPORT_GENERATE_TASK WHERE ID = #{id}
+    </delete>
+    
+    <insert id="insertObjectStorageRecord" parameterType="com.todaysoft.ghealth.mybatis.model.ObjectStorage">
+        INSERT INTO GHEALTH_OBJECT_STORAGE
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="storageType != null">
+                STORAGE_TYPE,
+            </if>
+            <if test="storageDetails != null">
+                STORAGE_DETAILS,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="storageType != null">
+                #{storageType},
+            </if>
+            <if test="storageDetails != null">
+                #{storageDetails},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateObjectStorageRecord" parameterType="com.todaysoft.ghealth.mybatis.model.ObjectStorage">
+        UPDATE GHEALTH_OBJECT_STORAGE
+        <set>
+            <if test="id != null">
+                ID = #{id},
+            </if>
+            <if test="storageType != null">
+                STORAGE_TYPE = #{storageType, jdbcType=TIMESTAMP},
+            </if>
+            <if test="storageDetails != null">
+                STORAGE_DETAILS = #{storageDetails},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+    
+    <select id="getObjectStorageRecord" resultMap="ObjectStorageEntity" parameterType="java.lang.String">
+        SELECT * FROM GHEALTH_OBJECT_STORAGE WHERE ID = #{id}
+    </select>
+    <!-- end 映射方法 -->
+
+    <!-- start 内部定义 -->
+    <resultMap id="ReportGenerateTaskEntity" type="com.todaysoft.ghealth.mybatis.model.ReportGenerateTask">
+        <id column="ID" property="id" />
+        <result column="STATUS" property="status" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATOR_NAME" property="creatorName" />
+        <result column="FINISH_TIME" property="finishTime" />
+        <result column="ERROR_CODE" property="errorCode" />
+        <result column="ERROR_MESSAGE" property="errorMessage" />
+        <result column="WORD_FILE_URL" property="wordFileUrl" />
+        <result column="PDF_FILE_URL" property="pdfFileUrl" />
+    </resultMap>
+    
+    <resultMap id="ObjectStorageEntity" type="com.todaysoft.ghealth.mybatis.model.ObjectStorage">
+        <id column="ID" property="id" />
+        <result column="STORAGE_TYPE" property="storageType" />
+        <result column="STORAGE_DETAILS" property="storageDetails" />
+    </resultMap>
+    <!-- end 内部定义 -->
+</mapper>

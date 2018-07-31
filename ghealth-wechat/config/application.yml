@@ -1,0 +1,13 @@
+server:
+    port: 8084
+    
+spring:
+    freemarker:
+        suffix: .html
+    messages:
+        basename: messages/errors
+        
+gateway:
+    api:
+        host: localhost
+        port: 3031

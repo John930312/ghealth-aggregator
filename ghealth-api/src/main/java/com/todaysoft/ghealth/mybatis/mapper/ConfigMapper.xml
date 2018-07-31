@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.ConfigMapper">
+    <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.base.response.model.Config">
+        <id column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="CONFIG_KEY" property="configKey" jdbcType="VARCHAR"/>
+        <result column="CONFIG_NAME" property="configName" jdbcType="VARCHAR"/>
+        <result column="CONFIG_VALUE" property="configValue" jdbcType="VARCHAR"/>
+        <result column="CONFIG_VALUE_TYPE" property="configValueType" jdbcType="BIT"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    select
+    *
+    from ghealth_config
+  </sql>
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String">
+
+        <include refid="Base_Column_List"/>
+
+        where ID = #{id,jdbcType=VARCHAR}
+    </select>
+    <delete id="delete" parameterType="java.lang.String">
+    delete from ghealth_config
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+
+    <insert id="insertSelective" parameterType="com.todaysoft.ghealth.base.response.model.Config">
+        insert into ghealth_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="configKey != null">
+                CONFIG_KEY,
+            </if>
+            <if test="configName != null">
+                CONFIG_NAME,
+            </if>
+            <if test="configValue != null">
+                CONFIG_VALUE,
+            </if>
+            <if test="configValueType != null">
+                CONFIG_VALUE_TYPE,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="configKey != null">
+                #{configKey,jdbcType=VARCHAR},
+            </if>
+            <if test="configName != null">
+                #{configName,jdbcType=VARCHAR},
+            </if>
+            <if test="configValue != null">
+                #{configValue,jdbcType=VARCHAR},
+            </if>
+            <if test="configValueType != null">
+                #{configValueType,jdbcType=BIT},
+            </if>
+        </trim>
+    </insert>
+    <update id="modify" parameterType="com.todaysoft.ghealth.base.response.model.Config">
+        update ghealth_config
+        <set>
+            <if test="configKey != null">
+                CONFIG_KEY = #{configKey,jdbcType=VARCHAR},
+            </if>
+            <if test="configName != null">
+                CONFIG_NAME = #{configName,jdbcType=VARCHAR},
+            </if>
+            <if test="configValue != null">
+                CONFIG_VALUE = #{configValue,jdbcType=VARCHAR},
+            </if>
+            <if test="configValueType != null">
+                CONFIG_VALUE_TYPE = #{configValueType,jdbcType=BIT},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.ConfigSearcher">
+        SELECT COUNT(*)
+        from ghealth_config
+        <include refid="SearchFilters"></include>
+    </select>
+
+    <select id="search" resultMap="BaseResultMap"
+            parameterType="com.todaysoft.ghealth.mybatis.searcher.ConfigSearcher">
+        <include refid="Base_Column_List"></include>
+        <include refid="SearchFilters"></include>
+        <include refid="SearchLimit"></include>
+    </select>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="SearchFilters">
+        WHERE 1=1
+        <if test="_parameter.name != null and _parameter.name != ''">
+            <bind name="namePattern" value="_parameter.name + '%'"/>
+            AND CONFIG_NAME LIKE #{namePattern}
+        </if>
+    </sql>
+</mapper>

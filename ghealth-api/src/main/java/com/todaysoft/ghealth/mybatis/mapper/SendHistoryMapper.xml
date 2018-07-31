@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.SendHistoryMapper">
+
+    <resultMap id="SignInHistoryEntity" type="com.todaysoft.ghealth.mybatis.model.SignInHistory" >
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="OPERATOR_NAME" property="operatorName"  />
+        <result column="OPERATE_TIME" property="operateTime"  />
+        <result column="SAMPLE_COUNT" property="sampleCount"  />
+    </resultMap>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="SearchFilters">
+        WHERE 1 = 1
+        <if test="_parameter.operatorName != null and _parameter.operatorName != ''">
+            <bind name="operatorNamePattern" value="'%'+_parameter.operatorName + '%'" />
+            AND t.OPERATOR_NAME LIKE #{operatorNamePattern}
+        </if>
+        <if test="_parameter.startTime != null">
+            <bind name="startTimePattern" value="_parameter.startTime" />
+            <![CDATA[   and DATE_FORMAT(t.OPERATE_TIME, '%Y-%m-%d %h%m%s')>=  DATE_FORMAT(#{startTimePattern}, '%Y-%m-%d %h%m%s')   ]]>
+        </if>
+        <if test="_parameter.endTime != null">
+            <bind name="endTimePattern" value="_parameter.endTime" />
+            <![CDATA[   and DATE_FORMAT(t.OPERATE_TIME, '%Y-%m-%d %h%m%s') <  DATE_FORMAT(#{endTimePattern}, '%Y-%m-%d %h%m%s')   ]]>
+        </if>
+
+        <if test="_parameter.orderCode != null and _parameter.orderCode != ''">
+            AND exists (select b.ID from GHEALTH_SAMPLE_DELIVERY_DETAILS b left join GHEALTH_ORDER c on b.ORDER_ID = c.ID where c.CODE = #{orderCode} and t.ID = b.DELIVERY_RECORD_ID and c.DELETED = 0)
+        </if>
+    </sql>
+
+    <select id="search" resultMap="SignInHistoryEntity" parameterType="com.todaysoft.ghealth.mybatis.searcher.SignInHistorySearcher">
+        SELECT t.* FROM GHEALTH_SAMPLE_DELIVERY t
+        <include refid="SearchFilters"></include> ORDER BY t.OPERATE_TIME DESC
+        <include refid="SearchLimit"></include>
+    </select>
+
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.SignInHistorySearcher">
+        SELECT COUNT(*) FROM GHEALTH_SAMPLE_DELIVERY t
+        <include refid="SearchFilters"></include>
+    </select>
+
+
+</mapper>

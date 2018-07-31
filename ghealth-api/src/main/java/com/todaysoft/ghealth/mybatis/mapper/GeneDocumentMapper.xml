@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.GeneDocumentMapper">
+    <resultMap id="PrimaryEntity" type="com.todaysoft.ghealth.mybatis.model.PrimaryEntity">
+        <id column="ID" property="id"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="CREATOR_NAME" property="creatorName"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <result column="UPDATOR_NAME" property="updatorName"/>
+        <result column="DELETED" property="deleted"/>
+        <result column="DELETE_TIME" property="deleteTime"/>
+        <result column="DELETOR_NAME" property="deletorName"/>
+    </resultMap>
+
+    <resultMap id="GeneDocumentEntity" type="com.todaysoft.ghealth.mybatis.model.GeneDocument" extends="PrimaryEntity">
+        <id column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="GENE_ID" property="geneId"/>
+        <result column="TITLE" property="title"/>
+    </resultMap>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="SearchFilters">
+        WHERE t.DELETED = 0
+        <if test="_parameter.geneId != null and _parameter.geneId != ''">
+            <bind name="geneIdPattern" value="_parameter.geneId + '%'"/>
+            AND t.geneId LIKE #{geneIdPattern}
+        </if>
+    </sql>
+
+    <select id="search" resultMap="GeneDocumentEntity"
+            parameterType="com.todaysoft.ghealth.mybatis.searcher.GeneDocumentSearcher">
+        SELECT t.* FROM GHEALTH_GENE_DOCUMENT t
+           WHERE t.GENE_ID= #{geneId}
+    </select>
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.GeneDocumentSearcher">
+        SELECT COUNT(*) FROM GHEALTH_GENE_DOCUMENT t
+        WHERE t.GENE_ID= #{geneId}
+    </select>
+
+
+    <insert id="insert" parameterType="com.todaysoft.ghealth.mybatis.model.GeneDocument">
+        insert into GHEALTH_GENE_DOCUMENT
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="geneId != null">
+                GENE_ID,
+            </if>
+            <if test="title != null">
+                TITLE,
+            </if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="geneId != null">
+                #{geneId,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                #{title,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="update" parameterType="com.todaysoft.ghealth.mybatis.model.GeneDocument">
+        UPDATE GHEALTH_GENE_DOCUMENT
+        <set>
+            <if test="title != null">
+                TITLE = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="id != null">
+                ID = #{id,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE GENE_ID = #{geneId,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="delete" parameterType="com.todaysoft.ghealth.mybatis.model.GeneDocument">
+        DELETE  FROM GHEALTH_GENE_DOCUMENT WHERE GENE_ID = #{geneId,jdbcType=VARCHAR}
+    </delete>
+
+
+</mapper>

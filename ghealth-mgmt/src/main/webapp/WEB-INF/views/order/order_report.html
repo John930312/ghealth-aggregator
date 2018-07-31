@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>订单列表-订单管理</title>
+<link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+<link href="${system_css}/system.css?v=0.1" rel="stylesheet"></link>
+</head>
+<body>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row m-b-xs">
+            <input type="hidden" id="orderId" value="${(data.id)!?html}">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    <#if !(data.orderTask)??>
+                    <h1>该订单还未生成报告</h1>
+                    </#if> <#if (data.orderTask)??> <#if (data.orderTask.status) == 0>
+                    <h1>报告正在生成中。。。</h1>
+                    <#elseif (data.orderTask.status) == 1>
+                    <h1>报告已经生成！！！</h1>
+                    <#else>
+                    <h1>报告生成生成失败！！！</h1>
+                    </#if> </#if>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 button">
+                    <button class="btn btn-primary generate" type="button" onclick="showReportModel()"<#if
+                        (data.orderTask)??&&(data.orderTask.status) == 0>disabled</#if> >生成报告</button>
+                    <span class="download"
+                        <#if (data.orderTask)??&&(data.orderTask.status) == 1> <#else> style="display:none;" </#if> > <#assign pdfFileUrl =
+                        (data.orderTask.pdfFileUrl)! /> <#assign wordFileUrl = (data.orderTask.wordFileUrl)! />
+                        <a class="btn btn-primary pdf" type="button"
+                <#if pdfFileUrl == "">
+                    href="javascropt:;"
+                    <#else>
+                        href="${base}/order/download.jsp?url=${pdfFileUrl?replace('\\','%2F')}"
+                </#if>
+                >下载报告(PDF)
+                </a>
+                <a class="btn btn-primary doc" type="button"
+                <#if wordFileUrl == "">
+                    href="javascropt:;"
+                    <#else>
+                        href="${base}/order/download.jsp?url=${wordFileUrl?replace('\\','%2F')}"
+                </#if>
+                >下载报告(WORD)
+                </a>
+                </span>
+                    <button class="btn btn-primary" type="button" onclick="redirectBack()">返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script src="${plugins}/jquery/jquery.min.js"></script>
+    <script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+    <script src="${plugins}/pagination/jquery.pagination.js"></script>
+    <script src="${system_js}/system.js?v=0.2"></script>
+    <script src="${plugins}/layer/layer.min.js"></script>
+    <script src="${system_js}/generateReport.js"></script>
+    <script>
+                    var base = "${base}";
+                </script>
+</body>
+</html>

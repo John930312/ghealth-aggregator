@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.SampleDeliveryDetailsMapper" >
+  <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.mybatis.model.SampleDeliveryDetails" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="DELIVERY_RECORD_ID" property="deliveryRecordId" jdbcType="VARCHAR" />
+    <result column="ORDER_ID" property="orderId" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SELECT
+    *
+    FROM
+    ghealth_sample_delivery_details
+  </sql>
+  <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    <include refid="Base_Column_List" />
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="getByOrderId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+   SELECT
+    *
+    FROM
+    ghealth_sample_delivery_details dd
+    LEFT JOIN ghealth_sample_delivery d ON d.id = dd.DELIVERY_RECORD_ID
+    where ORDER_ID = #{orderId,jdbcType=VARCHAR}
+    ORDER BY d.OPERATE_TIME DESC
+  </select>
+
+  <insert id="create" parameterType="com.todaysoft.ghealth.mybatis.model.SampleDeliveryDetails" >
+    insert into ghealth_sample_delivery_details
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="deliveryRecordId != null" >
+        DELIVERY_RECORD_ID,
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="deliveryRecordId != null" >
+        #{deliveryRecordId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="modify" parameterType="com.todaysoft.ghealth.mybatis.model.SampleDeliveryDetails" >
+    update ghealth_sample_delivery_details
+    <set >
+      <if test="deliveryRecordId != null" >
+        DELIVERY_RECORD_ID = #{deliveryRecordId,jdbcType=VARCHAR},
+      </if>
+      <if test="orderId != null" >
+        ORDER_ID = #{orderId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

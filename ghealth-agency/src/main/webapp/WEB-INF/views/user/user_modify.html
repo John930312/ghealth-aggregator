@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>用户管理-用户修改</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css" rel="stylesheet"></link>
+    <link href="${plugins}/magicsuggest/magicsuggest-min.css" rel="stylesheet"></link>
+    <link href="${plugins}/fileinput/fileinput.min.css" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/user/list.jsp">用户管理</a>
+                        </li>
+                        <li class="active">
+                            <strong>修改用户</strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5>修改用户</h5>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal m-t" action="${base}/user/modify.jsp" method="post">
+                        <input type="hidden" name="id" id="id" value="${(data.id)!}"/>
+                        <input type="hidden" name="${(REPEAT_SUBMIT_TOKEN)!}" value="${(Request[REPEAT_SUBMIT_TOKEN])!}" />
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">用户名：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="username" id="username"  readonly="readonly"   value="${(data.username)!?html}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">密码：</label>
+                                <div class="col-sm-3">
+                                    <input type="password" class="form-control" name="password" id="password" placeholder="密码无修改留空即可" />
+                                </div>
+                                <label class="col-sm-2 control-label">重复密码：</label>
+                                <div class="col-sm-3">
+                                    <input type="password" class="form-control" data-rule-equalTo="#password" data-msg="密码输入不一致，请重新输入" />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">角色选择：</label>
+                                <div class="col-sm-3">
+                                    <div class="form-control" id="roleName" placeholder="请选择角色"></div>
+                                    <input type="hidden" name="rolePlatForm" id="roleId"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">姓名：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="name"  required data-msg="姓名名称不能为空" value="${(data.name)!?html}"/>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">电话号码：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="phone" id="phone"  value="${(data.phone)!?html}"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <button class="btn btn-primary" type="button" id="subBut">保存</button>
+                                    <button class="btn btn-primary goback" type="button">返回</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/magicsuggest/magicsuggest-min.js"></script>
+<script src="${plugins}/icheckbox/icheckbox.min.js"></script>
+<script src="${plugins}/validation/jquery.validate.min.js"></script>
+<script src="${plugins}/validation/additional-methods.min.js"></script>
+<script src="${plugins}/validation/localization/messages_zh.min.js"></script>
+<script src="${system_js}/system.js"></script>
+<script src="${plugins}/fileinput/fileinput.min.js"></script>
+
+<script src="${system_js}/myValidate.js"></script>
+
+<script>
+    $(function () {
+        var p = $('#roleName').magicSuggest(
+            {
+                width: 190,
+                highlight: true,
+                data: '${base}/role/json_list.do',
+                method: 'get',
+                queryParam: "name",
+                displayField: "name",
+                allowFreeEntries: false,
+                renderer: function (v) {
+                    return '<div>' + '<div >' + '<div>'
+                        + v.name + '</div>' + '</div>'
+                        + '<div style="clear:both;"></div>';
+                }
+            });
+
+        $(p).on('selectionchange', function(e,m) {
+            var values = '';
+            var roleId = [];
+            var roleIds = $('#roleName').magicSuggest().getSelection();
+            $.each(roleIds, function (index, obj) {
+                roleId.push(obj.id);
+            })
+            var tIds = roleId.join(",");
+            $('#roleId').val(tIds);
+            $('#roleName .ms-sel-item').each(function(){
+                var value=$(this).text();
+                values=(values+value).trim();
+            })
+        })
+        <#if roleList??>
+    <#if roleList!='[]'>
+        $('#roleName').magicSuggest().setSelection(${roleList});
+        var principalId=[];
+        var productPrincipalList=$('#roleName').magicSuggest().getSelection();
+        $.each(productPrincipalList,function(index,obj){
+            principalId.push(obj.id);
+        })
+        var principalIds = principalId.join(",");
+        $("#roleId").val(principalIds);
+    </#if>
+        </#if>
+
+
+
+
+
+        $("#subBut").click(function () {
+            if(p.getValue()==""){
+                alert("请选择角色！");
+                return false;
+            }
+
+            $('form').validate({
+                rules: {
+                    email:{
+                        email:true
+                    },
+                    phone:{
+                        isMobile:true
+                    },
+                    name:{
+                        seven:true
+                    },
+                    username: {
+                        han:true,
+                    }
+                },
+                messages:{
+                    email: {
+                        email: "请输入正确邮箱地址"
+                    },
+                    phone: {
+                        isMobile: "请输入正确手机号"
+                    },
+                    name: {
+                        seven: "请输入7位以内姓名"
+                    },
+                    username: {
+                        han:"不允许特殊字符，最长20位"
+                    },
+                },
+                errorPlacement: function(error, element) {
+                    error.appendTo(element.parent());
+                }
+
+
+
+            });
+            $('form').submit();
+        });
+
+    })
+
+
+</script>
+
+
+
+
+</body>
+</html>

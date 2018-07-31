@@ -1,0 +1,23 @@
+server: 
+  port: 5555
+
+spring: 
+  datasource: 
+    url: jdbc:mysql://localhost:3306/ghealth
+    username: root
+    password: TsZTaQJMue5d0wXATxD/plxwWQBMyacI+sN2+oFWcd5RCdxDaY5ON+uC5SU43Dlp97MpjsMnV06jxyTENPHadg==
+    driver-class-name: com.mysql.jdbc.Driver
+    druid: 
+      initial-size: 1
+      max-active: 3
+      min-idle: 1 
+      max-wait: 30000
+      validation-query: SELECT 1 FROM DUAL
+      test-on-return: false
+      test-on-borrow: false
+      test-while-idle: true
+      min-evictable-idle-time-millis: 30000
+      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIvkPJnfN7kb/TdR+LGoGs3iNTsumHt2UZQjN04nQTM4f9pVt5NFFcwQdYGN1zFMN7876nTrhq3fxqF1sQIOY2UCAwEAAQ==
+      filter: 
+        config: 
+          enabled: true

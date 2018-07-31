@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <title>客户表单-客户管理</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/cancer/list.jsp">肿瘤档案</a>
+                        </li>
+                        <li class="active">
+                            <strong><#if data??>修改档案<#else>新增档案</#if></strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5><#if data??>修改档案<#else>新增档案</#if></h5>
+                </div>
+                <div class="ibox-content">
+                    <#if data??> <#assign uri = "/cancer/modify.jsp" /> <#else> <#assign uri = "/cancer/create.jsp" /> </#if>
+                    <form class="form-horizontal m-t" action="${base}${uri}" method="post">
+                        <input type="hidden" name="id" value="${(data.id)!}" />
+                        <input type="hidden" name="${(REPEAT_SUBMIT_TOKEN)!}" value="${(Request[REPEAT_SUBMIT_TOKEN])!}" />
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">疾病名称：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="name" value="${(data.name)!?html}" required
+                                           data-msg="疾病名称不能为空"
+                                           data-rule-remote="${base}/cancer/name_unique.do?id=${(data.id)!?html}"
+                                           data-msg-remote="疾病名称已存在，请重新输入"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">男性平均患病风险值：</label>
+                                <div class="col-sm-3">
+                                        <input type="text" class="form-control" name="riskmale" value="${((data.riskmale)?string('#.######'))!''}" required data-msg="男性平均患病风险值不能为空" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label required-label">女性平均患病风险值：</label>
+                                <div class="col-sm-3">
+                                    <input type="text" class="form-control" name="riskfemale" value="${((data.riskfemale)?string('#.######'))!''}" required
+                                           data-msg="女性平均患病风险值不能为空" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">备注：</label><div class="col-sm-8">
+                                <textarea class="form-control" rows="5" name="description" id="area">${(data.description)!?html}</textarea>
+                                <p>字数限制：<span id="text-count">200</span>/200</p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <button class="btn btn-primary" type="submit">保存</button>
+                                    <button class="btn btn-primary goback" type="button">返回</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/icheckbox/icheckbox.min.js"></script>
+<script src="${plugins}/validation/jquery.validate.min.js"></script>
+<script src="${plugins}/validation/additional-methods.min.js"></script>
+<script src="${plugins}/validation/localization/messages_zh.min.js"></script>
+<script src="${system_js}/system.js"></script>
+<script src="${system_js}/myValidate.js"></script>
+<script type="text/javascript">
+    <!--
+    $(function()
+    {
+
+        $('form').validate({
+            rules: {
+                riskmale:{
+                    decimals:true
+                },
+                riskfemale:{
+                    decimals:true
+                },
+                name:{
+                    twenty:true
+                },
+            },
+            messages:{
+                riskmale:{
+                    decimals:"请输入正确的影响值"
+                },
+                riskfemale:{
+                    decimals:"请输入正确的影响值"
+                },
+                name:{
+                    twenty:"请输入20位以内的肿瘤名称"
+                },
+            },
+            errorPlacement: function(error, element) {
+                error.appendTo(element.parent());
+            }
+        });
+        $("#area").on("input propertychange", function() {
+            var $this = $(this),
+                _val = $this.val(),
+                count = "";
+            if (_val.length > 200) {
+                $this.val(_val.substring(0, 200));
+            }
+            count = 200 - $this.val().length;
+            $("#text-count").text(count);
+        });
+    });
+    //-->
+</script>
+
+</body>
+</html>

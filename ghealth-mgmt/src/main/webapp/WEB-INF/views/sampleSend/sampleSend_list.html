@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <title>订单列表-订单管理</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css?v=0.1" rel="stylesheet"></link>
+    <link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+    <link href="${plugins}/magicsuggest/magicsuggest-min.css" rel="stylesheet"></link>
+    <style>
+        #jcxmBox td {
+            text-align: left;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/sampleSend/list.jsp">样本寄送管理</a>
+                        </li>
+                        <li class="active">
+                            <strong>样本寄送列表</strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5>样本寄送列表</h5>
+                    <@security_resource resource = "/sampleSend/send.jsp">
+                    <a class="btn btn-sm btn-success" onclick="rebuildSend();">
+                        <i class="fa fa-refresh"></i> 批量寄送
+                    </a>
+                </@security_resource>
+                </div>
+                <div class="ibox-content">
+                    <form action="${base}/sampleSend/list.jsp" method="post" class="search-form" id="search-form" name="search-form">
+                        <div class="row m-b-xs">
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="orderCode" value="${(searcher.orderCode)!?html}"
+                                           placeholder="订单编号">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="agencyName" value="${(searcher.agencyName)!?html}"
+                                           placeholder="代理商">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="customerName" value="${(searcher.customerName)!?html}"
+                                           placeholder="检测客户">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <select class="form-control" name="status" data-value="${(searcher.status)!?html}">
+                                        <option value="">请选择订单状态</option>
+                                        <@dict_category category="order_status"> <#list entries as entry>
+                                        <option value="${(entry.dictValue)!html}">${(entry.dictText)!html}</option>
+                                    </#list> </@dict_category>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="" id="jcxmBox">
+                                    <div class="input-append input-group"
+                                         style="white-space: nowrap; vertical-align: middle;">
+                                        <input type="text" class="form-control" id="pn"
+                                               name='productName' placeholder="检测产品"
+                                               value="${searcher.productName!?html}">
+                                        <div class="btn-group"
+                                             style="display: inline-block; margin-left: -1px; vertical-align: middle;">
+                                            <button type="button" class="btn btn-default dropdown-toggle"
+                                                    data-toggle="dropdown">
+                                                <span class="caret"></span>
+                                            </button>
+                                        </div>
+                                        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-sm btn-success" onclick="sub()">
+                                        <i class="fa fa-search"></i> 查询
+                                    </button>
+                                    <button type="reset" class="btn btn-sm btn-success">
+                                        <i class="fa fa-repeat"></i> 重置
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row m-b-xs">
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <input type="text" class="Wdate form-control" id="startTime" name="startTime" style="height: 35px"
+                                           value="<#if searcher.startTime??>${searcher.startTime!?string('yyyy-MM-dd')}</#if>" placeholder="开始日期"
+                                           onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')}'})" />
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <input type="text" class="Wdate form-control" id="endTime" name="endTime" style="height: 35px"
+                                           value="<#if searcher.endTime??>${searcher.endTime!?string('yyyy-MM-dd')}</#if>" placeholder="结束日期"
+                                           onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startTime\')}'})" />
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th><input type="checkbox" class="check-controller" /></th>
+                            <th class="index">序号</th>
+                            <th>订单编号</th>
+                            <th>产品名称</th>
+                            <th>客户姓名</th>
+                            <th>代理商</th>
+                            <th>下单时间</th>
+                            <th>订单状态</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <#if pagination.records?has_content> <#list pagination.records as record>
+                            <tr>
+                                <td>
+                                    <input type="checkbox" class="check-instance" value="${record.code}" />
+                                </td>
+                                <td>${record_index + 1}</td>
+                                <td>${record.code!?html}</td>
+                                <td>${(record.product.name)!?html}</td>
+                                <td>${(record.customer.name)!?html}</td>
+                                <td>${record.agency.name!?html}</td>
+                                <td><#if record.submitTime??>${record.submitTime!?string('yyyy-MM-dd HH:mm:ss')} </#if></td>
+                                <td><@dict_category_value category="order_status" value = record.status/></td>
+                            </tr>
+                        </#list> <#else>
+                            <tr>
+                                <td colspan="11">暂无相关记录</td>
+                            </tr>
+                        </#if>
+                        </tbody>
+                    </table>
+                    <#include "../inc/pagination.html" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="send_model" tabindex="-1" role="dialog" aria-labelledby="send_ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="send_ModalLabel">批量寄送</h4>
+            </div>
+            <form id="sendForm" method="post" action="${base}/sampleSend/send.jsp" name="sendForm" >
+                <input type="hidden" name="orderIds" id="orderIds2">
+                <div class="modal-body">
+                    <div class="form-group ">
+                        <label class="control-label">一共勾选：<label class="geshu"></label>个</label>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-4" style="float: right">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" onclick="bbSub(this)">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap-suggest.js"></script>
+<script src="${plugins}/pagination/jquery.pagination.js"></script>
+<script src="${system_js}/system.js?v=0.2"></script>
+<script src="${plugins}/My97DatePicker/WdatePicker.js"></script>
+<script src="${plugins}/layer/layer.min.js"></script>
+<script src="${plugins}/icheckbox/icheckbox.min.js"></script>
+<script src="${plugins}/magicsuggest/magicsuggest-min.js"></script>
+<script src="${system_js}/selectChecked.js"></script>
+<script>
+    var base = "${base}";
+    $(function()
+    {
+        var p = $('#agencyName').magicSuggest(
+            {
+                width : 190,
+                highlight : true,
+                data : '${base}/agency/json_list.jsp',
+                method : 'get',
+                queryParam : "name",
+                maxSelection : 1,
+                displayField : "name",
+                allowFreeEntries : false,
+                renderer : function(v)
+                {
+                    return '<div>' + '<div >' + '<div>' + v.name + '</div>' + '</div>'
+                        + '<div style="clear:both;"></div>';
+                }
+            });
+
+
+
+        if ($('#agencyName').val() != null && "" != $('#agencyName').val())
+        {
+            s.setDataUrlParams({
+                testingType : $('#agencyName').val()
+            });
+        }
+
+        $("#pn").bsSuggest('init', {
+            url: "${base}/product/getSelectList.do?name=",
+            getDataMethod: "url",
+            idField: "id",
+            keyField: "name",
+            indexKey: 0,
+            effectiveFields: ["name"],
+            listAlign: 'right',
+            effectiveFieldsAlias: {
+                name: "产品名称"
+            }
+        }).on('onDataRequestSuccess', function (e, result) {
+        }).on('onSetSelectValue', function (e, keyword, data) {
+        }).on('onUnsetSelectValue', function () {
+        });
+    });
+
+    function sub()
+    {
+        $("#search-form").submit();
+    }
+
+
+
+
+
+    function bbSub(obj)
+    {
+        $('#sendForm').submit();
+        $(obj).attr("disabled", true);
+        $('#send_model').modal("hide");
+    }
+
+
+
+    function rebuildSend()
+    {
+        var ids ="";
+        var flag =0;
+        var aaa = "";
+        var bbb =$(this).parent().eq(7).text();
+        $(".check-instance:checkbox").each(function(i, v)
+        {
+            if ($(this).prop("checked"))
+            {
+                if ($(this).parents("tr").find("td").eq(7).text()!="已签收"){
+                    aaa=false;
+                    layer.alert('选项不符合条件', {
+                        title : "提示"
+                    });
+                    return ;
+
+
+                }else {
+                    ids += $(this).val() + "-";
+                    flag=flag+1;
+                    aaa= true;
+                    return true;
+                }
+            }
+        });
+        if (ids != ''&& aaa==true)
+        {
+            $('#send_model').modal('show');
+            $('#orderIds2').val(ids);
+            $('.geshu').text(flag);
+        }
+        else
+        {
+            layer.alert('选项不符合条件', {
+                title : "提示"
+            });
+        }
+    }
+
+</script>
+</body>
+</html>

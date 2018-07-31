@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>参数配置-评估参数</title>
+<link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+<link href="${plugins}/magicsuggest/magicsuggest-min.css" rel="stylesheet"></link>
+<link href="${system_css}/system.css" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <ol class="breadcrumb">
+                            <li>
+                                <a href="${base}/item-locus/list.jsp">评估参数</a>
+                            </li>
+                            <li class="active">
+                                <strong><#if data??>修改配置 <#else>新增配置 </#if></strong>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="ibox ibox-table">
+                    <div class="ibox-title">
+                        <h5><#if data??>修改配置 <#else>新增配置 </#if></h5>
+                    </div>
+                    <div class="ibox-content">
+                        <#if data??> <#assign uri = "/item-locus/modify.jsp" /> <#else> <#assign uri = "/item-locus/create.jsp" /> </#if>
+                        <form class="form-horizontal m-t" action="${base}${uri}" method="post">
+                            <input type="hidden" name="id" value="${(data.id)!}" />
+                            <input type="hidden" name="${(REPEAT_SUBMIT_TOKEN)!}" value="${(Request[REPEAT_SUBMIT_TOKEN])!}" />
+                            <input type="hidden" name="influenceFactors" value="" />
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label required-label">检测项目：</label>
+                                    <div class="col-sm-3">
+                                        <div class="form-control" id="testingItem" placeholder="请选择检测项目"></div>
+                                        <input type="hidden" name="testingItemId" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label required-label">位点片段：</label>
+                                    <div class="col-sm-3">
+                                        <div class="form-control" id="locus" placeholder="请选择位点"></div>
+                                        <input type="hidden" name="locusId" />
+                                    </div>
+                                </div>
+                                <div class="form-group data-obj">
+                                    <div class="form-group col-sm-6 control-label">
+                                        <label class="col-sm-2 control-label "></label>
+                                        <div class="col-sm-3 gene">
+                                            <div style="height: 36px; line-height: 36px;"></div>
+                                            <div style="height: 36px; line-height: 36px;">
+                                                <input type="text" class="form-control input_1" value="" name="gene_1" required data-msg="不能为空">
+                                            </div>
+                                            <div style="height: 40px; line-height: 40px;">
+                                                <input type="text" class="form-control input_2" value="" name="gene_2" required data-msg="不能为空">
+                                            </div>
+                                            <div style="height: 40px; line-height: 40px;">
+                                                <input type="text" class="form-control input_3" value="" name="gene_3" required data-msg="不能为空">
+                                            </div>
+                                        </div>
+                                        <div class="riskVal">
+                                            <div class="col-sm-3 man">
+                                                <div style="height: 36px; line-height: 36px;">
+                                                    <span>男性影响值</span>
+                                                    <button class="btn btn-sm btn-info" type="button"
+                                                        onclick="sycVal(this,'male_factor','female_factor')">同步(女)</button>
+                                                </div>
+                                                <div style="height: 36px; line-height: 36px;">
+                                                    <input type="text" class="form-control input_1" id="male_factor_1" name="male_factor_1" required
+                                                        data-msg="不能为空" value="">
+                                                </div>
+                                                <div style="height: 36px; line-height: 36px;">
+                                                    <input type="text" class="form-control input_2" id="male_factor_2" name="male_factor_2" required
+                                                        data-msg="不能为空" value="">
+                                                </div>
+                                                <div style="height: 36px; line-height: 36px;">
+                                                    <input type="text" class="form-control input_3" id="male_factor_3" name="male_factor_3" required
+                                                        data-msg="不能为空" value="">
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3 weman">
+                                                <div style="height: 36px; line-height: 36px;">
+                                                    <span>女性影响值</span>
+                                                    <button class="btn btn-sm btn-info" type="button"
+                                                        onclick="sycVal(this,'female_factor','male_factor')">同步(男)</button>
+                                                </div>
+                                                <div style="height: 36px; line-height: 36px;">
+                                                    <input type="text" class="form-control input_1" id="female_factor_1" name="female_factor_1"
+                                                        required data-msg="不能为空" value="">
+                                                </div>
+                                                <div style="height: 36px; line-height: 36px;">
+                                                    <input type="text" class="form-control input_2" id="female_factor_2" name="female_factor_2"
+                                                        required data-msg="不能为空" value="">
+                                                </div>
+                                                <div style="height: 36px; line-height: 36px;">
+                                                    <input type="text" class="form-control input_3" id="female_factor_3" name="female_factor_3"
+                                                        required data-msg="不能为空" value="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group"></div>
+                                <div class="form-group">
+                                    <div class="col-sm-4 col-sm-offset-2">
+                                        <button class="btn btn-primary" type="button" onclick="subForm(this)">保存</button>
+                                        <button class="btn btn-primary goback" type="button">返回</button>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="${plugins}/jquery/jquery.min.js"></script>
+    <script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+    <script src="${plugins}/validation/jquery.validate.min.js"></script>
+    <script src="${plugins}/validation/additional-methods.min.js"></script>
+    <script src="${plugins}/validation/localization/messages_zh.min.js"></script>
+    <script src="${plugins}/magicsuggest/magicsuggest-min.js"></script>
+    <script src="${system_js}/system.js"></script>
+    <script src="${system_js}/itemLocus.js?v=0.1"></script>
+    <script src="${plugins}/layer/layer.min.js"></script>
+    <script src="${system_js}/myValidate.js"></script>
+    <script type="text/javascript">
+                <!--
+                    $(function()
+                    {
+                        var suggest = function(opts)
+                        {
+                            var suggestOpts = {
+                                width : 190,
+                                highlight : true,
+                                method : 'get',
+                                maxSelection : 1,
+                                allowFreeEntries : false,
+                                renderer : function(selected)
+                                {
+                                    return '<div><div><div>' + selected.name
+                                            + '</div></div><div style="clear:both;"></div>';
+                                }
+                            };
+
+                           // suggestOpts.value = opts.value;
+                            suggestOpts.data = opts.url;
+                            suggestOpts.queryParam = opts.keyword;
+                            suggestOpts.displayField = opts.field;
+                            suggestOpts.renderer = function(selected)
+                            {
+                                return '<div><div><div>' + selected[opts.field]
+                                        + '</div></div><div style="clear:both;"></div>';
+                            }
+
+                            var $source = opts.source;
+                            var $target = opts.target;
+                            var validator = opts.validator;
+
+                            var suggestObject = $source.magicSuggest(suggestOpts);
+
+                            $(suggestObject).on('selectionchange', function(e, selected)
+                            {
+                                var sex = selected.getSelection()[0].sexRestraint;
+                                if(undefined != sex)
+                                {
+                                    changeByselectVal(sex);
+                                }
+                                var value = selected.getValue();
+                                $target.val(value);
+                                validator.element($target);
+                            });
+                            if(undefined != opts.obj)
+                            {
+                                suggestObject.setSelection(opts.obj)
+                            }
+                            return suggestObject;
+                        }
+
+                        var validator = $('form').validate({
+                            ignore : ''
+                        });
+
+                        var locusSuggestOpts = {
+                            'source' : $('#locus'),
+                            'url' : '${base}/locus/json_list.do',
+                            'keyword' : 'name',
+                            'field' : 'name',
+                            'target' : $('[name="locusId"]'),
+                            'validator' : validator
+                        };
+
+                        var testingItemSuggestOpts = {
+                            'source' : $('#testingItem'),
+                            'url' : '${base}/item/json_list.do',
+                            'keyword' : 'name',
+                            'field' : 'name',
+                            'target' : $('[name="testingItemId"]'),
+                            'validator' : validator
+                        };
+
+                        <#if data??>
+                            locusSuggestOpts.obj = ${(data.locusJson)};
+                            testingItemSuggestOpts.obj = ${(data.testingItemJson)};
+                        </#if>
+                        
+                        suggest(locusSuggestOpts);
+                        suggest(testingItemSuggestOpts);
+
+                        var arr = []
+                        <#if (data.influenceFactors)?has_content >
+                        <#list data.influenceFactors as factor>
+                        arr.push({'genetype':'${factor.genetype!?html}','maleFactor':'${((factor.maleFactor)?string('#.######'))!''}','femaleFactor':'${((factor.femaleFactor)?string('#.######'))!''}'});
+                        </#list>    
+                        </#if>
+                        
+                        if (arr.length > 0)
+                        {
+                            setVal(arr);
+                        }
+                        
+                        $('form').validate();
+                    });
+                    -->
+                </script>
+</body>
+</html>

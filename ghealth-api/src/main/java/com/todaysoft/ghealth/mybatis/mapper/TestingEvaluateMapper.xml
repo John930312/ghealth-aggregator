@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.TestingEvaluateMapper">
+
+    <!-- start 映射方法 -->
+    <delete id="deleteOrderTestingItemEvaluateRecords">
+        DELETE FROM GHEALTH_ORDER_EVAL_ITEM WHERE ORDER_ID = #{orderId}
+    </delete>
+
+    <insert id="insertTestingItemEvaluateRecord"
+            parameterType="com.todaysoft.ghealth.mybatis.model.TestingItemEvaluateRecord">
+        INSERT INTO GHEALTH_ORDER_EVAL_ITEM
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="orderId != null">
+                ORDER_ID,
+            </if>
+            <if test="testingItemId != null">
+                ITEM_ID,
+            </if>
+            <if test="evaluateValue != null">
+                EVAL_VALUE,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="orderId != null">
+                #{orderId},
+            </if>
+            <if test="testingItemId != null">
+                #{testingItemId},
+            </if>
+            <if test="evaluateValue != null">
+                #{evaluateValue},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="deleteOrderTestingItemLocusEvaluateRecords">
+        DELETE FROM GHEALTH_ORDER_EVAL_ITEM_LOCUS WHERE ORDER_ID = #{orderId}
+    </delete>
+
+    <insert id="insertTestingItemLocusEvaluateRecord"
+            parameterType="com.todaysoft.ghealth.mybatis.model.TestingItemLocusEvaluateRecord">
+        INSERT INTO GHEALTH_ORDER_EVAL_ITEM_LOCUS
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="orderId != null">
+                ORDER_ID,
+            </if>
+            <if test="testingItemId != null">
+                ITEM_ID,
+            </if>
+            <if test="locusId != null">
+                LOCUS_ID,
+            </if>
+            <if test="genetype != null">
+                GENETYPE,
+            </if>
+            <if test="evaluateValue != null">
+                EVAL_VALUE,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="orderId != null">
+                #{orderId},
+            </if>
+            <if test="testingItemId != null">
+                #{testingItemId},
+            </if>
+            <if test="locusId != null">
+                #{locusId},
+            </if>
+            <if test="genetype != null">
+                #{genetype},
+            </if>
+            <if test="evaluateValue != null">
+                #{evaluateValue},
+            </if>
+        </trim>
+    </insert>
+    <!-- end 映射方法 -->
+
+    <resultMap id="itemData" type="com.todaysoft.ghealth.service.model.reportData.ItemData">
+        <result column="CODE" property="testingItem.code"/>
+        <result column="ITEM_ID" property="testingItem.id"/>
+        <result column="CATEGORY" property="testingItem.category"/>
+        <result column="EVAL_ALGORITHM" property="testingItem.evalAlgorithm"/>
+        <result column="EVAL_ALGORITHM_DETAILS" property="testingItem.evalAlgorithmDetails"/>
+        <result column="EVAL_GRADE_DETAILS" property="testingItem.evalGradeDetails"/>
+        <result column="CATEGORY_MAPPING" property="testingItem.categoryMapping"/>
+        <result column="ITEM_NAME" property="itemName"/>
+        <result column="DISEASE_RISK" property="diseaseRisk"/>
+        <result column="ITEM_RESULT" property="itemResult"/>
+        <result column="ITEM_RESULT_DESC" property="itemResultDesc"/>
+    </resultMap>
+
+    <resultMap id="locusData" type="com.todaysoft.ghealth.service.model.reportData.LocusData">
+        <result column="GENE_NAME" property="geneName"/>
+        <result column="SNPS" property="snps"/>
+        <result column="GENE_RESULT" property="geneResult"/>
+        <result column="GENE_RISK" property="geneRisk"/>
+    </resultMap>
+
+    <select id="getItemDatas" resultMap="itemData">
+        SELECT
+        i.ID AS ITEM_ID,
+        i.NAME AS ITEM_NAME,
+        i.CODE AS CODE,
+        i.EVAL_ALGORITHM AS EVAL_ALGORITHM,
+        i.EVAL_ALGORITHM_DETAILS AS EVAL_ALGORITHM_DETAILS,
+        i.EVAL_GRADE_DETAILS AS EVAL_GRADE_DETAILS,
+        ei.EVAL_VALUE AS DISEASE_RISK,
+        i.CATEGORY AS CATEGORY,
+        i.CATEGORY_MAPPING AS CATEGORY_MAPPING
+        FROM ghealth_order_eval_item ei
+        LEFT JOIN ghealth_testing_item i ON ei.ITEM_ID = i.ID
+        WHERE ei.ORDER_ID = #{orderId}
+    </select>
+
+    <select id="getLocusDatas" resultMap="locusData">
+        SELECT
+        g.SYMBOL AS GENE_NAME,
+        l.NAME AS SNPS,
+        eil.GENETYPE AS GENE_RESULT,
+        eil.EVAL_VALUE AS GENE_RISK
+        FROM ghealth_locus l
+        RIGHT JOIN ghealth_order_eval_item_locus eil ON eil.LOCUS_ID = l.ID
+        LEFT JOIN ghealth_gene g ON l.GENE_ID = g.ID
+        WHERE eil.ORDER_ID = #{orderId}
+        AND eil.ITEM_ID = #{itemId}
+    </select>
+
+    <!-- start 内部定义 -->
+    <!-- end 内部定义 -->
+</mapper>

@@ -1,0 +1,1 @@
+DELETE h FROM ghealth_order_history h WHERE h.ORDER_ID IN (SELECT o.id FROM ghealth_order o WHERE o.DELETED = 1);

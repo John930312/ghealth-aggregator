@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>代理详情-代理机构</title>
+<link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+<link href="${system_css}/system.css?v=0.1" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <ol class="breadcrumb">
+                            <li>
+                                <a href="${base}/agency/list.jsp">代理机构</a>
+                            </li>
+                            <li class="active">
+                                <strong>代理详情</strong>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5>代理详情</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <h5>基本信息</h5>
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link">
+                                                <i class="fa fa-chevron-down"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <table class="table table-striped table-bordered table-hover table-details">
+                                            <tr>
+                                                <th class="col-sm-1">代理编号</th>
+                                                <td class="col-sm-3">${(data.code)!?html}</td>
+                                                <th class="col-sm-1">代理简称</th>
+                                                <td class="col-sm-3">${(data.abbr)!?html}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="col-sm-1">机构名称</th>
+                                                <td class="col-sm-3">${(data.name)!?html}</td>
+                                                <th class="col-sm-1">联系人电话</th>
+                                                <td class="col-sm-3">${(data.contactPhone)!?html}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="col-sm-1">联系人姓名</th>
+                                                <td class="col-sm-2">${(data.contactName)!?html}</td>
+                                                <th class="col-sm-1">联系人邮箱</th>
+                                                <td class="col-sm-3">${(data.contactEmail)!?html}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="col-sm-1">所在地市</th>
+                                                <td class="col-sm-3">${(data.provinceText)!?html}${(data.cityText)!?html}</td>
+                                                <th class="col-sm-1">联系地址</th>
+                                                <td class="col-sm-3">${(data.address)!?html}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="col-sm-1">主账号</th>
+                                                <td class="col-sm-3">${(data.primaryUsername)!?html}</td>
+                                                <th class="col-sm-1">账户余额</th>
+                                                <td class="col-sm-3">${(data.accountAmount)!?html}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="col-sm-1">授权金额</th>
+                                                <td class="col-sm-3">${(data.authorizationAmount)!}</td>
+                                                <th class="col-sm-1">授权金额是否展示</th>
+                                                <td class="col-sm-3">${(data.authorizationAmountFlag)?string('是','否')}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="col-sm-1">创建人</th>
+                                                <td class="col-sm-3">${(data.creatorName)!?html}</td>
+                                                <th class="col-sm-1">创建时间</th>
+                                                <td class="col-sm-3"><#if (data.createTime)??>${data.createTime?string('yyyy-MM-dd
+                                                    HH:mm:ss')}<#else>-</#if></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="col-sm-1">最近更新人</th>
+                                                <td class="col-sm-3">${(data.updatorName)!'-'?html}</td>
+                                                <th class="col-sm-1">最近更新时间</th>
+                                                <td class="col-sm-3"><#if (data.updateTime)??>${data.updateTime?string('yyyy-MM-dd
+                                                    HH:mm:ss')}<#else>-</#if></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="col-sm-1">备注</th>
+                                                <td class="col-sm-3">${(data.remark)!}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <h5>代理产品</h5>
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link">
+                                                <i class="fa fa-chevron-down"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <table class="table table-striped table-bordered table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th class="index">序号</th>
+                                                    <th>产品编号</th>
+                                                    <th>产品名称</th>
+                                                    <th>指导价格</th>
+                                                    <th>代理价格</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <#if (data.agentProducts)?? && (data.agentProducts)?has_content> <#list data.agentProducts as record>
+                                                <tr>
+                                                    <td>${(record_index+1)!?html}</td>
+                                                    <td>${(record.productCode)!?html}</td>
+                                                    <td>${(record.productName)!?html}</td>
+                                                    <td>${(record.guidingPrice)!?html}</td>
+                                                    <td>${(record.agencyPrice)!?html}</td>
+                                                </tr>
+                                                </#list><#else>
+                                                <tr>
+                                                    <td colspan="5">暂无代理产品</td>
+                                                </tr>
+                                                </#if>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <h5>子账号</h5>
+                                        <div class="ibox-tools">
+                                            <a class="collapse-link">
+                                                <i class="fa fa-chevron-down"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <table class="table table-striped table-bordered table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th class="index">序号</th>
+                                                <th>子账号名称</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <#if (data.subAccount)?? && (data.subAccount)?has_content> <#list data.subAccount as record>
+                                            <tr>
+                                                <td>${(record_index+1)!?html}</td>
+                                                <td>${(record)!?html}</td>
+                                            </tr>
+                                            </#list><#else>
+                                            <tr>
+                                                <td colspan="5">暂无子账号</td>
+                                            </tr>
+                                        </#if>
+                                        </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <table class="table table-striped table-bordered table-hover table-details">
+                            <tr>
+                                <th colspan="2"><div class="col-sm-4 col-sm-offset-2">
+                                        <button class="btn btn-success goback" type="button">返回</button>
+                                    </div></th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="${plugins}/jquery/jquery.min.js"></script>
+    <script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+    <script src="${plugins}/hplus/content.min.js"></script>
+    <script src="${system_js}/system.js?v=0.1"></script>
+</body>
+</html>

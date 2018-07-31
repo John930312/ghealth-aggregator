@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.MenuMapper">
+
+    <resultMap id="MenuEntity" type="com.todaysoft.ghealth.mybatis.model.Menu">
+        <id column="ID" property="id" />
+        <result column="PARENT_ID" property="parentId" />
+        <result column="NAME" property="name" />
+        <result column="ICON" property="icon" />
+        <result column="URI" property="uri" />
+        <result column="SORT" property="sort" />
+    </resultMap>
+
+    <insert id="insert" parameterType="com.todaysoft.ghealth.mybatis.model.Menu">
+        INSERT INTO GHEALTH_MENU
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="parentId != null">
+                PARENT_ID,
+            </if>
+            <if test="name != null">
+                NAME,
+            </if>
+            <if test="icon != null">
+                ICON,
+            </if>
+            <if test="uri != null">
+                URI,
+            </if>
+            <if test="sort != null">
+                SORT,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null">
+                #{parentId, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="icon != null">
+                #{icon, jdbcType=VARCHAR},
+            </if>
+            <if test="uri != null">
+                #{uri, jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null">
+                #{sort, jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM GHEALTH_MENU
+    </delete>
+
+    <select id="getMenus" resultMap="MenuEntity">
+        SELECT * FROM GHEALTH_MENU t
+    </select>
+</mapper>

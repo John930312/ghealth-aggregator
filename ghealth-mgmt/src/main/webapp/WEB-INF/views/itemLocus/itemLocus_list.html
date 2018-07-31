@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>参数列表-评估参数</title>
+<link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+<link href="${system_css}/system.css?v=0.1" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <ol class="breadcrumb">
+                            <li>
+                                <a href="${base}/item-locus/list.jsp">评估参数</a>
+                            </li>
+                            <li class="active">
+                                <strong>参数列表</strong>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="ibox ibox-table">
+                    <div class="ibox-title">
+                        <h5>参数列表</h5>
+                        <@security_resource resource = "/item-locus/create.jsp">
+                        <a href="${base}/item-locus/create.jsp" class="btn btn-sm btn-success">
+                            <i class="fa fa-plus"></i> 新增
+                        </a>
+                    </@security_resource>
+                    </div>
+                    <div class="ibox-content">
+                        <form action="${base}/item-locus/list.jsp" method="post" class="search-form">
+                            <div class="row m-b-xs">
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="itemName" value="${(searcher.itemName)!?html}"
+                                            placeholder="检测项目">
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="itemCode" value="${(searcher.itemCode)!?html}"
+                                               placeholder="检测项目编号">
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="locusName" value="${(searcher.locusName)!?html}"
+                                           placeholder="位点名称">
+                                </div>
+                            </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="fa fa-search"></i> 查询
+                                        </button>
+                                        <button type="reset" class="btn btn-sm btn-success">
+                                            <i class="fa fa-repeat"></i> 重置
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="index">序号</th>
+                                    <th>检测项目名称</th>
+                                    <th>检测项目编号</th>
+                                    <th>位点名称</th>
+                                    <th>基因型</th>
+                                    <th>男性影响值</th>
+                                    <th>女性影响值</th>
+                                    <th class="flexible-btns">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <#if pagination.records?has_content>
+                                <#list pagination.records as record>
+                                <#if (record.influenceFactors)??>
+                                <#assign rows = record.influenceFactors?size />
+                                <#else>
+                                <#assign rows = 0 />
+                                </#if>
+                                <#if rows == 0>
+                                <tr>
+                                    <td>${record_index + 1}</td>
+                                    <td>${(record.testingItemName)!?html}</td>
+                                    <td>${(record.testingItemCode)!?html}</td>
+                                    <td>${(record.locusName)!?html}</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td class="flexible-btns">
+                                        <@security_resource resource = "/item-locus/modify.jsp">
+                                        <a href="${base}/item-locus/modify.jsp?id=${record.id}" class="btn btn-sm btn-success">
+                                            <i class="fa fa-edit"></i> 修改
+                                        </a>
+                                    </@security_resource>
+                                    <@security_resource resource = "/item-locus/delete.jsp">
+                                        <a href="${base}/item-locus/delete.jsp?id=${record.id}" class="btn btn-sm btn-success layer-confirm"
+                                            data-confirm-message="确定删除该参数配置吗？">
+                                            <i class="fa fa-trash"></i> 删除
+                                        </a>
+                                </@security_resource>
+                                    </td>
+                                </tr>
+                                <#else>
+                                <#list record.influenceFactors as factor>
+                                <tr>
+                                    <#if 0 == factor_index>
+                                    <td rowspan="${rows}">${record_index + 1}</td>
+                                    <td rowspan="${rows}">${(record.testingItemName)!?html}</td>
+                                    <td rowspan="${rows}">${(record.testingItemCode)!?html}</td>
+                                    <td rowspan="${rows}">${(record.locusName)!?html}</td>
+                                    <td>${(factor.genetype)!?html}</td>
+                                    <td>${((factor.maleFactor)?string("#.######%"))!''}</td>
+                                    <td>${((factor.femaleFactor)?string("#.######%"))!''}</td>
+                                    <td rowspan="${rows}" class="flexible-btns">
+                                        <@security_resource resource = "/item-locus/modify.jsp">
+                                        <a href="${base}/item-locus/modify.jsp?id=${record.id}" class="btn btn-sm btn-success">
+                                            <i class="fa fa-edit"></i> 修改
+                                        </a>
+                                    </@security_resource>
+                                        <@security_resource resource = "/item-locus/delete.jsp">
+                                        <a href="${base}/item-locus/delete.jsp?id=${record.id}" class="btn btn-sm btn-success layer-confirm"
+                                            data-confirm-message="确定删除该参数配置吗？">
+                                            <i class="fa fa-trash"></i> 删除
+                                        </a>
+                                    </@security_resource>
+                                    </td>
+                                    <#else>
+                                    <td>${(factor.genetype)!?html}</td>
+                                    <td>${((factor.maleFactor)?string("#.######%"))!''}</td>
+                                    <td>${((factor.femaleFactor)?string("#.######%"))!''}</td>
+                                    </#if>
+                                </tr>
+                                </#list>
+                                </#if> </#list> <#else>
+                                <tr>
+                                    <td colspan="8">暂无相关记录</td>
+                                </tr>
+                                </#if>
+                            </tbody>
+                        </table>
+                        <#include "../inc/pagination.html" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="${plugins}/jquery/jquery.min.js"></script>
+    <script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+    <script src="${plugins}/pagination/jquery.pagination.js"></script>
+    <script src="${system_js}/system.js?v=0.1"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.ItemLocusMapper">
+    <!-- start 映射方法 -->
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.ItemLocusSearcher">
+        SELECT COUNT(*)
+        FROM GHEALTH_TESTING_ITEM_LOCUS t
+        LEFT JOIN GHEALTH_TESTING_ITEM item ON t.TESTING_ITEM_ID = item.ID
+        LEFT JOIN GHEALTH_LOCUS locus ON t.LOCUS_ID = locus.ID
+        <include refid="SearchFilters"></include>
+    </select>
+
+    <select id="search" resultMap="TestingItemLocusEntity" parameterType="com.todaysoft.ghealth.mybatis.searcher.ItemLocusSearcher">
+        SELECT t.*, item.NAME AS TESTING_ITEM_NAME, locus.NAME AS LOCUS_NAME, gene.ID as GENE_ID, gene.SYMBOL as GENE_NAME,item.CODE AS TESTING_ITEM_CODE
+        FROM GHEALTH_TESTING_ITEM_LOCUS t
+        LEFT JOIN GHEALTH_TESTING_ITEM item ON t.TESTING_ITEM_ID = item.ID
+        LEFT JOIN GHEALTH_LOCUS locus ON t.LOCUS_ID = locus.ID
+        LEFT JOIN GHEALTH_GENE gene ON locus.GENE_ID = gene.ID
+        <include refid="SearchFilters"></include>
+        ORDER BY t.TESTING_ITEM_ID
+        <include refid="SearchLimit"></include>
+    </select>
+
+    <select id="get" resultMap="TestingItemLocusEntity" parameterType="java.lang.String">
+        SELECT t.*, item.NAME AS TESTING_ITEM_NAME, locus.NAME AS LOCUS_NAME, gene.ID as GENE_ID, gene.SYMBOL as GENE_NAME,item.SEX_RESTRAINT AS TESTING_ITEM_SEX_RESTRAINT
+        FROM GHEALTH_TESTING_ITEM_LOCUS t
+        LEFT JOIN GHEALTH_TESTING_ITEM item ON t.TESTING_ITEM_ID = item.ID
+        LEFT JOIN GHEALTH_LOCUS locus ON t.LOCUS_ID = locus.ID
+        LEFT JOIN GHEALTH_GENE gene ON locus.GENE_ID = gene.ID
+        WHERE t.ID = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.todaysoft.ghealth.mybatis.model.TestingItemLocus">
+        INSERT INTO GHEALTH_TESTING_ITEM_LOCUS
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="testingItemId != null">
+                TESTING_ITEM_ID,
+            </if>
+            <if test="locusId != null">
+                LOCUS_ID,
+            </if>
+            <if test="influenceFactors != null">
+                INFLUENCE_FACTORS,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="testingItemId != null">
+                #{testingItemId},
+            </if>
+            <if test="locusId != null">
+                #{locusId},
+            </if>
+            <if test="influenceFactors != null">
+                #{influenceFactors},
+            </if>
+        </trim>
+    </insert>
+    
+    <update id="update" parameterType="com.todaysoft.ghealth.mybatis.model.TestingItemLocus">
+        UPDATE GHEALTH_TESTING_ITEM_LOCUS
+        <set>
+            <if test="testingItemId != null">
+                TESTING_ITEM_ID = #{testingItemId},
+            </if>
+            <if test="locusId != null">
+                LOCUS_ID = #{locusId},
+            </if>
+            <if test="influenceFactors != null">
+                INFLUENCE_FACTORS = #{influenceFactors},
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.String">
+        DELETE FROM GHEALTH_TESTING_ITEM_LOCUS WHERE ID = #{id}
+    </delete>
+
+    <delete id="deleteForTestingItem" parameterType="java.lang.String">
+        DELETE FROM GHEALTH_TESTING_ITEM_LOCUS WHERE TESTING_ITEM_ID = #{itemId}
+    </delete>
+    <!-- end 映射方法  -->
+
+    <!-- start 内部定义 -->
+    <resultMap id="TestingItemLocusEntity" type="com.todaysoft.ghealth.mybatis.model.TestingItemLocus">
+        <id column="ID" property="id" />
+        <result column="TESTING_ITEM_ID" property="testingItemId" />
+        <result column="TESTING_ITEM_NAME" property="testingItemName" />
+        <result column="TESTING_ITEM_CODE" property="testingItemCode" />
+        <result column="TESTING_ITEM_SEX_RESTRAINT" property="testingItemSexRestraint" />
+        <result column="LOCUS_ID" property="locusId" />
+        <result column="LOCUS_NAME" property="locusName" />
+        <result column="GENE_ID" property="geneId" />
+        <result column="GENE_NAME" property="geneName" />
+        <result column="INFLUENCE_FACTORS" property="influenceFactors" />
+    </resultMap>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="SearchFilters">
+        WHERE 1 = 1
+        <if test="_parameter.itemId != null and _parameter.itemId != ''">
+            AND t.TESTING_ITEM_ID = #{_parameter.itemId}
+        </if>
+        <if test="_parameter.itemName != null and _parameter.itemName != ''">
+            <bind name="itemNamePattern" value="'%' + _parameter.itemName + '%'" />
+            AND item.NAME LIKE #{itemNamePattern}
+        </if>
+
+        <if test="_parameter.itemCode != null and _parameter.itemCode != ''">
+            <bind name="itemCodePattern" value="'%' + _parameter.itemCode + '%'" />
+            AND item.CODE LIKE #{itemCodePattern}
+        </if>
+
+        <if test="_parameter.locusName != null and _parameter.locusName != ''">
+            <bind name="locusNamePattern" value="'%' + _parameter.locusName + '%'" />
+            AND locus.NAME LIKE #{locusNamePattern}
+        </if>
+    </sql>
+    <!-- end 内部定义 -->
+</mapper>

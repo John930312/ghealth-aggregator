@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.TestingItemMapper">
+
+    <resultMap id="PrimaryEntity" type="com.todaysoft.ghealth.mybatis.model.PrimaryEntity">
+        <id column="ID" property="id" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATOR_NAME" property="creatorName" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="UPDATOR_NAME" property="updatorName" />
+        <result column="DELETED" property="deleted" />
+        <result column="DELETE_TIME" property="deleteTime" />
+        <result column="DELETOR_NAME" property="deletorName" />
+    </resultMap>
+
+    <resultMap id="TestingItemEntity" type="com.todaysoft.ghealth.mybatis.model.TestingItem" extends="PrimaryEntity">
+        <result column="CODE" property="code" />
+        <result column="NAME" property="name" />
+        <result column="SEX_RESTRAINT" property="sexRestraint" />
+        <result column="ENABLED" property="enabled" />
+        <result column="CATEGORY_MAPPING" property="categoryMapping"/>
+        <result column="EVAL_ALGORITHM" property="evalAlgorithm"/>
+        <result column="EVAL_ALGORITHM_DETAILS" property="evalAlgorithmDetails"/>
+        <result column="EVAL_GRADE_DETAILS" property="evalGradeDetails"/>
+    </resultMap>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="SearchFilters">
+        WHERE DELETED = 0
+        <if test="_parameter.productId != null and _parameter.productId != ''">
+            AND EXISTS (SELECT pi.TESTING_ITEM_ID FROM GHEALTH_PRODUCT_ITEM pi WHERE pi.TESTING_ITEM_ID = t.ID AND pi.PRODUCT_ID =
+            #{productId})
+        </if>
+        <if test="_parameter.code != null and _parameter.code != ''">
+            <choose>
+                <when test="_parameter.codeExactMatches">AND t.CODE = #{code}</when>
+                <otherwise>
+                    <bind name="codePattern" value="'%'+ _parameter.code + '%'" />
+                    AND t.CODE LIKE #{codePattern}
+                </otherwise>
+            </choose>
+        </if>
+        <if test="_parameter.name != null and _parameter.name != ''">
+            <bind name="namePattern" value="'%' + _parameter.name + '%'" />
+            AND t.NAME LIKE #{namePattern}
+        </if>
+        <if test="_parameter.enabled != null and _parameter.enabled != ''">
+            <bind name="enabledPattern" value=" _parameter.enabled" />
+            AND t.ENABLED = #{enabledPattern}
+        </if>
+        <if test="_parameter.excludeKeys != null and _parameter.excludeKeys.size != 0">
+            <choose>
+                <when test="_parameter.excludeKeys.size == 1">
+                    AND t.ID !=
+                    <foreach collection="_parameter.excludeKeys" item="excludeKey" index="index" open="" close="" separator="">
+                        #{excludeKey}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND t.ID NOT IN
+                    <foreach collection="_parameter.excludeKeys" item="excludeKey" index="index" open="(" close=")" separator=",">
+                        #{excludeKey}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.TestingItemSearcher">
+        SELECT COUNT(*) FROM GHEALTH_TESTING_ITEM t
+        <include refid="SearchFilters"></include>
+    </select>
+
+    <select id="search" resultMap="TestingItemEntity" parameterType="com.todaysoft.ghealth.mybatis.searcher.TestingItemSearcher">
+        SELECT * FROM GHEALTH_TESTING_ITEM t
+        <include refid="SearchFilters"></include>
+        ORDER BY t.CATEGORY, t.CREATE_TIME DESC
+        <include refid="SearchLimit"></include>
+    </select>
+
+    <select id="get" resultMap="TestingItemEntity" parameterType="java.lang.String">
+        SELECT
+        *
+        FROM GHEALTH_TESTING_ITEM
+        WHERE ID =
+        #{id, jdbcType=VARCHAR}
+    </select>
+
+    <insert id="insert" parameterType="com.todaysoft.ghealth.mybatis.model.TestingItem">
+        insert into GHEALTH_TESTING_ITEM
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="code != null">
+                CODE,
+            </if>
+            <if test="name != null">
+                NAME,
+            </if>
+            <if test="category != null">
+                CATEGORY,
+            </if>
+            <if test="categoryMapping != null">
+                CATEGORY_MAPPING,
+            </if>
+            <if test="sexRestraint != null">
+                SEX_RESTRAINT,
+            </if>
+            <if test="enabled != null">
+                ENABLED,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME,
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME,
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME,
+            </if>
+            <if test="deleted != null">
+                DELETED,
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME,
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="code != null">
+                #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="category != null">
+                #{category,jdbcType=VARCHAR},
+            </if>
+            <if test="categoryMapping != null">
+                #{categoryMapping,jdbcType=VARCHAR},
+            </if>
+            <if test="sexRestraint != null">
+                #{sexRestraint,jdbcType=TINYINT},
+            </if>
+            <if test="enabled != null">
+                #{enabled,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=TINYINT},
+            </if>
+            <if test="deleteTime != null">
+                #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.todaysoft.ghealth.mybatis.model.TestingItem">
+        UPDATE GHEALTH_TESTING_ITEM
+        <set>
+            <if test="code != null">
+                CODE = #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                NAME = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="category != null">
+                CATEGORY = #{category,jdbcType=VARCHAR},
+            </if>
+            <if test="categoryMapping != null">
+                CATEGORY_MAPPING = #{categoryMapping,jdbcType=VARCHAR},
+            </if>
+            <if test="sexRestraint != null">
+                SEX_RESTRAINT = #{sexRestraint,jdbcType=TINYINT},
+            </if>
+            <if test="enabled != null">
+                ENABLED = #{enabled,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME= #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME = #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME = #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                DELETED = #{deleted,jdbcType=TINYINT},
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME = #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME = #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE ID = #{id, jdbcType=VARCHAR}
+    </update>
+</mapper>

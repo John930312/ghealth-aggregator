@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>系统维护-导入菜单</title>
+<link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+</head>
+<body>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <ol class="breadcrumb">
+                            <li>
+                                <a href="${base}/maintain/index.jsp">系统维护</a>
+                            </li>
+                            <li class="active">
+                                <strong>导入菜单</strong>
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="ibox-content">
+                        <form class="form-horizontal m-t" action="${base}/maintain/menus/import/parse.jsp" method="post" enctype="multipart/form-data">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label required-label">菜单文件：</label>
+                                    <div class="col-sm-3">
+                                        <input class="form-control" type="file" name="file" required data-msg-required="菜单文件不能为空"
+                                            data-rule-extension="xlsx|xls" data-msg-extension="菜单文件仅支持xls和xlsx格式">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-4 col-sm-offset-2">
+                                        <button class="btn btn-primary" type="submit">解析</button>
+                                        <a class="btn btn-primary" href="${base}/maintain/index.jsp">返回</a>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="${plugins}/jquery/jquery.min.js"></script>
+    <script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+    <script src="${plugins}/validation/jquery.validate.min.js"></script>
+    <script src="${plugins}/validation/additional-methods.min.js"></script>
+    <script src="${plugins}/validation/localization/messages_zh.min.js"></script>
+    <script type="text/javascript">
+                <!--
+                    $(function()
+                    {
+                        $('form').validate();
+                    });
+                //-->
+                </script>
+</body>
+</html>

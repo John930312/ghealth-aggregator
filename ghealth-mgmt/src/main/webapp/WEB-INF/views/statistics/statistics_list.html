@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <title>代理管理-代理统计</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css?v=0.1" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/statistics/list.jsp">代理统计</a>
+                        </li>
+                        <li class="active">
+                            <strong>统计列表</strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5>统计列表</h5>
+                </div>
+                <div class="ibox-content">
+                    <form action="${base}/statistics/list.jsp" method="post" class="search-form">
+                        <div class="row m-b-xs">
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <input type="text" class="Wdate form-control" id="startTime" name="startTime"
+                                           style="height: 35px"
+                                           value="<#if searcher.startTime??>${searcher.startTime!?string('yyyy-MM-dd')}</#if>"
+                                           placeholder="开始日期"
+                                           onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')}'})"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <input type="text" class="Wdate form-control" id="endTime" name="endTime"
+                                           style="height: 35px"
+                                           value="<#if searcher.endTime??>${searcher.endTime!?string('yyyy-MM-dd')}</#if>"
+                                           placeholder="结束日期"
+                                           onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startTime\')}'})"/>
+                                </div>
+                            </div>
+                            <div>
+                                <input type="hidden" id="hid" name="hid">
+                            </div>
+                        </div>
+                        <!--<div class="col-sm-2 form-group">-->
+                            <@security_resource resource = "/statistics/statisticsDownload.jsp">
+                            <button type="button" class="btn btn-sm btn-success"
+                                    onclick="subHideForm('${base}/statistics/statisticsDownload.jsp')">
+                                <i class="fa fa-arrow-circle-down"></i> 导出
+                            </button>
+                            </@security_resource>
+                                <@security_resource resource = "/statistics/statisticsReportDownload.jsp">
+                                <button type="button" class="btn btn-sm btn-success"
+                                        onclick="subHideForm('${base}/statistics/statisticsReportDownload.jsp')">
+                                    <i class="fa fa-arrow-circle-down"></i> 报表统计
+                                </button>
+                            </@security_resource>
+                            <button type="submit" class="btn btn-sm btn-success">
+                                <i class="fa fa-search"></i> 查询
+                            </button>
+                            <button type="reset" class="btn btn-sm btn-success" onclick="subset()">
+                                <i class="fa fa-repeat"></i> 重置
+                            </button>
+                        </div>
+                    </form>
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th>数据汇总</th>
+                            <th>下单</th>
+                            <th>样本签收</th>
+                            <th>样本寄送</th>
+                            <th>已出报告</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>个数</td>
+                            <td>${statistics.orderForm}</td>
+                            <td>${statistics.orderSignIn}</td>
+                            <td>${statistics.orderDelivery}</td>
+                            <td>${statistics.report}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5>统计图表</h5>
+                </div>
+                <div class="ibox-content clearfix">
+                    <div style="width: 50%; padding-right: 10px; float: left">
+                        <div id="saleprice" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                    </div>
+                    <div style="width: 50%; padding-left: 10px; float: left;">
+                        <div id="saleprice1" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <form action="" disabled id="hidden-form">
+        <input type="hidden"  name="startTime">
+        <input type="hidden"  name="endTime">
+    </form>
+</div>
+<div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel1">展示</h4>
+            </div>
+            <div class="modal-body">
+                    <div class="ibox-content">
+                        <iframe id='sample_order_list' src="" style="border: 0; width: 100%; height: 250px;" name="sample_order_list"></iframe>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-4" style="float: right">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="${plugins}/jquery/jquery.min.js"></script>
+
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/pagination/jquery.pagination.js"></script>
+
+<script src="${system_js}/system.js?v=0.1"></script>
+<script src="${plugins}/My97DatePicker/WdatePicker.js"></script>
+<script src="${system_js}/highcharts/js/highcharts.js"></script>
+<script src="${system_js}/jquery.colorbox.js"></script>
+<script src="${system_js}/jquery.colorbox-min.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $('#saleprice').highcharts({
+            title: {
+                text: '订单情况统计（按月）',
+                x: -20 //center
+            },
+            xAxis: {
+                categories: ${xAxis!!}
+            },
+            yAxis: {
+                allowDecimals: 'false',        //控制数轴是否显示小数。
+                min: 0,
+                title: {
+                    text: '个数'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: true
+                    },
+                    enableMouseTracking: true
+                },
+                series: {
+                    cursor: 'pointer',
+                    events: {
+                        click: function(e) {
+                            var href="${base}/statistics/order_statistics.do?date="+e.point.category+"&&status="+this.userOptions.status;
+                            $("#sample_order_list").attr("src", href );
+                            $('#myModal').modal('show');
+                        }
+                    }
+                }
+            },
+            tooltip: {
+                valueSuffix: '（个）'
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            series: ${salepriceSeries!!}
+        });
+
+
+        $('#saleprice1').highcharts({
+            title: {
+                text: '订单情况统计（按日）',
+                x: -20 //center
+            },
+            xAxis: {
+                categories: ${xAxisA!!}
+            },
+            yAxis: {
+                allowDecimals: 'false',        //控制数轴是否显示小数。
+                min: 0,
+                title: {
+                    text: '个数'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: true
+                    },
+                    enableMouseTracking: true
+                },
+                series: {
+                    cursor: 'pointer',
+                    events: {
+                        click: function(e) {
+                            var href="${base}/statistics/order_statistics_day.do?date="+e.point.category+"&&status="+this.userOptions.status;
+                            $("#sample_order_list").attr("src", href );
+                            $('#myModal').modal('show');
+
+                        }
+                    }
+                }
+            },
+            tooltip: {
+                valueSuffix: '（个）'
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            series: ${dayStatistics!!}
+        });
+
+    })
+
+
+    function subHideForm(url)
+    {
+
+        $('input[name="startTime"]').val($("#startTime").val());
+        $('input[name="endTime"]').val($("#endTime").val());
+        $("#hidden-form").attr("action",url);
+        $('#hidden-form').submit();
+    }
+
+
+    function subset() {
+        $('#hid').val(sss);
+    }
+</script>
+</body>
+</html>

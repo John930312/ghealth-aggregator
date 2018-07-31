@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>解析结果-上传数据-检测数据</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css" rel="stylesheet"></link>
+
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/order/list.jsp">检测数据</a>
+                        </li>
+                        <li>上传数据</li>
+                        <li class="active">
+                            <strong>解析结果</strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>解析结果</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover">
+                            <#if uploadDatas??>
+                            <thead>
+                            <tr>
+                                <#list uploadDatas.heads as head>
+                                    <th>${head}</th>
+                                </#list>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <#if uploadDatas.datas?has_content>
+                            <#list uploadDatas.datas as data>
+                                <tr>
+                                    <#list uploadDatas.heads as key>
+                                        <#assign val = data[key]/>
+                                        <#if val.isMach>
+                                            <td>${(val.text)!?html}</td>
+                                            <#else>
+                                                <td><label class="label label-danger">${(val.text)!?html}</label></td>
+                                        </#if>
+                                    </#list>
+                                </tr>
+                            </#list>
+                            </#if>
+                            </tbody>
+                            </#if>
+                        </table>
+                    </div>
+                    <form class="form-horizontal m-t" action="${base}/order/upload.jsp" method="post">
+                        <input name = "data" type="hidden"/>
+                        <fieldset>
+                            <div class="form-group">
+                                <div class="col-sm-8 col-sm-offset-2">
+                                    <label>订单数：${(uploadDatas.uploadCount)!?html}，有效检测数据：${(uploadDatas.effectiveUploadCount)!?html}，无效检测数据：${(uploadDatas.invalidUploadCount)!?html}</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-2 col-sm-offset-2">
+                                    <div class="checkbox-inline i-checks">
+                                        <label><input type="checkbox" id="ignoreInvalidGenetypes"
+                                                      name="ignoreInvalidGenetypes"/>忽略无效数据</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+
+                                    <button id="btn_upload" class="btn btn-primary" type="button" onclick="subForm()"
+                                    <#if uploadDatas.invalidUploadCount gt 0 > disabled="disabled"</#if> >
+                                        上传
+                                    </button>
+
+                                    <a class="btn btn-default" href="${base}/order/list.jsp">返回</a>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/icheckbox/icheckbox.min.js"></script>
+<script src="${system_js}/system.js?v=0.1"></script>
+<script type="text/javascript">
+    <!--
+    <#if uploadDatas.invalidUploadCount == 0 >$('#ignoreInvalidGenetypes').iCheck('disable')</#if>
+    $(function () {
+
+        $('#ignoreInvalidGenetypes').on('ifChecked', function () {
+            $(".label-danger").each(function (i, v) {
+                $(v).closest("tr").remove();
+            });
+            var count = $('tbody')[0].childElementCount;
+            if (count > 0) {
+                $('#btn_upload').attr('disabled', false);
+            }
+        });
+
+        $('#ignoreInvalidGenetypes').on('ifUnchecked', function () {
+            $('#btn_upload').attr('disabled', 'disabled');
+        });
+    });
+
+    function subForm()
+    {
+        var arr = [];
+        var fields = ["id","customerName","sex","email","birthday","phone","productId","wantPaper","sampleType"]
+        $("tbody").find("tr").each(function(i,v){
+            var data ={};
+            $(v).find('td').each(function(j,k){
+                data[fields[j]] = $(k).text().trim();
+            });
+            arr.push(data);
+        });
+        $("[name='data']").val(JSON.stringify(arr));
+        $("form").submit();
+    }
+    //-->
+</script>
+</body>
+</html>

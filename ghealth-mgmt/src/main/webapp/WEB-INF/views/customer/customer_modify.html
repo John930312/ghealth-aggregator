@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>客户表单-客户管理</title>
+<link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+<link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+<link href="${system_css}/system.css" rel="stylesheet"></link>
+<link href="${plugins}/layDate/theme/default/laydate.css" rel="stylesheet">
+    <style type="text/css">
+        .area-select-group {
+            position: relative;
+            padding-left: 0;
+            padding-right: 34px;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+        .area-select-group .dw {
+            position: absolute;
+            right: 0px;
+            top: 50%;
+            height: 34px;
+            line-height: 34px;
+            margin-top: -17px;
+            font-size: 12px;
+            padding-right: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <ol class="breadcrumb">
+                            <li>
+                                <a href="${base}/customer/list.jsp">客户管理</a>
+                            </li>
+                            <li class="active">
+                                <strong>修改客户</strong>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="ibox ibox-table">
+                    <div class="ibox-title">
+                        <h5>修改客户</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <form class="form-horizontal m-t" action="${base}/customer/modify.jsp" method="post" id="modifyform">
+                            <input type="hidden" name="id" value="${(data.id)!}" />
+                            <input type="hidden" name="${(REPEAT_SUBMIT_TOKEN)!}" value="${(Request[REPEAT_SUBMIT_TOKEN])!}" />
+                            <fieldset>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label required-label">客户姓名：</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" name="name" value="${(data.name)!?html}" required data-msg="客户姓名不能为空" />
+                                    </div>
+                                    <label class="col-sm-2 control-label required-label">客户性别：</label>
+                                    <div class="col-sm-3">
+                                        <div class="radio-inline i-checks">
+                                            <label><input type="radio" id="sex_1" name="sex" value="1" checked="checked">男</label> <label  style="margin-left: 50px;"><input
+                                                    type="radio" id="sex_2" name="sex" value="2">女</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label required-label">联系电话：</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" name="phone" value="${(data.phone)!?html}" required
+                                            data-msg="联系电话不能为空" />
+                                    </div>
+                                    <label class="col-sm-2 control-label">电子邮箱：</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" name="email" value="${(data.email)!?html}" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">出生日期：</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" id="birthday" name="birthday"  value="${(data.birthday)!?html}" readonly="readonly" placeholder="年-月-日"/>
+                                    </div>
+                                    <label class="col-sm-2 control-label">婚姻状况：</label>
+                                    <div class="col-sm-3">
+                                        <select class="form-control" name="maritalStatus" data-value="${(data.maritalStatus)!?html}">
+                                            <option value="">请选择</option>
+                                            <@dict_category category = "MARITAL_STATUS">
+                                            <#list entries as entry>
+                                                <option value="${(entry.dictValue)!?html}">${(entry.dictText)!?html}</option>
+                                            </#list>
+                                        </@dict_category>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">民族：</label>
+                                    <div class="col-sm-3">
+                                        <select class="form-control" name="nation" data-value="${(data.nation)!?html}">
+                                            <option value="">请选择</option>
+                                            <@dict_category category = "BASE_NATION">
+                                            <#list entries as entry>
+                                                <option value="${(entry.dictValue)!?html}">${(entry.dictText)!?html}</option>
+                                            </#list>
+                                        </@dict_category>
+                                        </select>
+                                    </div>
+                                    <label class="col-sm-2 control-label">工作单位：</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" name="company" value="${(data.company)!?html}"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">职业：</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" name="vocation" value="${(data.vocation)!?html}"/>
+                                    </div>
+
+                                    <label class="col-sm-2 control-label">所属代理：</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" value="${(data.agencyAbbr)!?html}" readonly="readonly" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">籍贯：</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" class="form-control" name="district" value="${(data.district)!?html}"/>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">所在地市：</label>
+                                    <div class="col-sm-8">
+                                        <div class="area-select-group col-sm-4">
+                                            <select class="form-control" name="province" data-value="${(data.province)!?html}"
+                                                    onchange="selectOpt(this)">
+                                                <option value="">请选择</option>
+                                                <#if list?has_content>
+                                                    <#list list as record>
+                                                        <option value="${(record.id)!?html}">${(record.name)!?html}</option>
+                                                    </#list>
+                                                </#if>
+                                            </select>
+                                            <span class="dw">省</span>
+                                        </div>
+                                        <div class="area-select-group col-sm-4">
+                                            <select class="form-control" name="city" data-value="${(data.city)!?html}" onchange="selectCountyOpt(this)">
+                                                <option value="">请选择</option>
+                                                <#if province?has_content>
+                                                    <#list province as record>
+                                                        <option value="${(record.id)!?html}">${(record.name)!?html}</option>
+                                                    </#list>
+                                                </#if>
+                                            </select>
+                                            <span class="dw">市</span>
+                                        </div>
+                                        <div class="area-select-group col-sm-4">
+                                            <select class="form-control" name="county" data-value="${(data.county)!?html}">
+                                                <option value="">请选择</option>
+                                                <#if city?has_content>
+                                                    <#list city as record>
+                                                        <option value="${(record.id)!?html}">${(record.name)!?html}</option>
+                                                    </#list>
+                                                </#if>
+                                            </select>
+                                            <span class="dw">区</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label"></label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" name="address" value="${(data.address)!?html}" placeholder="详细地址"/>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">备注：</label>
+                                    <div class="col-sm-8">
+                                        <textarea class="form-control" rows="5" name="remark" id="area">${(data.remark)!}</textarea>
+                                        <p>字数限制：<span id="text-count">200</span>/200</p>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-4 col-sm-offset-2">
+                                        <button class="btn btn-primary" type="submit">保存</button>
+                                        <button class="btn btn-primary goback" type="button">返回</button>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="${plugins}/jquery/jquery.min.js"></script>
+    <script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+    <script src="${plugins}/icheckbox/icheckbox.min.js"></script>
+    <script src="${plugins}/validation/jquery.validate.min.js"></script>
+    <script src="${plugins}/validation/additional-methods.min.js"></script>
+    <script src="${plugins}/validation/localization/messages_zh.min.js"></script>
+    <script src="${system_js}/system.js"></script>
+    <script src="${system_js}/myValidate.js"></script>
+    <script src="${plugins}/layDate/laydate.js"></script>
+    <script type="text/javascript">
+                <!--
+                    $(function()
+                    {
+                        $('[name="sex"]:radio').iCheck('uncheck');
+                        $("#sex_${(data.sex)!'0'}").iCheck('check');
+                        $('form').validate();
+                        $("#area").on("input propertychange", function() {
+                            var $this = $(this),
+                                _val = $this.val(),
+                                count = "";
+                            if (_val.length > 200) {
+                                $this.val(_val.substring(0, 200));
+                            }
+                            count = 200 - $this.val().length;
+                            $("#text-count").text(count);
+                        });
+                        //出生日期
+                        var d=new Date()
+                        var day=d.getDate()
+                        var month=d.getMonth() + 1
+                        var year=d.getFullYear()
+                        var maxDay=year+'-'+month+'-'+day
+                        laydate.render({
+                            elem:'#birthday', //指定元素
+                            max: maxDay
+                        });
+
+
+                    });
+                    //-->
+                    $("#modifyform").validate({
+                        submitHandler : function(form)
+                        {
+                            var x = s.getSelection();
+                            if (x == null || x == "")
+                            {
+                                alert("客户查询必须填写");
+                                return false;
+                            }
+                            else
+                            {
+                                form.submit();
+                            }
+
+                        },
+                        rules : {
+                            email : {
+                                email : true
+                            },
+                            phone : {
+                                required : true,
+                                isMobile : true
+                            },
+                            name:{
+                                seven:true
+                            },
+                        },
+                        messages : {
+                            email:{
+                                email:"请输入有效的邮箱账号"
+                            },
+                            phone:{
+                                isMobile:"请输入有效的联系电话"
+                            },
+                            name:{
+                                seven:"请输入7位以内的客户姓名"
+                            },
+
+                        },
+                        errorPlacement : function(error, element)
+                        {
+                            error.appendTo(element.parent());
+                        }
+
+                    });
+
+                function selectOpt(obj){
+                    $(obj).parent().next().children("select").empty();
+                    $(obj).parent().next().children("select").append('<option value="">请选择</option>');
+                    $(obj).parent().next().next().children("select").empty();
+                    $(obj).parent().next().next().children("select").append('<option value="">请选择</option>');
+                    var obj_ = $('select[name="city"]');
+
+                    $.ajax({
+                        type:'POST',
+                        url:'${base}/customer/getAreas?parentId='+$(obj).val(),
+                        success:function(data){
+
+                            for(i in data){
+                                obj_.append(
+                                    '<option value="'+data[i].id+'">'+data[i].name+'</option>'
+                                );
+                            }
+                        }
+                    });
+                }
+                function selectCountyOpt(obj) {
+                    $(obj).parent().next().children("select").empty();
+                    $(obj).parent().next().children("select").append('<option value="">请选择</option>');
+                    var obj_ = $('select[name="county"]');
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '${base}/customer/getAreas?parentId=' + $(obj).val(),
+                        success: function (data) {
+                            for (i in data) {
+                                obj_.append(
+                                    '<option value="' + data[i].id + '">' + data[i].name + '</option>'
+                                );
+                            }
+                        }
+                    });
+                }
+                </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+GHEALTH_TESTING_ITEM_LOCUS -- INFLUENCE_FACTORS
+[
+    {
+        "genetype": "GG",
+        "male_factor": "0.0075",
+        "female_factor": "0.0075"
+    },
+    {
+        "genetype": "GA",
+        "male_factor": "0.0075",
+        "female_factor": "0.0075"
+    },
+    {
+        "genetype": "AA",
+        "male_factor": "0.0075",
+        "female_factor": "0.0075"
+    }
+]
+
+GHEALTH_ORDER_TESTING_DATA
+[
+    {
+        "locus": "rs2131877",
+        "genetype": "GG"
+    },
+    {
+        "locus": "rs6983267",
+        "genetype": "GC"
+    },
+    {
+        "locus": "rs2294008",
+        "genetype": "GA"
+    },
+    {
+        "locus": "rs10822013",
+        "genetype": "AA"
+    }
+]
+
+GHEALTH_EVENT_NOTIFY_CONFIG -- CONFIG_DETAILS
+{
+    "sampleSigned": {
+        "notifyEnabled": "1",
+        "notifyTarget": ["1"]
+    },
+    "sampleDelivered": {
+        "notifyEnabled": "1",
+        "notifyTarget": ["1","2"]
+    },
+    "reportGenerated": {
+        "notifyEnabled": "0"
+    }
+}

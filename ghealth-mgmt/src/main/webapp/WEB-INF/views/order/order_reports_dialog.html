@@ -1,0 +1,187 @@
+<style>
+    <!--
+    .modal-body {
+        padding: 10px;
+    }
+
+    .report-status {
+        display: none;
+        text-align: center;
+    }
+
+    -->
+</style>
+<div class="row">
+    <div class="col-lg-12">
+        <table class="table table-striped table-bordered table-hover table-details report-table">
+            <#if orders?has_content>
+                <#list orders as data>
+                    <#if data.status == '4'||data.status == '5'>
+                        <tr>
+                            <input type="hidden" class="orderId" value="${(data.id)!?html}"/>
+                            <input type="hidden" class="taskId" value="${(data.reportGenerateTaskId)!?html}"/>
+                            <th class="col-sm-1">订单编号</th>
+                            <td class="col-sm-3">${(data.code)!?html}</td>
+                            <th class="col-sm-1">产品名称</th>
+                            <td class="col-sm-3">${(data.product.name)!?html}</td>
+                        </tr>
+                    </#if>
+                </#list>
+            </#if>
+        </table>
+        <h2 id="title" style="text-align: center;"></h2>
+        <div class="report-status" id="waiting">
+            <button class="btn btn-sm btn-primary btn-generate">
+                <i class="fa fa-book"></i> 生成报告
+            </button>
+        </div>
+        <div class="report-status" id="processing">
+            <button class="btn btn-sm btn-primary btn-regenerate">
+                <i class="fa fa-book"></i> 异常重置
+            </button>
+        </div>
+        <div class="report-status" id="success">
+            <button class="btn btn-sm btn-primary btn-generate">
+                <i class="fa fa-book"></i> 重新生成
+            </button>
+        </div>
+        <div class="report-status" id="failure">
+            <h3 id="failure-message" style="text-align: center; color: #ee0000;"></h3>
+            <button class="btn btn-sm btn-primary btn-generate">
+                <i class="fa fa-book"></i> 重新生成
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+
+    <!--
+    $(function () {
+
+        var setReportStatus = function (status, message) {
+            $('.report-status').hide();
+
+            if ('Waiting' == status) {
+                $('#title').empty().append('尚未执行订单报告生成任务');
+                $('#waiting').show();
+            }
+
+            if ('Processing' == status) {
+                $('#title').empty().append('订单报告生成进行中');
+                $('#processing').show();
+            }
+            else if ('Success' == status) {
+                $('#title').empty().append('订单报告生成成功');
+                $('#success').show();
+            }
+            else if ('Failure' == status) {
+                $('#title').empty().append('订单报告生成失败');
+                $('#failure-message').empty().append(message);
+                $('#failure').show();
+            }
+            else if ('Error' == status) {
+                $('#title').empty().append(message);
+            }
+        }
+
+
+        $('.btn-generate').on('click', function () {
+
+            var orderIds = getIdsByClass(".orderId");
+            var message = '确定生成报告？';
+            var buttons = ['确定', '取消'];
+            var layerObject = parent.parent.layer;
+
+            layerObject.confirm(message, {
+                icon: 3,
+                title: '操作确认',
+                btn: buttons,
+                shade: 'transparent'
+            }, function (index) {
+                var args = {
+                    'ids': orderIds
+            };
+
+                $.post('${base}/order/report/generates.jsp', args, function (rsp) {
+                    if (rsp.success) {
+                        var taskIds = rsp.taskIds;
+                        startReportDetailsRefresh(taskIds);
+                    }
+                    else {
+                        setReportStatus('Error', '生成报告失败-' + rsp.message)
+                    }
+                });
+
+                layerObject.close(index);
+            }, function (index) {
+                layerObject.close(index);
+            });
+        });
+
+        var startReportDetailsRefresh = function (reportGenerateTaskId) {
+            stopReportDetailsRefresh();
+
+            refreshReportStatus(reportGenerateTaskId);
+
+            timer = window.setInterval(function () {
+                refreshReportStatus(reportGenerateTaskId);
+            }, 2000);
+        };
+
+        var stopReportDetailsRefresh = function () {
+            if (null != timer) {
+                window.clearInterval(timer);
+            }
+        };
+
+        var refreshReportStatus = function (reportGenerateTaskId) {
+            var args = {
+                'reportGenerateTaskIds': reportGenerateTaskId
+            };
+
+            $.post('${base}/order/report/reportsDetails.do', args, function (rsp) {
+                if (rsp.success) {
+                    var task = rsp.task;
+                    if ('0' == task.status) {
+                        setReportStatus('Processing');
+                    }
+                    else if ('1' == task.status) {
+                        setReportStatus('Success');
+                        stopReportDetailsRefresh();
+                    }
+                    else if ('2' == task.status) {
+                        setReportStatus('Failure', rsp.task.errorMessage);
+                        stopReportDetailsRefresh();
+                    }
+                }
+                else {
+                    setReportStatus('Error', '获取报告生成详情失败-' + rsp.message)
+                }
+            });
+        };
+
+        var taskIds = getIdsByClass(".taskId");
+        if ('' == taskIds) {
+            setReportStatus('Waiting');
+        }
+        else {
+            startReportDetailsRefresh(taskIds);
+        }
+
+    });
+
+    function getIdsByClass(obj) {
+
+        var ids = "";
+        $('.report-table').find(obj).each(function (i, v) {
+            if ("" != $(v).val() && null != $(v).val()) {
+                ids += $(v).val() + "-";
+            }
+        });
+        return ids;
+    }
+
+    //-->
+</script>
+</body>
+</html>

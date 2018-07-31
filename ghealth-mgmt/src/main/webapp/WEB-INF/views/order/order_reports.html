@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>订单列表-订单管理</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css?v=0.1" rel="stylesheet"></link>
+    <link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+</head>
+<body>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row m-b-xs">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th><input type="checkbox" class="check-controller"/></th>
+                <th class="index">序号</th>
+                <th>订单编号</th>
+                <th>订单状态</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#if datas?has_content>
+                <#list datas as record>
+                    <tr>
+                        <td><input type="checkbox" class="check-instance" value="${record.id}"
+                            <#if record.status?number lt 4>Disabled</#if>
+                            <#if (record.orderTask.status)?? && record.orderTask.status == 2>checked</#if>
+                            />
+                        </td>
+                        <td>${record_index + 1}</td>
+                        <td>${record.code!?html}</td>
+                        <td>
+                            <@dict_category_value category="order_status" value = record.status/>
+                        </td>
+                    </tr>
+                </#list>
+                <#else>
+                    <tr>
+                        <td colspan="10">暂无相关记录</td>
+                    </tr>
+            </#if>
+
+            </tbody>
+            <tfoot>
+
+            <tr>
+                <td colspan="8">
+                    <button type="button" class="btn btn-primary" onclick="submitMyForm()">批量生成已选择的报告</button>
+                    <button class="btn btn-primary" type="button" onclick="redirectBack()">返回</button>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+
+    </div>
+</div>
+</div>
+
+
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/pagination/jquery.pagination.js"></script>
+<script src="${system_js}/system.js?v=0.2"></script>
+<script src="${plugins}/layer/layer.min.js"></script>
+<script src="${plugins}/icheckbox/icheckbox.min.js"></script>
+<script src="${system_js}/selectChecked.js"></script>
+<script src="${system_js}/generateReports.js"></script>
+
+<script>
+    var base = "${base}";
+</script>
+</body>
+</html>

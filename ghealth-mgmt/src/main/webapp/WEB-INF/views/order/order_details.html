@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>订单详情-订单管理</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css?v=0.1" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/order/list.jsp">订单管理</a>
+                        </li>
+                        <li class="active">
+                            <strong>订单详情</strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>订单详情</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="ibox">
+                                <div class="ibox-content">
+                                    <table class="table table-striped table-bordered table-hover table-details">
+                                        <tr>
+                                            <th class="col-sm-2">订单编号</th>
+                                            <td>${(data.code)!?html}</td>
+                                            <th class="col-sm-2">订单价格</th>
+                                            <td>${(data.actualPrice)!?html}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="ibox">
+                                <div class="ibox-title">
+                                    <h5>产品信息</h5>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-down"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <table class="table table-striped table-bordered table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th>产品编码</th>
+                                            <th>产品名称</th>
+                                            <th>产品价格</th>
+                                            <th>纸质报告</th>
+                                            <th>下单时间</th>
+                                            <th>订单状态</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <#if (data.product)??>
+                                            <tr>
+                                                <td>${(data.product.code)!?html}</td>
+                                                <td>${(data.product.name)!?html}</td>
+                                                <td>${(data.product.guidingPrice)!?html}</td>
+                                                <td>
+                                                    <@dict_category_value category="REPORT_PRINT_REQUIRED" value = data.reportPrintRequired/>
+                                                </td>
+                                                <td>
+                                                    <#if data.submitTime??>${data.submitTime!?string('yyyy-MM-dd
+                                                        HH:mm:ss')}
+                                                    </#if>
+                                                </td>
+                                                <td><@dict_category_value category="ORDER_STATUS" value = data.status/></td>
+                                            </tr>
+                                        </#if>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="ibox">
+                                <div class="ibox-title">
+                                    <h5>检测人信息</h5>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-down"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <table class="table table-striped table-bordered table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th>姓名</th>
+                                            <th>性别</th>
+                                            <th>联系电话</th>
+                                            <th>样本类型</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <#if (data.customer)??>
+                                            <tr>
+                                                <td>${(data.customer.name)!?html}</td>
+                                                <td> <@dict_category_value category="GENDER" value = data.customer.sex/></td>
+                                                <td>${(data.customer.phone)!?html}</td>
+                                                <td>
+                                                    <@dict_category_value category="SAMPLE_TYPE" value = data.sampleType/>
+                                                </td>
+                                            </tr>
+                                        </#if>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="ibox">
+                                <div class="ibox-title">
+                                    <h5>检测项目</h5>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-down"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <table class="table table-striped table-bordered table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th class="index">序号</th>
+                                            <th>名称</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <#if (data.product.testingItems)?? && (data.product.testingItems)?has_content>
+                                            <#list data.product.testingItems as record>
+                                                <tr>
+                                                    <td>${(record_index+1)!?html}</td>
+                                                    <td>${(record.name)!?html}</td>
+                                                </tr>
+                                            </#list>
+                                        </#if>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="ibox">
+                                <div class="ibox-title">
+                                    <h5>检测结果</h5>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-down"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <table class="table table-striped table-bordered table-hover" id="123">
+
+
+                                        <thead>
+                                        <tr>
+                                            <th>位点</th>
+                                            <th>基因型</th>
+                                            <th>位点</th>
+                                            <th>基因型</th>
+                                            <th>位点</th>
+                                            <th>基因型</th>
+                                            <th>位点</th>
+                                            <th>基因型</th>
+                                        </tr>
+
+                                        </thead>
+                                        <tbody>
+
+
+                                        </tbody>
+
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="ibox">
+                                <div class="ibox-title">
+                                    <h5>订单日志</h5>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-down"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+                                    <table class="table table-striped table-bordered table-hover" >
+                                        <thead>
+                                        <tr>
+                                            <th>时间</th>
+                                            <th>操作</th>
+                                            <th>操作人</th>
+                                            <th>信息</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <#if orderHistories?has_content>
+                                            <#list orderHistories as record>
+                                                <tr>
+                                                    <td><#if record.eventTime??>${record.eventTime!?string('yyyy-MM-dd HH:mm:ss')}
+                                                    </#if></td>
+                                                    <td> <@dict_category_value category="ORDER_EVENT" value=record.eventType/></td>
+                                                    <td>${(record.operatorName)!?html}</td>
+                                                    <td><#if record.eventType=="6"><a href="javascript:dealShedule('${(record.orderId)!?html}')">${(record.title)!?html}</a><#else>${(record.title)!?html}</#if></td>
+                                                </tr>
+                                            </#list>
+                                        </#if>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <table class="table table-striped table-bordered table-hover table-details">
+                        <tr>
+                            <th colspan="2">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <button class="btn btn-success goback" type="button">返回</button>
+                                </div>
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">报告</h4>
+            </div>
+
+                <input type="hidden" name="agencyId">
+                <input type="hidden" name="productId">
+                <div class="modal-body">
+
+                    <table class="table table-striped table-bordered table-hover table-details report-table">
+                        <tr>
+                            <input type="hidden" class="orderId" />
+                            <th class="col-sm-1">订单编号</th>
+                            <td class="col-sm-4" id="aa"></td>
+                            <th class="col-sm-1">产品名称</th>
+                            <td class="col-sm-4" id="bb"></td>
+                        </tr>
+                    </table>
+
+                    <a class="btn btn-sm btn-primary btn-report-download pdf" href="javascript:;">
+                        <i class="fa fa-book"></i> PDF下载
+                    </a>
+                    <a  class="btn btn-sm btn-primary btn-report-download word" href="javascript:;">
+                        <i class="fa fa-book"></i> WORD下载
+                    </a>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-4" style="float: right">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/hplus/content.min.js"></script>
+<script  src="${system_js}/system.js?v=0.1"></script>
+<script>
+var data ='${list}';
+var data1 = JSON.parse(data);
+    console.info( data1);
+   $(function(){
+        $("#123").find('tbody').empty();
+        var a =1;
+
+        var tr=""
+        $.each(data1,function(index,d){
+            console.info(index)
+
+
+            if((index+1)%4==1){
+                tr = tr +'<tr>';
+            }
+            tr = tr +'<td>'+d.locus+'</td><td>'+d.genetype+'</td>';
+            if((index+1)%4==0){
+                tr = tr +'</tr>';
+            }
+
+        });
+        $('#123').find('tbody').append(tr)
+    });
+
+
+function dealShedule(orderId) {
+    $('#myModal').modal('show');
+    $.ajax({
+        type: "POST",
+        traditional: true,
+        url: '${base}/order/getOrder',
+        data: {
+            id: orderId,
+        },
+        success: function (order) {
+            {
+                console.log(order);
+                $("#aa").text(order.code);
+                $("#bb").text(order.product.name);
+                $(".pdf").attr("href","${base}/order/report/download.do?id="+order.id+"&type=pdf")
+                $(".word").attr("href","${base}/order/report/download.do?id="+order.id+"&type=word")
+            }
+        }
+    })
+}
+
+</script>
+
+</body>
+</html>

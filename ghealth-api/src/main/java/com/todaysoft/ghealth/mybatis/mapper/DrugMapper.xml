@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.DrugMapper">
+    <resultMap id="PrimaryEntity" type="com.todaysoft.ghealth.mybatis.model.PrimaryEntity">
+        <id column="ID" property="id" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATOR_NAME" property="creatorName" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="UPDATOR_NAME" property="updatorName" />
+        <result column="DELETED" property="deleted" />
+        <result column="DELETE_TIME" property="deleteTime" />
+        <result column="DELETOR_NAME" property="deletorName" />
+    </resultMap>
+
+    <resultMap id="DrugEntity" type="com.todaysoft.ghealth.mybatis.model.Drug" extends="PrimaryEntity">
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="INGREDIENT_CN" property="ingredientCn"  />
+        <result column="INGREDIENT_EN" property="ingredientEn"  />
+        <result column="PRODUCT_NAME" property="productName"  />
+        <result column="CATEGORY" property="category"  />
+        <result column="ADULT_USED" property="adultUsed"  />
+        <result column="CHILDREN_USED" property="childrenUsed"  />
+        <result column="GENE_NAME" property="geneName"  />
+        <result column="GENE_ID" property="geneId"  />
+    </resultMap>
+
+
+    <sql id="Base_Column_List">
+
+        select
+        t.ID AS ID,
+        t.INGREDIENT_CN AS INGREDIENT_CN,
+        t.INGREDIENT_EN AS INGREDIENT_EN,
+        t.PRODUCT_NAME AS PRODUCT_NAME,
+        t.CATEGORY AS CATEGORY,
+        t.ADULT_USED AS ADULT_USED,
+        t.CHILDREN_USED AS CHILDREN_USED
+        FROM GHEALTH_DRUG t
+    </sql>
+
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+
+
+    <sql id="SearchFilters">
+        WHERE t.DELETED = 0
+        <if test="_parameter.ingredientCn != null and _parameter.ingredientCn != ''">
+            <choose>
+                <when test="_parameter.ingredientCnExactMatches">AND t.INGREDIENT_CN = #{ingredientCn}</when>
+                <otherwise>
+                    <bind name="ingredientCnPattern" value="'%'+_parameter.ingredientCn + '%'" />
+                    AND t.INGREDIENT_CN LIKE #{ingredientCnPattern}
+                </otherwise>
+            </choose>
+        </if>
+        <if test="_parameter.ingredientEn != null and _parameter.ingredientEn != ''">
+            <bind name="ingredientEnPattern" value="'%'+_parameter.ingredientEn + '%'" />
+            AND t.INGREDIENT_EN LIKE #{ingredientEnPattern}
+        </if>
+        <if test="_parameter.geneName != null and _parameter.geneName != ''">
+            AND exists (select c.ID from GHEALTH_GENE c left join GHEALTH_DRUG_GENE b on b.GENE_ID = c.ID where c.SYMBOL = #{geneName} and t.ID = b.DRUG_ID)
+        </if>
+        <if test="_parameter.excludeKeys != null and _parameter.excludeKeys.size != 0">
+            <choose>
+                <when test="_parameter.excludeKeys.size == 1">
+                    AND t.ID !=
+                    <foreach collection="_parameter.excludeKeys" item="excludeKey" index="index" open="" close="" separator="">
+                        #{excludeKey}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND t.ID NOT IN
+                    <foreach collection="_parameter.excludeKeys" item="excludeKey" index="index" open="(" close=")" separator=",">
+                        #{excludeKey}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+
+    </sql>
+
+
+    <select id="search" resultMap="DrugEntity" parameterType="com.todaysoft.ghealth.mybatis.searcher.DrugSearcher">
+        <include refid="Base_Column_List"></include>
+        <include refid="SearchFilters"></include> ORDER BY t.CREATE_TIME DESC
+        <include refid="SearchLimit"></include>
+    </select>
+
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.DrugSearcher">
+        SELECT COUNT(*) FROM GHEALTH_DRUG t
+        <include refid="SearchFilters"></include>
+    </select>
+
+
+
+    <insert id="create" parameterType="com.todaysoft.ghealth.mybatis.model.Drug">
+        insert into GHEALTH_DRUG
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="ingredientCn != null">
+                INGREDIENT_CN,
+            </if>
+            <if test="ingredientEn != null">
+                INGREDIENT_EN,
+            </if>
+            <if test="productName != null">
+                PRODUCT_NAME,
+            </if>
+            <if test="category != null">
+                CATEGORY,
+            </if>
+            <if test="adultUsed != null">
+                ADULT_USED,
+            </if>
+            <if test="childrenUsed != null">
+                CHILDREN_USED,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME,
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME,
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME,
+            </if>
+            <if test="deleted != null">
+                DELETED,
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME,
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="ingredientCn != null">
+                #{ingredientCn,jdbcType=VARCHAR},
+            </if>
+            <if test="ingredientEn != null">
+                #{ingredientEn,jdbcType=VARCHAR},
+            </if>
+            <if test="productName != null">
+                #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="category != null">
+                #{category,jdbcType=TINYINT},
+            </if>
+            <if test="adultUsed != null">
+                #{adultUsed,jdbcType=TINYINT},
+            </if>
+            <if test="childrenUsed != null">
+                #{childrenUsed,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=TINYINT},
+            </if>
+            <if test="deleteTime != null">
+                #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="createDrugGene" parameterType="com.todaysoft.ghealth.mybatis.model.DrugGene">
+        insert into GHEALTH_DRUG_GENE
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="drugId != null">
+                DRUG_ID,
+            </if>
+            <if test="geneId != null">
+                GENE_ID,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="drugId != null">
+                #{drugId,jdbcType=VARCHAR},
+            </if>
+            <if test="geneId != null">
+                #{geneId,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+
+
+    <update id="modify" parameterType="com.todaysoft.ghealth.mybatis.model.Drug">
+        UPDATE GHEALTH_DRUG
+        <set>
+            <if test="ingredientCn != null">
+                INGREDIENT_CN = #{ingredientCn,jdbcType=VARCHAR},
+            </if>
+            <if test="ingredientEn != null">
+                INGREDIENT_EN = #{ingredientEn,jdbcType=VARCHAR},
+            </if>
+            <if test="productName != null">
+                PRODUCT_NAME = #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="category != null">
+                CATEGORY = #{category,jdbcType=VARCHAR},
+            </if>
+            <if test="adultUsed != null">
+                ADULT_USED = #{adultUsed,jdbcType=TIMESTAMP},
+            </if>
+            <if test="childrenUsed != null">
+                CHILDREN_USED = #{childrenUsed,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME = #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME = #{updatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                DELETED = #{deleted,jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME = #{deleteTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME = #{deletorName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="get" resultMap="DrugEntity" parameterType="java.lang.String">
+        <include refid="Base_Column_List"></include>
+        where t.ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+
+    <select id="getGeneName" resultType="String">
+        SELECT d.SYMBOL FROM GHEALTH_GENE d LEFT JOIN GHEALTH_DRUG_GENE s ON s.GENE_ID = d.ID WHERE s.DRUG_ID =#{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getGeneId" resultType="String">
+        SELECT d.ID FROM GHEALTH_GENE d LEFT JOIN GHEALTH_DRUG_GENE s ON s.GENE_ID = d.ID WHERE s.DRUG_ID =#{id,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="deleteDrugGene" parameterType="com.todaysoft.ghealth.mybatis.model.DrugGene">
+        DELETE  FROM GHEALTH_DRUG_GENE WHERE DRUG_ID = #{drugId,jdbcType=VARCHAR}
+    </delete>
+
+    <select id="getDrugByCategory" resultMap="DrugEntity" parameterType="com.todaysoft.ghealth.mybatis.searcher.DrugSearcher">
+        <include refid="Base_Column_List"></include>
+        where t.DELETED = 0
+        <if test="_parameter.isAdultUsed != null and _parameter.isAdultUsed != ''">
+            AND t.ADULT_USED = #{isAdultUsed}
+        </if>
+        <if test="_parameter.isChildrenUsed != null and _parameter.isChildrenUsed != ''">
+            AND t.CHILDREN_USED = #{isChildrenUsed}
+        </if>
+        AND t.CATEGORY = #{category,jdbcType=VARCHAR}
+        ORDER BY t.INGREDIENT_CN
+    </select>
+</mapper>

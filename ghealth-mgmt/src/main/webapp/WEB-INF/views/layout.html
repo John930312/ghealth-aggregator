@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>华生健康管理平台</title>
+<link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+<link href="${system_css}/system.css" rel="stylesheet"></link>
+    <style>
+        #side-menu .fa-cny {
+            font-size: 17px;
+            width: 12.5px;
+        }
+    </style>
+</head>
+<body class="fixed-sidebar full-height-layout gray-bg" style="overflow: hidden">
+    <div id="wrapper">
+        <nav class="navbar-default navbar-static-side" role="navigation">
+            <div class="nav-close">
+                <i class="fa fa-times-circle"></i>
+            </div>
+            <div class="sidebar-collapse">
+                <ul class="nav" id="side-menu">
+                    <li class="nav-header">
+                        <div class="logo-element">M+</div>
+                    </li>
+                    <li style="height: 10px; background-color: #f3f3f3;"></li>
+                    <#list menus as menu>
+                    <#if menu.name == "业务管理" || menu.name == "代理管理">
+                        <li id="menu_active" class="active fixed">
+                    <#else>
+                        <li id="menu_${menu.id!?html}">
+                    </#if>
+                        <#if menu.submenu?has_content>
+                        <a href="#">
+                            <i class="fa ${menu.icon!?html}"></i>
+                            <span class="nav-label">${menu.name!?html}</span>
+                            <span class="fa arrow"></span>
+                        </a>
+                        <ul class="nav nav-second-level">
+                            <#list menu.submenu as submenu>
+                            <li id="menu_${submenu.id!?html}">
+                                <#if submenu.submenu?has_content>
+                                <a class="menu">
+                                    <#else>
+                                    <a class="menu" href="${base}${submenu.uri}">
+                                        </#if> <i class="fa ${submenu.icon!?html}"></i>${submenu.name!?html} <#if submenu.submenus?has_content>
+                                        <span class="fa arrow"></span>
+                                        </#if>
+                                    </a>
+                                    <#if submenu.submenu?has_content>
+                                    <ul class="nav nav-third-level">
+                                        <#list submenu.submenu as thirdmenu>
+                                        <li id="menu_${thirdmenu.id!?html}">
+                                            <a class="menu" href="${base}${thirdmenu.uri}">
+                                                <i class="fa ${thirdmenu.icon!?html}"></i>${thirdmenu.name!?html}
+                                            </a>
+                                        </li>
+                                        </#list>
+                                    </ul>
+                                    </#if>
+                            </li>
+                            </#list>
+                        </ul>
+                        <#else>
+                        <a class="menu" href="${base}${menu.uri!}">
+                            <i class="fa ${menu.icon!?html}"></i>
+                            <span class="nav-label">${menu.name!?html}</span>
+                            <span class="fa arrow"></span>
+                        </a>
+                        </#if>
+                    </li>
+                    </#list>
+                </ul>
+            </div>
+        </nav>
+        <!--左侧导航结束-->
+        <!--右侧部分开始-->
+        <div id="page-wrapper" class="gray-bg dashbard-1">
+            <div class="row header">
+                <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                    <div class="navbar-header">
+                        <a class="navbar-minimalize minimalize-my-style" href="#">
+                            <i class="fa fa-bars"></i>
+                        </a>
+                        国际领先的DNA服务商
+                    </div>
+                    <div class="op-box pull-right">
+                        <a href="javascript:;"><span class="fa fa-user"></span> ${account_name!?html}</a>
+                        <a href="${base}/logout.jsp"><span class="fa fa-sign-out"></span> 退出</a>
+                    </div>
+                    <!--<ul class="nav navbar-top-links navbar-right">-->
+                        <!--<li>-->
+                            <!--<div class="dropdown">-->
+                                <!--<button type="button" class="btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">-->
+                                    <!--<i class="fa fa-user"></i> ${account_name!?html}-->
+                                    <!--<span class="caret"></span>-->
+                                <!--</button>-->
+                                <!--<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" id="menu1">-->
+                                    <!--<li role="presentation">-->
+                                        <!--<a role="menuitem" tabindex="-1" href="${base}/logout.jsp">-->
+                                            <!--<i class="fa fa-sign-out"></i> 退出-->
+                                        <!--</a>-->
+                                    <!--</li>-->
+                                <!--</ul>-->
+                            <!--</div>-->
+                        <!--</li>-->
+                    <!--</ul>-->
+                </nav>
+            </div>
+            <div class="row J_mainContent" id="content-main">
+                <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="<#if (defaultMenu.uri)??>${base}${(defaultMenu.uri)!?html}</#if>" frameborder="0" seamless></iframe>
+            </div>
+            <div class="footer">
+                <div class="pull-right"></div>
+            </div>
+        </div>
+    </div>
+    <script src="${plugins}/jquery/jquery.min.js"></script>
+    <script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+    <script src="${plugins}/metisMenu/jquery.metisMenu.js"></script>
+    <script src="${plugins}/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="${plugins}/layer/layer.min.js"></script>
+    <script src="${plugins}/hplus/hplus.min.js"></script>
+    <script src="${plugins}/hplus/contabs.min.js"></script>
+    <script src="${plugins}/pace/pace.min.js"></script>
+    <script src="${system_js}/system.js"></script>
+    <#if (defaultMenu.uri)??>
+    <script type="text/javascript">
+                <!--
+//                    var $li = $('#menu_${defaultMenu.id!?html}');
+//                    $li.addClass('active');
+//                    $li.parents('li').addClass('active');
+                //-->
+                </script>
+    </#if>
+</body>
+</html>

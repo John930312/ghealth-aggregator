@@ -1,0 +1,248 @@
+body {
+    font-family: "微软雅黑";
+}
+
+table tr th {
+    text-align: center;
+}
+
+table tr td {
+    text-align: center;
+}
+
+.table>tbody>tr>td {
+    padding: 4px; word-wrap: break-word
+}
+
+.table {
+    margin-bottom: 10px;
+}
+
+.table>thead>tr {
+    height: 42px; line-height: 42px;
+}
+
+.table>tbody>tr {
+    height: 39px; line-height: 39px;
+}
+
+th.index {
+    width: 60px;
+}
+
+.table-details th {
+    text-align: right; margin-right: 10px;
+}
+
+.table-details td {
+    text-align: left; margin-left: 10px;
+}
+
+.minimalize-styl-2 {
+    padding: 4px 12px; margin: 6px 20px; font-size: 14px; float: left;
+}
+
+.page-tabs a {
+    text-align: center;
+}
+
+.wrapper-content {
+    padding: 10px;
+}
+
+.ibox {
+    margin-bottom: 10px;
+}
+
+.ibox-table .ibox-title {
+    padding-top: 0; padding-bottom: 0; height: 40px;
+}
+
+.ibox-table .ibox-title h5 {
+    height: 30px; line-height: 30px; margin-top: 7px;
+}
+
+.ibox .ibox-title a.btn {
+    float: right; margin-right: 25px; margin-top: 7px;
+}
+
+.ibox-content {
+    padding: 10px;
+}
+
+.search-form {
+    margin-top: 5px;
+}
+
+.search-form .form-group {
+    margin-bottom: 10px;
+}
+
+.search-form .form-group .btn {
+    margin-top: 3px;
+}
+
+.pagination-wrap label {
+    float: right; height: 30px; line-height: 30px;
+}
+
+.pagination {
+    margin: 0; float: right; margin-right: 15px;
+}
+
+.pagination ul {
+    margin: 0 auto; overflow: hidden; zoom: 1; float: right;
+}
+
+.pagination ul li {
+    min-width: 20px; float: left; display: inline-block; height: 30px; line-height: 30px; padding: 0 10px; border: 1px solid #e2e4ff;
+    border-left: none; text-align: center;
+}
+
+.pagination ul li.disabled {
+    color: #ccc;
+}
+
+.pagination ul li:first-child {
+    border-left: 1px solid #e2e4ff;
+}
+
+.pagination ul li a {
+    display: block; width: 100%;
+}
+
+.control-label.control-required span {
+    color: #f00; font-weight: bold;
+}
+
+.flexible-btns-max {
+    width: 450px;
+}
+
+.flexible-btns-min {
+    width: 100px;
+}
+
+.flexible-btns-2 {
+    width: 150px;
+}
+
+.flexible-btns-3 {
+    width: 210px;
+}
+
+.flexible-btns-4 {
+    width: 280px;
+}
+
+.flexible-btns-5 {
+    width: 360px;
+}
+
+.inmodal .modal-header {
+    padding-top: 10px; padding-bottom: 10px;
+}
+
+.inmodal .modal-header .modal-title {
+    text-align: left; font-size: 14px;
+}
+
+.ms-ctn .ms-sel-ctn {
+    background-image: url('/static/system/images/searchicon.png'); background-repeat: no-repeat; background-position: 96%; padding-right: 40px
+}
+
+.input-mini {
+    width: 60px; text-align: center; margin: 0 auto;
+}
+
+.input-small {
+    width: 80px; text-align: center; margin: 0 auto;
+}
+
+.input-sample-size {
+    width: 80px; text-align: center; margin: 0 auto;
+}
+
+.input-library-index {
+    width: 80px; text-align: center; margin: 0 auto;
+}
+
+.table-column-total {
+    text-align: right; font-weight: bold;
+}
+
+td.library-index span {
+    display: block;
+}
+
+.modal-body .library-index>div {
+    text-align: center; margin: 0 auto;
+}
+
+#firstPcrPrintChoose {
+    text-align: center;
+}
+
+#firstPcrPrintChoose>div {margin-left： auto;
+    margin-right: auto; text-align: left;
+}
+
+.technical-analy-result-frame {
+    width: 100%; border: none; height: 0;
+}
+
+td .checkbox label {
+    padding-left: 0;
+}
+
+td .checkbox-inline {
+    padding-top: 10px;
+}
+
+.record-invalid {
+    color: #f00;
+}
+
+.record-matched {
+    color: #008000;
+}
+
+.record-submitted {
+    color: #2a62bc;
+}
+
+.record-unqualified {
+    color: #ccc;
+}
+
+.invoiceApply {
+    margin: 15px 10px 20px; width: 90%;
+}
+
+.invoiceApply td {
+    text-align: left;
+}
+
+.invoiceApply td.tdName {
+    font-weight: bold;
+}
+
+.invoiceApplyTitle {
+    margin-top: 10px; font-weight: bold; font-size: 15px;
+}
+
+.capture-failure {
+    color: #f00;
+}
+
+.table>tbody>tr>td>span {
+    color: #eb4f38;
+}
+
+#plan_tasks .plan-task-actived {
+    background-color: #11eeee;
+}
+
+#plan_tasks .plan-task-actived.plan-task-postponed {
+    background-color: #f73809;color: #fff;
+}

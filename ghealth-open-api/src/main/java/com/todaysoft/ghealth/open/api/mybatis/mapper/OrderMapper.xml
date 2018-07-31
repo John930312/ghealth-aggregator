@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.open.api.mybatis.mapper.OrderMapper">
+
+    <resultMap id="PrimaryEntity" type="com.todaysoft.ghealth.open.api.mybatis.model.PrimaryEntity">
+        <id column="ID" property="id" />
+        <result column="CREATE_TIME" property="createTime" />
+        <result column="CREATOR_NAME" property="creatorName" />
+        <result column="UPDATE_TIME" property="updateTime" />
+        <result column="UPDATOR_NAME" property="updatorName" />
+        <result column="DELETED" property="deleted" />
+        <result column="DELETE_TIME" property="deleteTime" />
+        <result column="DELETOR_NAME" property="deletorName" />
+    </resultMap>
+
+    <resultMap id="OrderEntity" type="com.todaysoft.ghealth.open.api.mybatis.model.Order" extends="PrimaryEntity">
+        <result column="CODE" property="code" />
+        <result column="PRODUCT_ID" property="product.id" />
+        <result column="PRODUCT_CODE" property="product.code" />
+        <result column="PRODUCT_NAME" property="product.name" />
+        <result column="CUSTOMER_ID" property="customer.id" />
+        <result column="CUSTOMER_NAME" property="customer.name" />
+        <result column="CUSTOMER_SEX" property="customer.sex" />
+        <result column="CUSTOMER_PHONE" property="customer.phone" />
+        <result column="CUSTOMER_EMAIL" property="customer.email" />
+        <result column="CUSTOMER_BIRTHDAY" property="customer.birthday" />
+        <result column="CUSTOMER_MARITAL_STATUS" property="customer.maritalStatus" />
+        <result column="CUSTOMER_PROVINCE" property="customer.province" />
+        <result column="CUSTOMER_CITY" property="customer.city" />
+        <result column="CUSTOMER_COUNTY" property="customer.county" />
+        <result column="CUSTOMER_ADDRESS" property="customer.address" />
+        <result column="AGENCY_ID" property="agency.id" />
+        <result column="AGENCY_CODE" property="agency.code" />
+        <result column="AGENCY_ABBR" property="agency.abbr" />
+        <result column="AGENCY_NAME" property="agency.name" />
+        <result column="AGENCY_CONTACT_NAME" property="agency.contactName" />
+        <result column="AGENCY_CONTACT_PHONE" property="agency.contactPhone" />
+        <result column="AGENCY_PROVINCE" property="agency.province" />
+        <result column="AGENCY_CITY" property="agency.city" />
+        <result column="AGENCY_ADDRESS" property="agency.address" />
+        <result column="ACTUAL_PRICE" property="amount" />
+        <result column="SAMPLE_TYPE" property="sampleType" />
+        <result column="REPORT_PRINT_REQUIRED" property="printReport" />
+        <result column="SUBMIT_TIME" property="submitTime" />
+        <result column="SUBMITOR_NAME" property="submitorName" />
+        <result column="STATUS" property="status" />
+        <result column="REPORT_GENERATE_TIME" property="reportGenerateTime" />
+    </resultMap>
+    
+    <resultMap id="TestingItemEvaluationEntity" type="com.todaysoft.ghealth.open.api.mybatis.model.TestingItemEvaluation">
+        <result column="TESTING_ITEM_NAME" property="name" />
+        <result column="TESTING_ITEM_CATEGORY" property="category" />
+        <result column="GRADE_CONFIG" property="gradeConfig" />
+        <result column="EVALUATED_VALUE" property="evaluatedValue" />
+        <result column="MALE_REFERENCE_VALUE" property="maleReferenceValue" />
+        <result column="FEMALE_REFERENCE_VALUE" property="femaleReferenceValue" />
+    </resultMap>
+    
+    <sql id="OrderColumns">
+        ${order}.*
+    </sql>
+    
+    <sql id="AgencyColumns">
+        ${agency}.CODE AS AGENCY_CODE,
+        ${agency}.ABBR AS AGENCY_ABBR,
+        ${agency}.NAME AS AGENCY_NAME,
+        ${agency}.CONTACT_NAME AS AGENCY_CONTACT_NAME,
+        ${agency}.CONTACT_PHONE AS AGENCY_CONTACT_PHONE,
+        ${agency}.PROVINCE AS AGENCY_PROVINCE,
+        ${agency}.CITY AS AGENCY_CITY,
+        ${agency}.ADDRESS AS AGENCY_ADDRESS
+    </sql>
+    
+    <sql id="ProductColumns">
+        ${product}.CODE AS PRODUCT_CODE,
+        ${product}.NAME AS PRODUCT_NAME
+    </sql>
+    
+    <sql id="CustomerColumns">
+        ${customer}.NAME AS CUSTOMER_NAME,
+        ${customer}.SEX AS CUSTOMER_SEX,
+        ${customer}.PHONE AS CUSTOMER_PHONE,
+        ${customer}.EMAIL AS CUSTOMER_EMAIL,
+        ${customer}.BIRTHDAY AS CUSTOMER_BIRTHDAY,
+        ${customer}.MARITAL_STATUS AS CUSTOMER_MARITAL_STATUS,
+        ${customer}.PROVINCE AS CUSTOMER_PROVINCE,
+        ${customer}.CITY AS CUSTOMER_CITY,
+        ${customer}.COUNTY AS CUSTOMER_COUNTY,
+        ${customer}.ADDRESS AS CUSTOMER_ADDRESS
+    </sql>
+    
+    <sql id="OrderFilters">
+        <if test="_parameter.keyIncludes != null">
+            <choose>
+                <when test="_parameter.keyIncludes.size == 0">
+                    AND 1 = 2
+                </when>
+                <when test="_parameter.keyIncludes.size == 1">
+                    AND ${order}.ID =
+                    <foreach collection="_parameter.keyIncludes" item="key" index="index" open="" close="" separator="">
+                        #{key}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND ${order}.ID IN
+                    <foreach collection="_parameter.keyIncludes" item="key" index="index" open="(" close=")" separator=",">
+                        #{key}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="_parameter.keyExcludes != null">
+            <choose>
+                <when test="_parameter.keyExcludes.size == 0">
+                </when>
+                <when test="_parameter.keyExcludes.size == 1">
+                    AND ${order}.ID !=
+                    <foreach collection="_parameter.keyExcludes" item="key" index="index" open="" close="" separator="">
+                        #{key}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND ${order}.ID NOT IN
+                    <foreach collection="_parameter.keyExcludes" item="key" index="index" open="(" close=")" separator=",">
+                        #{key}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="_parameter.orderCode != null">
+            <bind name="orderCodePattern" value="'%' + _parameter.orderCode + '%'" />
+            AND ${order}.CODE LIKE #{orderCodePattern}
+        </if>
+        <if test="_parameter.orderStatusIncludes != null">
+            <choose>
+                <when test="_parameter.orderStatusIncludes.size == 0">
+                    AND 1 = 2
+                </when>
+                <when test="_parameter.orderStatusIncludes.size == 1">
+                    AND ${order}.STATUS =
+                    <foreach collection="_parameter.orderStatusIncludes" item="orderStatus" index="index" open="" close="" separator="">
+                        #{orderStatus}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND ${order}.STATUS IN
+                    <foreach collection="_parameter.orderStatusIncludes" item="orderStatus" index="index" open="(" close=")" separator=",">
+                        #{orderStatus}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="_parameter.orderStatusExcludes != null">
+            <choose>
+                <when test="_parameter.orderStatusExcludes.size == 0">
+                </when>
+                <when test="_parameter.orderStatusExcludes.size == 1">
+                    AND ${order}.STATUS !=
+                    <foreach collection="_parameter.orderStatusExcludes" item="orderStatus" index="index" open="" close="" separator="">
+                        #{orderStatus}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND ${order}.STATUS NOT IN
+                    <foreach collection="_parameter.orderStatusExcludes" item="orderStatus" index="index" open="(" close=")" separator=",">
+                        #{orderStatus}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="_parameter.reportGenerateTimeStart != null" >
+            AND ${order}.REPORT_GENERATE_TIME &gt;= #{_parameter.reportGenerateTimeStart}
+        </if>
+        <if test="_parameter.reportGenerateTimeEnd != null" >
+            AND ${order}.REPORT_GENERATE_TIME &lt; #{_parameter.reportGenerateTimeEnd}
+        </if>
+    </sql>
+    
+    <sql id="ProductFilters">
+        <if test="_parameter.productName != null">
+            <bind name="productNamePattern" value="'%' + _parameter.productName + '%'" />
+            AND ${product}.NAME LIKE #{productNamePattern}
+        </if>
+        <if test="_parameter.productKeyIncludes != null">
+            <choose>
+                <when test="_parameter.productKeyIncludes.size == 0">
+                    AND 1 = 2
+                </when>
+                <when test="_parameter.productKeyIncludes.size == 1">
+                    AND ${product}.ID =
+                    <foreach collection="_parameter.productKeyIncludes" item="productKey" index="index" open="" close="" separator="">
+                        #{productKey}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND ${product}.ID IN
+                    <foreach collection="_parameter.productKeyIncludes" item="productKey" index="index" open="(" close=")" separator=",">
+                        #{productKey}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="_parameter.productKeyExcludes != null">
+            <choose>
+                <when test="_parameter.productKeyExcludes.size == 0">
+                </when>
+                <when test="_parameter.productKeyExcludes.size == 1">
+                    AND ${product}.ID !=
+                    <foreach collection="_parameter.productKeyExcludes" item="productKey" index="index" open="" close="" separator="">
+                        #{productKey}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND ${product}.ID NOT IN
+                    <foreach collection="_parameter.productKeyExcludes" item="productKey" index="index" open="(" close=")" separator=",">
+                        #{productKey}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+    
+    <sql id="CustomerFilters">
+        <if test="_parameter.customerName != null">
+            <bind name="customerNamePattern" value="'%' + _parameter.customerName + '%'" />
+            AND ${customer}.NAME LIKE #{customerNamePattern}
+        </if>
+    </sql>
+    
+    <sql id="AgencyFilters">
+        <if test="_parameter.agencyName != null">
+            <bind name="agencyNamePattern" value="'%' + _parameter.agencyName + '%'" />
+            AND (${agency}.NAME LIKE #{agencyNamePattern} OR ${agency}.ABBR LIKE #{agencyNamePattern})
+        </if>
+        <if test="_parameter.agencyIncludes != null">
+            <choose>
+                <when test="_parameter.agencyIncludes.size == 0">
+                    AND 1 = 2
+                </when>
+                <when test="_parameter.agencyIncludes.size == 1">
+                    AND ${agency}.ID =
+                    <foreach collection="_parameter.agencyIncludes" item="agencyKey" index="index" open="" close="" separator="">
+                        #{agencyKey}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND ${agency}.ID IN
+                    <foreach collection="_parameter.agencyIncludes" item="agencyKey" index="index" open="(" close=")" separator=",">
+                        #{agencyKey}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="_parameter.agencyExcludes != null">
+            <choose>
+                <when test="_parameter.agencyExcludes.size == 0">
+                </when>
+                <when test="_parameter.agencyExcludes.size == 1">
+                    AND ${agency}.ID !=
+                    <foreach collection="_parameter.agencyExcludes" item="agencyKey" index="index" open="" close="" separator="">
+                        #{agencyKey}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND ${agency}.ID NOT IN
+                    <foreach collection="_parameter.agencyExcludes" item="agencyKey" index="index" open="(" close=")" separator=",">
+                        #{agencyKey}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+    
+    <sql id="OrderbyClause">
+        <if test="_parameter.orderbys == null">
+        ORDER BY ${order}.CREATE_TIME DESC
+        </if>
+        <if test="_parameter.orderbys != null">
+            <choose>
+                <when test="_parameter.orderbys.size == 1">
+                    ORDER BY
+                    <foreach collection="_parameter.orderbys" item="orderby" index="index" open="" close="" separator="">
+                        <choose>
+                            <when test="orderby.field == 'CREATE_TIME'">${order}.CREATE_TIME</when>
+                            <when test="orderby.field == 'SUBMIT_TIME'">${order}.SUBMIT_TIME</when>
+                            <otherwise>${order}.CREATE_TIME</otherwise>
+                        </choose>
+                        <if test="orderby.asc == false">
+                            DESC
+                        </if>
+                    </foreach>
+                </when>
+                <otherwise>
+                    ORDER BY
+                    <foreach collection="_parameter.orderbys" item="orderby" index="index" open="" close="" separator=",">
+                        <choose>
+                            <when test="orderby.field == 'CREATE_TIME'">${order}.CREATE_TIME</when>
+                            <when test="orderby.field == 'SUBMIT_TIME'">${order}.SUBMIT_TIME</when>
+                            <otherwise>${order}.CREATE_TIME</otherwise>
+                        </choose>
+                        <if test="orderby.asc == false">
+                            DESC
+                        </if>
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+    
+    <sql id="OffsetLimitClause">
+        <if test="_parameter.limit != null">
+            LIMIT #{limit}
+        </if>
+        <if test="_parameter.offset != null">
+            OFFSET #{offset}
+        </if>
+    </sql>
+    
+    <select id="count" resultType="long" parameterType="com.todaysoft.ghealth.open.api.mybatis.model.OrderQuery">
+        SELECT COUNT(o.ID)
+        FROM GHEALTH_ORDER o
+        LEFT JOIN GHEALTH_AGENCY a ON o.AGENCY_ID = a.ID
+        LEFT JOIN GHEALTH_TESTING_PRODUCT p ON o.PRODUCT_ID = p.ID
+        LEFT JOIN GHEALTH_CUSTOMER c ON o.CUSTOMER_ID = c.ID
+        WHERE o.DELETED = '0'
+        <include refid="OrderFilters">
+            <property name="order" value="o" />
+        </include>
+        <include refid="ProductFilters">
+            <property name="product" value="p" />
+        </include>
+        <include refid="CustomerFilters">
+            <property name="customer" value="c" />
+        </include>
+        <include refid="AgencyFilters">
+            <property name="agency" value="a" />
+        </include>
+    </select>
+    
+    <select id="query" resultMap="OrderEntity" parameterType="com.todaysoft.ghealth.open.api.mybatis.model.OrderQuery">
+        SELECT
+        <include refid="OrderColumns">
+            <property name="order" value="o" />
+        </include>
+        ,
+        <include refid="AgencyColumns">
+            <property name="agency" value="a" />
+        </include>
+        ,
+        <include refid="ProductColumns">
+            <property name="product" value="p" />
+        </include>
+        ,
+        <include refid="CustomerColumns">
+            <property name="customer" value="c" />
+        </include>
+        FROM GHEALTH_ORDER o
+        LEFT JOIN GHEALTH_AGENCY a ON o.AGENCY_ID = a.ID
+        LEFT JOIN GHEALTH_TESTING_PRODUCT p ON o.PRODUCT_ID = p.ID
+        LEFT JOIN GHEALTH_CUSTOMER c ON o.CUSTOMER_ID = c.ID
+        WHERE o.DELETED = '0'
+        <include refid="OrderFilters">
+            <property name="order" value="o" />
+        </include>
+        <include refid="ProductFilters">
+            <property name="product" value="p" />
+        </include>
+        <include refid="CustomerFilters">
+            <property name="customer" value="c" />
+        </include>
+        <include refid="AgencyFilters">
+            <property name="agency" value="a" />
+        </include>
+        <include refid="OrderbyClause">
+            <property name="order" value="o" />
+        </include>
+        <include refid="OffsetLimitClause" />
+    </select>
+    
+    <select id="get" resultMap="OrderEntity" parameterType="java.lang.String">
+        SELECT
+        <include refid="OrderColumns">
+            <property name="order" value="o" />
+        </include>
+        ,
+        <include refid="AgencyColumns">
+            <property name="agency" value="a" />
+        </include>
+        ,
+        <include refid="ProductColumns">
+            <property name="product" value="p" />
+        </include>
+        ,
+        <include refid="CustomerColumns">
+            <property name="customer" value="c" />
+        </include>
+        FROM GHEALTH_ORDER o
+        LEFT JOIN GHEALTH_AGENCY a ON o.AGENCY_ID = a.ID
+        LEFT JOIN GHEALTH_TESTING_PRODUCT p ON o.PRODUCT_ID = p.ID
+        LEFT JOIN GHEALTH_CUSTOMER c ON o.CUSTOMER_ID = c.ID
+        WHERE o.ID = #{id}
+        AND o.DELETED = '0'
+    </select>
+    
+    <select id="getOrderTestingItemEvaluations" resultMap="TestingItemEvaluationEntity" parameterType="java.lang.String">
+        SELECT
+        ti.NAME AS TESTING_ITEM_NAME,
+        ti.CATEGORY AS TESTING_ITEM_CATEGORY,
+        ti.EVAL_GRADE_DETAILS AS GRADE_CONFIG,
+        oei.EVAL_VALUE AS EVALUATED_VALUE,
+        c.RISK_MALE AS MALE_REFERENCE_VALUE,
+        c.RISK_FEMALE AS FEMALE_REFERENCE_VALUE
+        FROM GHEALTH_ORDER_EVAL_ITEM oei
+        LEFT JOIN GHEALTH_TESTING_ITEM ti ON oei.ITEM_ID = ti.ID
+        LEFT JOIN GHEALTH_CANCER c ON ti.CATEGORY = '1' AND ti.CATEGORY_MAPPING = c.ID
+        WHERE oei.ORDER_ID = #{id}
+    </select>
+</mapper>

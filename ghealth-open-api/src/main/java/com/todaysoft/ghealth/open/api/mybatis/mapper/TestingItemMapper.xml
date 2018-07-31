@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.open.api.mybatis.mapper.TestingItemMapper">
+
+    <resultMap id="TestingItemEntity" type="com.todaysoft.ghealth.open.api.mybatis.model.TestingItem">
+        <id column="ID" property="id" />
+        <result column="NAME" property="name" />
+    </resultMap>
+    
+    <sql id="TestingItemFilters">
+        <if test="_parameter.name != null">
+            <bind name="namePattern" value="'%' + _parameter.name + '%'" />
+            AND ${testingItem}.NAME LIKE #{namePattern}
+        </if>
+        <if test="_parameter.categoryIncludes != null">
+            <choose>
+                <when test="_parameter.categoryIncludes.size == 0">
+                    AND 1 = 2
+                </when>
+                <when test="_parameter.categoryIncludes.size == 1">
+                    AND ${testingItem}.CATEGORY =
+                    <foreach collection="_parameter.categoryIncludes" item="category" index="index" open="" close="" separator="">
+                        #{category}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND ${testingItem}.CATEGORY IN
+                    <foreach collection="_parameter.categoryIncludes" item="category" index="index" open="(" close=")" separator=",">
+                        #{category}
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+    
+    <sql id="OrderbyClause">
+        <if test="_parameter.orderbys == null">
+        ORDER BY ${testingItem}.CATEGORY, ${testingItem}.CODE
+        </if>
+        <if test="_parameter.orderbys != null">
+            <choose>
+                <when test="_parameter.orderbys.size == 1">
+                    ORDER BY
+                    <foreach collection="_parameter.orderbys" item="orderby" index="index" open="" close="" separator="">
+                        <choose>
+                            <when test="orderby.field == 'CATEGORY'">${testingItem}.CATEGORY</when>
+                            <when test="orderby.field == 'CODE'">${testingItem}.CODE</when>
+                            <when test="orderby.field == 'NAME'">${testingItem}.NAME</when>
+                            <otherwise>${testingItem}.CATEGORY</otherwise>
+                        </choose>
+                        <if test="orderby.asc == false">
+                            DESC
+                        </if>
+                    </foreach>
+                </when>
+                <otherwise>
+                    ORDER BY
+                    <foreach collection="_parameter.orderbys" item="orderby" index="index" open="" close="" separator=",">
+                        <choose>
+                            <when test="orderby.field == 'CATEGORY'">${testingItem}.CATEGORY</when>
+                            <when test="orderby.field == 'CODE'">${testingItem}.CODE</when>
+                            <when test="orderby.field == 'NAME'">${testingItem}.NAME</when>
+                            <otherwise>${testingItem}.CATEGORY</otherwise>
+                        </choose>
+                        <if test="orderby.asc == false">
+                            DESC
+                        </if>
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+    
+    <sql id="OffsetLimitClause">
+        <if test="_parameter.limit != null">
+            LIMIT #{limit}
+        </if>
+        <if test="_parameter.offset != null">
+            OFFSET #{offset}
+        </if>
+    </sql>
+    
+    <select id="query" resultMap="TestingItemEntity" parameterType="com.todaysoft.ghealth.open.api.mybatis.model.TestingItemQuery">
+        SELECT t.ID, T.NAME FROM GHEALTH_TESTING_ITEM t
+        WHERE t.DELETED = '0'
+        <include refid="TestingItemFilters">
+            <property name="testingItem" value="t" />
+        </include>
+        <include refid="OrderbyClause">
+            <property name="testingItem" value="t" />
+        </include>
+        <include refid="OffsetLimitClause" />
+    </select>
+</mapper>

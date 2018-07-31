@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.AgencyAuthorityMapper" >
+    <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.base.response.model.Authority" >
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="PARENT_ID" property="parentId" jdbcType="VARCHAR" />
+        <result column="NAME" property="name" jdbcType="VARCHAR" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        SELECT
+        ID, PARENT_ID, NAME
+        FROM ghealth_agency_authority
+    </sql>
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        <include refid="Base_Column_List" />
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from ghealth_agency_authority
+        where ID = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.todaysoft.ghealth.base.response.model.Authority" >
+        insert into ghealth_agency_authority
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                ID,
+            </if>
+            <if test="parentId != null" >
+                PARENT_ID,
+            </if>
+            <if test="name != null" >
+                NAME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null" >
+                #{parentId,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null" >
+                #{name,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.todaysoft.ghealth.base.response.model.Authority" >
+        update ghealth_agency_authority
+        <set >
+            <if test="parentId != null" >
+                PARENT_Id = #{parentId,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null" >
+                NAME = #{name,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+    <select id="list" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        *
+        from ghealth_agency_authority
+
+    </select>
+
+    <select id="getAuthoritiesByParentId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        *
+        from ghealth_agency_authority
+        WHERE PARENT_ID = #{id,jdbcType=VARCHAR} ORDER BY sort ASC
+    </select>
+    <select id="getParentAuthorities" resultMap="BaseResultMap">
+        select
+        *
+        from ghealth_agency_authority
+        WHERE PARENT_Id IS NULL ORDER BY sort ASC ;
+    </select>
+</mapper>

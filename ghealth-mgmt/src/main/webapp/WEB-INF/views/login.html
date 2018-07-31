@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>登录-华生健康管理平台</title>
+<link href="${system_css}/login.css?v=0.1" rel="stylesheet"></link>
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+<!--
+    if (window != window.top)
+    {
+        window.top.location = window.location;
+    }
+//-->
+</script>
+</head>
+<style type="text/css">
+    body{margin:0;background:url("${system_images}/beijing.jpg")no-repeat;;background-size:100% 100%;}
+    .botCenter{width:100%; height:35px; position:fixed; bottom:0px; left:0px; font-size:14px; color:#000; text-align:center;}
+</style>
+<body>
+    <div class="login-box">
+        <div class="login-box-content">
+            <h3 class="title">基因检测业务管理平台</h3>
+            <#if (SPRING_SECURITY_LAST_EXCEPTION.message)??>
+            <div class="error">${SPRING_SECURITY_LAST_EXCEPTION.message}</div>
+            <#else>
+            <div class="error"></div>
+            </#if>
+            <form action="${base}/login_process.jsp" method="post">
+                <div class="form-group">
+                    <i class="login-user"></i>
+                    <input type="text" name="username" placeholder="登录账号" autofocus="autofocus">
+                </div>
+                <div class="form-group">
+                    <i class="login-pwd"></i>
+                    <input type="password" name="password" placeholder="登录密码">
+                </div>
+                <div class="form-group">
+                    <button type="submit">立即登录</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="botCenter">江苏华生基因数据科技股份有限公司</div>
+</body>
+</html>

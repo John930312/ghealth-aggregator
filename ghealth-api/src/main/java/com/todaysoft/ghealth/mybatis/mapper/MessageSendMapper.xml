@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.MessageSendMapper">
+    <!-- start Mapper映射方法 -->
+    <insert id="create" parameterType="com.todaysoft.ghealth.mybatis.model.MessageSend">
+        INSERT INTO GHEALTH_MESSAGE_SEND
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="title != null">
+                TITLE,
+            </if>
+            <if test="content != null">
+                CONTENT,
+            </if>
+            <if test="address != null">
+                ADDRESS,
+            </if>
+            <if test="pushTime != null">
+                PUSH_TIME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="title != null">
+                #{title, jdbcType=VARCHAR},
+            </if>
+            <if test="content != null">
+                #{content, jdbcType=TIMESTAMP},
+            </if>
+            <if test="address != null">
+                #{address, jdbcType=VARCHAR},
+            </if>
+            <if test="pushTime != null">
+                #{pushTime, jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+
+    <insert id="createMessageAgency" parameterType="com.todaysoft.ghealth.mybatis.model.MessageSendAgency">
+        INSERT INTO GHEALTH_MESSAGE_SEND_AGENCY
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="messageSendId != null">
+                MESSAGE_SEND_ID,
+            </if>
+            <if test="agencyId != null">
+                AGENCY_ID,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="messageSendId != null">
+                #{messageSendId, jdbcType=VARCHAR},
+            </if>
+            <if test="agencyId != null">
+                #{agencyId, jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- end 内部定义 -->
+
+
+    <resultMap id="MessageSendEntity" type="com.todaysoft.ghealth.mybatis.model.MessageSend" >
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="TITLE" property="title"  />
+        <result column="CONTENT" property="content"  />
+        <result column="ADDRESS" property="address"  />
+        <result column="PUSH_TIME" property="pushTime"  />
+    </resultMap>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="SearchFilters">
+        WHERE 1=1
+        <if test="_parameter.content != null and _parameter.content != ''">
+            <bind name="contentPattern" value="'%'+_parameter.content + '%'" />
+            AND t.content LIKE #{contentPattern}
+        </if>
+        <if test="_parameter.agencyId != null and _parameter.agencyId != ''">
+            AND s.AGENCY_ID = #{agencyId}
+        </if>
+        <if test="_parameter.title != null and _parameter.title != ''">
+            <choose>
+                <when test="_parameter.nameExactMatches">AND t.TITLE = #{title}</when>
+                <otherwise>
+                    <bind name="titlePattern" value="'%' + _parameter.title + '%'" />
+                    AND t.TITLE LIKE #{titlePattern}
+                </otherwise>
+            </choose>
+        </if>
+        <if test="_parameter.startTime != null">
+            <bind name="startTimePattern" value="_parameter.startTime" />
+            <![CDATA[   and DATE_FORMAT(t.PUSH_TIME, '%Y-%m-%d %H:%M:%S')>=  DATE_FORMAT(#{startTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
+        </if>
+        <if test="_parameter.endTime != null">
+            <bind name="endTimePattern" value="_parameter.endTime" />
+            <![CDATA[   and DATE_FORMAT(t.PUSH_TIME, '%Y-%m-%d %H:%M:%S') <  DATE_FORMAT(#{endTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
+        </if>
+    </sql>
+
+    <select id="search" resultMap="MessageSendEntity" parameterType="com.todaysoft.ghealth.mybatis.searcher.MessageSendSearcher">
+        SELECT DISTINCT (t.ID), t.* FROM GHEALTH_MESSAGE_SEND t
+        LEFT JOIN GHEALTH_MESSAGE_SEND_AGENCY s ON t.ID = s.MESSAGE_SEND_ID
+        <include refid="SearchFilters"></include> ORDER BY t.PUSH_TIME DESC
+        <include refid="SearchLimit"></include>
+    </select>
+
+
+     <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.MessageSendSearcher">
+        SELECT COUNT(DISTINCT (t.ID)) FROM GHEALTH_MESSAGE_SEND t
+         LEFT JOIN GHEALTH_MESSAGE_SEND_AGENCY s ON t.ID = s.MESSAGE_SEND_ID
+        <include refid="SearchFilters"></include>
+    </select>
+
+
+
+    <select id="get" resultMap="MessageSendEntity" parameterType="java.lang.String">
+        SELECT t.*  FROM GHEALTH_MESSAGE_SEND t
+        WHERE t.ID = #{id, jdbcType=VARCHAR}
+    </select>
+
+
+    <select id="getAgencyName" resultType="String">
+        SELECT p.NAME FROM GHEALTH_AGENCY p LEFT JOIN GHEALTH_MESSAGE_SEND_AGENCY s ON p.ID = s.AGENCY_ID
+        LEFT JOIN GHEALTH_MESSAGE_SEND t ON t.ID = s.MESSAGE_SEND_ID
+        WHERE t.ID = #{id, jdbcType=VARCHAR}
+    </select>
+
+
+    <update id="modify" parameterType="com.todaysoft.ghealth.mybatis.model.MessageSend">
+        UPDATE GHEALTH_MESSAGE_SEND
+        <set>
+            <if test="title != null">
+                TITLE = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null">
+                CONTENT = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                ADDRESS = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="pushTime != null">
+                PUSH_TIME = #{pushTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="delete" parameterType="java.lang.String">
+        DELETE FROM GHEALTH_MESSAGE_SEND
+        WHERE ID = #{id,jdbcType=VARCHAR}
+    </delete>
+
+
+
+    <delete id="deleteById" parameterType="java.lang.String">
+        DELETE FROM GHEALTH_MESSAGE_SEND_AGENCY
+        WHERE MESSAGE_SEND_ID = #{id,jdbcType=VARCHAR}
+    </delete>
+</mapper>

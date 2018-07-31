@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>代理列表-代理机构</title>
+<link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+<link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+<link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+<link href="${system_css}/system.css?v=0.1" rel="stylesheet"></link>
+</head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <ol class="breadcrumb">
+                            <li>
+                                <a href="${base}/agency/list.jsp">代理机构</a>
+                            </li>
+                            <li class="active">
+                                <strong>代理列表</strong>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="ibox ibox-table">
+                    <div class="ibox-title">
+                        <h5>代理列表</h5>
+                        <@security_resource resource = "/agency/create.jsp">
+                        <a href="${base}/agency/create.jsp" class="btn btn-sm btn-success">
+                            <i class="fa fa-plus"></i> 新增
+                        </a>
+                        </@security_resource>
+                    </div>
+                    <div class="ibox-content">
+                        <form action="${base}/agency/list.jsp" method="post" class="search-form">
+                            <div class="row m-b-xs">
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="code" value="${(searcher.code)!?html}" placeholder="代理编号">
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="primaryUsername" value="${(searcher.primaryUsername)!?html}" placeholder="主账号">
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="abbr" value="${(searcher.abbr)!?html}" placeholder="代理简称">
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="name" value="${(searcher.name)!?html}" placeholder="机构名称">
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="minAmount" value="${(searcher.minAmount)!?html}" placeholder="最小余额">
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="maxAmount" value="${(searcher.maxAmount)!?html}" placeholder="最大余额">
+                                    </div>
+                                </div>
+                                <div class="col-sm-2" style="float: right">
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="fa fa-search"></i> 查询
+                                        </button>
+                                        <button type="reset" class="btn btn-sm btn-success">
+                                            <i class="fa fa-repeat"></i> 重置
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="index">序号</th>
+                                    <th>代理编号</th>
+                                    <th>主账号</th>
+                                    <th>代理简称</th>
+                                    <th>机构名称</th>
+                                    <th>账户余额</th>
+                                    <th>所在地市</th>
+                                    <th>联系人</th>
+                                    <th>联系人电话</th>
+                                    <th>授权金额</th>
+                                    <th>创建时间</th>
+                                    <th class="flexible-btns">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <#if pagination.records?has_content> <#list pagination.records as record>
+                                <tr>
+                                    <td>${record_index + 1}</td>
+                                    <td>${(record.code)!?html}</td>
+                                    <td>${(record.primaryUsername)!?html}</td>
+                                    <td>${(record.abbr)!?html}</td>
+                                    <td>${(record.name)!?html}</td>
+                                    <td>${(record.accountAmount)!?html}</td>
+                                    <td>${(record.provinceText)!?html}${(record.cityText)!?html}</td>
+                                    <td>${(record.contactName)!?html}</td>
+                                    <td>${(record.contactPhone)!?html}</td>
+                                    <td>${(record.authorizationAmount)!?html}</td>
+                                    <td><#if record.createTime??>${record.createTime!?string('yyyy-MM-dd HH:mm:ss')} </#if></td>
+                                    <td class="flexible-btns" style="white-space: nowrap">
+                                        <@security_resource resource = "/agency/modify.jsp">
+                                        <a href="${base}/agency/modify.jsp?id=${record.id}" class="btn btn-sm btn-success">
+                                            <i class="fa fa-edit"></i> 修改
+                                        </a>
+                                        </@security_resource> <@security_resource resource = "/agency/delete.jsp">
+                                        <a class="btn btn-sm btn-success" href="JavaScript:;"
+                                            onclick="canDelete('${record.id}','${base}/agency/delete.jsp','${base}/agency/reload.do')">
+                                            <i class="fa fa-trash"></i> 删除
+                                        </a>
+                                        </@security_resource>
+                                        <a href="${base}/agency/display.jsp?id=${record.id}" class="btn btn-sm btn-success">
+                                            <i class="fa fa-search-plus"></i> 查看
+                                        </a>
+                                        <@security_resource resource = "/agency/recharge.jsp">
+                                        <a class="btn btn-sm btn-success" href="javascript:;" onclick="setValue('${record.id}')">
+                                            <i class="fa fa-cny"></i> 充值
+                                        </a>
+                                        </@security_resource>
+
+                                        <a href="${base}/agency/addProduct.do?id=${record.id}" class="btn btn-sm btn-success">
+                                            <i class="fa fa-search-plus"></i> 添加代理产品
+                                        </a>
+                                    </td>
+                                </tr>
+                                </#list> <#else>
+                                <tr>
+                                    <td colspan="12">暂无相关记录</td>
+                                </tr>
+                                </#if>
+                            </tbody>
+                        </table>
+                        <#include "../inc/pagination.html" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="report_ModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="report_ModalLabel">代理商充值</h4>
+                </div>
+                <form id="rechargeForm" method="get" action="${base}/agency/recharge.jsp" name="uploadForm">
+                    <input type="hidden" name="id" id="hiddenId">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="control-label">充值金额：</label>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="accountAmountMoney" name="accountAmount"style="width:40%;display: inline;" maxlength="12"/>
+                                <a id="moneyToCH" style="color: #00B83F;display: inline;"></a>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">充值方式：</label>
+                            <div class="form-group radio-inline i-checks">
+                                <@dict_category category = "RECHARGE_TYPE">
+                                <#list entries as entry>
+                                    <label><input type="radio" id="rechargeType_${(entry_index)!}" name="rechargeType" value="${(entry.dictValue)!html}">${(entry.dictText)!html}</label>
+                                </#list>
+                            </@dict_category>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <div class="col-lg-4">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            <button type="button" id="tijiao" class="btn btn-primary" onclick="checkedValue()">提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="${plugins}/jquery/jquery.min.js"></script>
+    <script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+    <script src="${plugins}/layer/layer.min.js"></script>
+    <script src="${plugins}/pagination/jquery.pagination.js"></script>
+    <script src="${plugins}/dist/nzh.js"></script>
+    <script src="${plugins}/icheckbox/icheckbox.min.js"></script>
+    <script src="${system_js}/system.js?v=0.2"></script>
+</body>
+<script>
+    $(function()
+    {
+        $('#accountAmountMoney').bind('input propertychange', function() {
+            $('.btn.btn-primary').attr("disabled",false);
+            var reg = /^[0-9]{1,9}([.]{1}[0-9]{1,2})?$/;
+            var val = $('input[name="accountAmount"]').val();
+            var result = val.match(/\./);
+            if (result != null)
+            {
+                var endStr = val.substring(val.indexOf(".")+1,val.length);
+                if (endStr.length == 0)
+                {
+                    val = val + "0";
+                }
+            }
+            if (reg.test(val)&&val != '0.00'){
+                $("#accountAmountMoney").css("border","");
+                $('#moneyToCH').css("color","#00B83F");
+                getMoney();
+            }else {
+                $("#accountAmountMoney").css("border","1px dotted #cc5965");
+                $('#moneyToCH').html("* 请输入大于0的数字,小数点后2位！").css("color","#ff0000");
+                $('.btn.btn-primary').attr("disabled","disabled");
+            }
+        });
+
+        $('#myModal').on("hide.bs.modal", function()
+        {
+            $('#moneyToCH').html("");
+            $("[name='accountAmount']").val("").css("border","");
+        });
+    });
+
+    function checkedValue()
+    {
+        var reg = /^(([0-9]+[\.]?[0-9]+)|[1-9])$/;
+        var val = $('input[name="accountAmount"]').val();
+        var result = val.match(/\./);
+        if (result != null)
+        {
+            var endStr = val.substring(val.indexOf(".")+1,val.length);
+            if (endStr == 00)
+            {
+                val = val.substring(0,val.indexOf("."));
+            }
+        }
+
+        if (reg.test(val))
+        {
+            if (result != null)
+            {
+                if (endStr.length > 2) {
+                    layer.confirm("请输入大于0的数字,小数点后2位！", {title: "提示"});
+                }else {
+                    $("form").submit();
+                }
+            }else {
+                $("form").submit();
+            }
+        }
+        else
+        {
+            layer.confirm("请输入大于0的数字,小数点后2位！",{title:"提示"});
+        }
+    }
+
+    function setValue(id)
+    {
+        $('[name="rechargeType"]:radio').iCheck('uncheck');
+        $("#rechargeType_0").iCheck('check');
+        $('#myModal').modal('show')
+        $("#hiddenId").val(id);
+    }
+
+    function getMoney() {
+        var money = $('#accountAmountMoney').val();
+        var endStr = money.substring(money.indexOf(".")+1,money.length);
+        if (endStr.length == 0)
+        {
+            money = money.substring(0,money.indexOf("."));
+        }
+        var custom = new Nzh({
+            ch: "零壹贰叁肆伍陆柒捌玖",      // 数字字符
+            ch_u: "个十百千万亿兆京",       // 数位单位字符，万以下 10 进制，万以上万进制，个位不能省略
+            ch_f: "负",                  // 负数字符
+            ch_d: "点",                  // 小数字符
+            m_u: "元角分厘",              // 金额单位
+            m_t: "充值：",                // 金额前缀
+            m_z: ""                    // 无小数后缀
+        });
+        $('#moneyToCH').html(custom.toMoney(money));
+    }
+</script>
+</html>

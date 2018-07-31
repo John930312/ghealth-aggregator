@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.mybatis.mapper.AgencyProductOldPriceMapper">
+    <resultMap id="BaseResultMap" type="com.todaysoft.ghealth.mybatis.model.AgencyProductOldPrice">
+        <id column="ID" property="id"/>
+        <result column="AGENCY_PRODUCT_ID" property="agencyProductId"/>
+        <result column="OLD_AGENCY_PRICE" property="oldAgencyPrice"/>
+        <result column="CHANGED_AGENCY_PRICE" property="changedAgencyPrice"/>
+        <result column="DETAIL" property="detail"/>
+        <result column="OPERATE_TIME" property="operateTime"/>
+        <result column="OPERATOR" property="operator"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        SELECT *
+        FROM ghealth_agency_product_old_price op
+        LEFT JOIN GHEALTH_AGENCY_PRODUCT ap ON ap.ID =  op.AGENCY_PRODUCT_ID
+    </sql>
+
+    <delete id="delete" parameterType="com.todaysoft.ghealth.mybatis.searcher.AgencyProductOldPriceSearcher" >
+        DELETE op FROM ghealth_agency_product_old_price op
+        LEFT JOIN GHEALTH_AGENCY_PRODUCT ap ON ap.ID =  op.AGENCY_PRODUCT_ID
+        WHERE ap.AGENCY_ID = #{agencyId,jdbcType=VARCHAR} AND ap.PRODUCT_ID = #{productId,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.todaysoft.ghealth.mybatis.model.AgencyProductOldPrice">
+        insert into ghealth_agency_product_old_price
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="agencyProductId != null">
+                AGENCY_PRODUCT_ID,
+            </if>
+            <if test="oldAgencyPrice != null">
+                OLD_AGENCY_PRICE,
+            </if>
+            <if test="changedAgencyPrice != null">
+                CHANGED_AGENCY_PRICE,
+            </if>
+            <if test="detail != null">
+                DETAIL,
+            </if>
+            <if test="operateTime != null">
+                OPERATE_TIME,
+            </if>
+            <if test="operator != null">
+                OPERATOR,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="agencyProductId != null">
+                #{agencyProductId,jdbcType=VARCHAR},
+            </if>
+            <if test="oldAgencyPrice != null">
+                #{oldAgencyPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="changedAgencyPrice != null">
+                #{changedAgencyPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="detail != null">
+                #{detail,jdbcType=VARCHAR},
+            </if>
+            <if test="operateTime != null">
+                #{operateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="operator != null">
+                #{operator,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.AgencyProductOldPriceSearcher">
+        SELECT COUNT(*)
+        from ghealth_agency_product_old_price op
+        LEFT JOIN GHEALTH_AGENCY_PRODUCT ap ON ap.ID =  op.AGENCY_PRODUCT_ID
+        <include refid="SearchFilters"></include>
+    </select>
+
+
+    <select id="search" resultMap="BaseResultMap"
+            parameterType="com.todaysoft.ghealth.mybatis.searcher.AgencyProductOldPriceSearcher">
+        <include refid="Base_Column_List"></include>
+        <include refid="SearchFilters"></include>
+        ORDER BY op.OPERATE_TIME ASC
+        <include refid="SearchLimit"></include>
+    </select>
+
+    <sql id="SearchLimit">
+        <if test="_parameter.offset != null and _parameter.limit != null">
+            LIMIT #{_parameter.offset}, #{_parameter.limit}
+        </if>
+    </sql>
+
+    <sql id="SearchFilters">
+        WHERE 1=1
+        <if test="_parameter.agencyProductId != null and _parameter.agencyProductId != ''">
+            AND op.AGENCY_PRODUCT_ID = #{agencyProductId}
+        </if>
+        <if test="_parameter.agencyId != null and _parameter.agencyId != ''">
+            AND ap.AGENCY_ID = #{agencyId}
+        </if>
+        <if test="_parameter.productId != null and _parameter.productId != ''">
+            AND ap.PRODUCT_ID = #{productId}
+        </if>
+    </sql>
+
+</mapper>

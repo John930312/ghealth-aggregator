@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>订单列表-订单管理</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css?v=0.1" rel="stylesheet"></link>
+    <link href="${plugins}/magicsuggest/magicsuggest-min.css" rel="stylesheet"></link>
+    <style>
+        #jcxmBox td {
+            text-align: left;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/order/list.jsp">订单管理</a>
+                        </li>
+                        <li class="active">
+                            <strong>订单列表</strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5>订单列表</h5>
+                    <@security_resource resource = "/order/cancle.jsp">
+                    <a href="javaScript:;" class="btn btn-sm btn-success btn-cancel">
+                        <i class="fa fa-toggle-on"></i> 批量取消
+                    </a>
+                    </@security_resource>
+                    <@security_resource resource = "/order/downloadReport.jsp">
+                    <a class="btn btn-sm btn-success" data-toggle="modal" data-target="#myModal">
+                        <i class="fa fa-level-down"></i> 导出
+                    </a>
+                    </@security_resource>
+                    <@security_resource resource = "/order/reports_dialog.jsp">
+                    <a class="btn btn-sm btn-success order-reports" href="${base}/order/reports_dialog.jsp">
+                        <i class="fa fa-refresh"></i> 生成报告
+                    </a>
+                    </@security_resource>
+    </div>
+    <div class="ibox-content">
+        <form action="${base}/order/list.jsp" method="post" class="search-form" id="search-form" name="search-form">
+            <div class="row m-b-xs">
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="orderCode"
+                               value="${(searcher.orderCode)!?html}"
+                               placeholder="订单编号">
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="customerName"
+                               value="${(searcher.customerName)!?html}"
+                               placeholder="客户姓名">
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="customerPhone"
+                               value="${(searcher.customerPhone)!?html}"
+                               placeholder="联系电话">
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="primaryUsername"
+                               value="${(searcher.primaryUsername)!?html}"
+                               placeholder="主账号">
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="agencyName"
+                               value="${(searcher.agencyName)!?html}"
+                               placeholder="代理商">
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="createName"
+                               value="${(searcher.createName)!?html}"
+                               placeholder="创建人">
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <select class="form-control" name="status" data-value="${(searcher.status)!?html}">
+                            <option value="">订单状态</option>
+                            <@dict_category category = "order_status">
+                            <#list entries as entry>
+                                <option value="${(entry.dictValue)!html}">${(entry.dictText)!html}</option>
+                            </#list>
+                            </@dict_category>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="" id="jcxmBox">
+                        <div class="input-append input-group"
+                             style="white-space: nowrap; vertical-align: middle;">
+                            <input type="text" class="form-control" id="pn"
+                                   name='productName' placeholder="检测项目"
+                                   value="${searcher.productName!?html}">
+                            <div class="btn-group"
+                                 style="display: inline-block; margin-left: -1px; vertical-align: middle;">
+                                <button type="button" class="btn btn-default dropdown-toggle"
+                                        data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                </button>
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="Wdate form-control" id="startTime" name="startTime"
+                               style="height: 35px"
+                               value="<#if searcher.startTime??>${searcher.startTime!?string('yyyy-MM-dd')}</#if>"
+                               placeholder="下单开始日期"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')}'})" readonly/>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="Wdate form-control" id="endTime" name="endTime"
+                               style="height: 35px"
+                               value="<#if searcher.endTime??>${searcher.endTime!?string('yyyy-MM-dd')}</#if>"
+                               placeholder="下单结束日期"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startTime\')}'})" readonly/>
+                    </div>
+                </div>
+
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="Wdate form-control" id="startReportTime" name="startReportTime"
+                               style="height: 35px"
+                               value="<#if searcher.startReportTime??>${searcher.startReportTime!?string('yyyy-MM-dd')}</#if>"
+                               placeholder="出报告开始日期"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endReportTime\')}'})" readonly/>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="Wdate form-control" id="endReportTime" name="endReportTime"
+                               style="height: 35px"
+                               value="<#if searcher.endReportTime??>${searcher.endReportTime!?string('yyyy-MM-dd')}</#if>"
+                               placeholder="出报告结束日期"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startReportTime\')}'})" readonly/>
+                    </div>
+                </div>
+
+
+                <div class="col-sm-2" style="float: right">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-sm btn-success">
+                            <i class="fa fa-search"></i> 查询
+                        </button>
+                        <button type="reset" class="btn btn-sm btn-success">
+                            <i class="fa fa-repeat"></i> 重置
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr >
+                <th><input type="checkbox" class="check-controller"/></th>
+                <th class="index">序号</th>
+                <th>订单编号</th>
+                <th>产品名称</th>
+                <th>客户姓名</th>
+                <th>订单价格</th>
+                <th>代理商</th>
+                <th>创建人</th>
+                <th>下单时间</th>
+                <th>送检时间</th>
+                <th>出报告时间</th>
+                <th>报告下载次数</th>
+                <th>订单状态</th>
+                <th class="flexible-btns">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#if pagination.records?has_content>
+                <#list pagination.records as record>
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="check-instance" value="${record.id}"/>
+                        </td>
+                        <td>${record_index + 1}</td>
+                        <td>${record.code!?html}</td>
+                        <td>${(record.product.name)!?html}</td>
+                        <td>${(record.customer.name)!?html}</td>
+                        <td>${record.actualPrice!?html}</td>
+                        <td>${(record.agency.name)!?html}</td>
+                        <td>${record.creatorName!?html}</td>
+                        <td <#if record.monthAgo??&&record.monthAgo>style="background-color: red;"</#if> >
+                            <#if record.submitTime??>${record.submitTime!?string('yyyy-MM-dd HH:mm:ss')}</#if>
+                        </td>
+                        <td>
+                            <#if record.operateTime??>${record.operateTime!?string('yyyy-MM-dd HH:mm:ss')}</#if>
+                        </td>
+                        <td>
+                            <#if record.reportGenerateTime??>${record.reportGenerateTime!?string('yyyy-MM-dd
+                                HH:mm:ss')}
+                            </#if>
+                        </td>
+                        <td>${record.reportDownloadCount!?html}</td>
+                        <td status="${(record.status)!?html}"><@dict_category_value category="order_status" value =
+                            record.status/>
+                        </td>
+                        <td class="flexible-btns" style="white-space: nowrap">
+                            <a href="${base}/order/display.jsp?id=${record.id}" class="btn btn-sm btn-success">
+                                <i class="fa fa-thn"></i> 详情
+                            </a>
+
+                            <#if (record.status)?number lt 3>
+                                <@security_resource resource = "/order/modify.jsp">
+                                <a href="javascript:;" onclick="canModify('${record.id}')"
+                                   class="btn btn-sm btn-success">
+                                    <i class="fa fa-gear"></i> 修改
+                                </a>
+                                </@security_resource>
+                                <@security_resource resource = "/order/cancel.jsp">
+                                <a class="btn btn-sm btn-success"
+                                   href="javascript:cancelConfirm('${(record.id)!?html}')">
+                                    <i class="fa fa-times"></i> 取消
+                                </a>
+                                </@security_resource>
+                            </#if>
+
+                        <@security_resource resource = "/order/report_dialog.jsp">
+                        <#if (record.status)??&&(record.status)?number gte 4 &&(record.status)?number lt 6>
+                            <#if (record.status)?number ==4>
+                                <a class="btn btn-sm btn-success" data-toggle="modal" data-target="#uploadModel"
+                                   href="javascript:;" onclick="setOrder('${(record.id)!}','${(record.code)!}')">
+                                    <i class="fa fa-arrow-circle-up"></i>上传报告
+                                </a>
+                            </#if>
+                            <a class="btn btn-sm btn-success order-report"
+                               href="${base}/order/report_dialog.jsp?id=${(record.id)!}">
+                                <i class="fa fa-book"></i> 报告
+                            </a>
+                        </#if>
+                        </@security_resource>
+                        <@security_resource resource = "/order/delete.jsp">
+                             <#if (record.status)?number ==6>
+                                <a class="btn btn-sm btn-success"
+                                   onclick="deleteOrder('${record.id!?html}')">
+                                    <i class="fa fa-trash"></i> 删除
+                                </a>
+                             </#if>
+                        </@security_resource>
+                </td>
+            </tr>
+            </#list>
+            <#else>
+                <tr>
+                    <td colspan="14">暂无相关记录</td>
+                </tr>
+                </#if>
+                </tbody>
+        </table>
+        <#include "../inc/pagination.html" />
+    </div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">订单导出</h4>
+            </div>
+            <form id="uploadForm" method="get" action="${base}/order/downloadReport.jsp" name="uploadForm">
+                <input type="hidden" name="agencyId">
+                <input type="hidden" name="productId">
+                <div class="modal-body">
+                    <div class="form-group ">
+                        <label class="control-label">订单状态：</label>
+                        <select class="form-control " name="status">
+                            <option value="${(searcher.status)!?html}">全部</option>
+                            <@dict_category category="order_status">
+                            <#list entries as entry>
+                                <option value="${(entry.dictValue)!html}">${(entry.dictText)!html}</option>
+                            </#list>
+                        </@dict_category>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label ">代理人：</label>
+                        <div class="form-control " id="agencyName" placeholder="请选择代理人"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">检测产品：</label>
+                        <div class="form-control " id="productName" placeholder="请选择检测产品"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label ">创建时间：</label>
+                        <input type="text" class="Wdate form-control" id="startTime1" name="startTime"
+                               style="height: 35px" placeholder="开始日期"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime1\')}'})"/>
+                        -
+                        <input type="text" class="Wdate form-control" id="endTime1" name="endTime" style="height: 35px"
+                               placeholder="结束日期"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startTime1\')}'})"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-4" style="float: right">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" onclick="submitMyForm(this)">提交</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="uploadModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">上传报告</h4>
+            </div>
+            <form id="uploadForm1" action="" enctype="multipart/form-data" method="post">
+                <div class="modal-body">
+                    <input type="file" class="file clearClass" name="uploadData" id="uploadData"
+                           accept=".pdf,.doc,.docx"/>
+                    <input type="hidden" name="id" value=""/>
+                    <input type="hidden" name="code" value=""/>
+                    <div class="error" style="color: red;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="subForm(this)">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/jquery/jquery.form.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap-suggest.js"></script>
+<script src="${plugins}/bootstrap-dialog/bootstrap-dialog.min.js"></script>
+<script src="${plugins}/pagination/jquery.pagination.js"></script>
+<script src="${plugins}/My97DatePicker/WdatePicker.js"></script>
+<script src="${plugins}/layer/layer.min.js"></script>
+<script src="${plugins}/icheckbox/icheckbox.min.js"></script>
+<script src="${system_js}/selectChecked.js"></script>
+<script src="${system_js}/system.js?v=0.2"></script>
+<script src="${plugins}/magicsuggest/magicsuggest-min.js"></script>
+<script>
+    var base = "${base}";
+    var timer = null;
+
+    $(function () {
+
+        $('.btn-cancel').click(function (e) {
+
+            var ids = getSelectedIds(true);
+            if (ids != '') {
+                e.preventDefault();
+                cancelConfirm(ids);
+            }
+            else {
+                layer.alert('选项不符合条件', {
+                    title: "提示"
+                });
+            }
+        });
+
+
+        $("#pn").bsSuggest('init', {
+            url: "${base}/product/getSelectList.do?name=",
+            getDataMethod: "url",
+            idField: "id",
+            keyField: "name",
+            indexKey: 0,
+            effectiveFields: ["name"],
+            listAlign: 'right',
+            effectiveFieldsAlias: {
+                name: "产品名称"
+            }
+        }).on('onDataRequestSuccess', function (e, result) {
+        }).on('onSetSelectValue', function (e, keyword, data) {
+        }).on('onUnsetSelectValue', function () {
+        });
+
+        $('a.order-report').click(function (e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+
+            BootstrapDialog.alert({
+                title: '订单报告',
+                closable: false,
+                buttonLabel: '关闭',
+                onhide: function (dialog) {
+                    if (null != timer) {
+                        window.clearInterval(timer);
+                    }
+                },
+                message: $('<div></div>').load(url)
+            });
+        });
+
+        $('a.order-reports').click(function (e) {
+
+            var ids = getSelectedIds(false);
+            if (ids != '') {
+                e.preventDefault();
+                var url = $(this).attr('href') + "?ids=" + ids;
+
+                BootstrapDialog.alert({
+                    title: '订单报告',
+                    closable: false,
+                    buttonLabel: '关闭',
+                    onhide: function (dialog) {
+                        if (null != timer) {
+                            window.clearInterval(timer);
+                        }
+                    },
+                    message: $('<div></div>').load(url)
+                });
+            }
+            else {
+                $(this).attr('href', 'javascript:;');
+                layer.alert('选项不符合条件', {
+                    title: "提示"
+                });
+            }
+        });
+
+        var p = $('#agencyName').magicSuggest(
+            {
+                width: 190,
+                highlight: true,
+                data: '${base}/agency/json_list.do',
+                method: 'get',
+                queryParam: "name",
+                maxSelection: 1,
+                displayField: "name",
+                allowFreeEntries: false,
+                renderer: function (v) {
+                    return '<div>' + '<div >' + '<div>' + v.name + '</div>' + '</div>'
+                        + '<div style="clear:both;"></div>';
+                }
+            });
+
+        var s = $('#productName').magicSuggest(
+            {
+                width: 190,
+                highlight: true,
+                data: '${base}/product/json_list.do',
+                method: 'get',
+                queryParam: "name",
+                maxSelection: 1,
+                displayField: "name",
+                allowFreeEntries: false,
+                renderer: function (v) {
+                    return '<div>' + '<div >' + '<div  class="probe">' + v.name + '</div>'
+                        + '</div>' + '<div style="clear:both;"></div>';
+                }
+            });
+
+        if ($('#agencyName').val() != null && "" != $('#agencyName').val()) {
+            s.setDataUrlParams({
+                testingType: $('#agencyName').val()
+            });
+        }
+        $('#myModal').on('hide.bs.modal', function () {
+            $('input').val('');
+        });
+    });
+
+    function submitMyForm(obj) {
+        var agency = $('#agencyName').magicSuggest().getSelection()[0];
+        if (undefined != agency) {
+            $('input[name="agencyId"]').val(agency.id);
+        }
+
+        var product = $('#productName').magicSuggest().getSelection()[0];
+        if (undefined != product) {
+            $('input[name="productId"]').val(product.id);
+        }
+        $('#uploadForm').submit();
+        $(obj).attr("disabled", true);
+        $('#myModal').modal("hide");
+    };
+
+    function getSelectedIds(flag) {
+        var ids = "";
+        $(".check-instance:checkbox").each(function (i, v) {
+            if ($(this).prop("checked")) {
+                if (flag) {
+                    var status = $(this).parents("tr").find("td").eq(9).attr("status");
+                    if (status < 3) {
+                        ids += $(this).val() + "-"
+                    }
+                }
+                else {
+                    ids += $(this).val() + "-"
+                }
+            }
+        });
+        return ids;
+    }
+
+    function cancelConfirm(orderId) {
+        layer.confirm("确定要取消订单么？", {
+            icon: 3,
+            title: '操作确认',
+            btn: ['确定', '取消'],
+            shade: 'transparent'
+        }, function (index) {
+            cancelOrder(orderId);
+            layer.close(index);
+        }, function (index) {
+            layer.close(index);
+        });
+    }
+
+    function cancelOrder(orderId) {
+        $.ajax({
+            type: "POST",
+            traditional: true,
+            async: false,
+            url: '${base}/order/cancel.jsp',
+            data: {
+                id: orderId
+            },
+            success: function (data) {
+                window.location.reload();
+            },
+            error: function () {
+                layer.alert('操作失败', {title: "提示"});
+            }
+        });
+
+    }
+
+    function setOrder(orderId, orderCode) {
+        $("[name='id']").val(orderId);
+        $("[name='code']").val(orderCode);
+    }
+
+    function subForm(data) {
+        if(validateUpload(data))
+        {
+            var ajaxFormOption = {
+                type: 'POST',
+                dataType: 'json',
+                url: "${base}/order/upload_report.do", //请求url
+                success: function (data) {
+                    $("#uploadModel").modal("hide");
+                    if (data.mess == "success") {
+                        window.location.href = "${base}/order/list.jsp";
+                    }
+                    else {
+                        layer.alert(data.mess, {
+                            title: "提示"
+                        });
+                    }
+                }
+            };
+
+            $("#uploadForm1").ajaxSubmit(ajaxFormOption);
+
+            $(data).attr("disabled", true);
+        }
+    }
+
+    function deleteOrder(id) {
+        layer.confirm('确定要删除该订单么？', {
+            btn: ['确认', '取消'] //按钮
+        }, function () {
+
+            $.post('${base}/order/delete.jsp', {
+                id: id
+            },function(){
+               window.location.href = "${base}/order/redirect.do"
+            });
+        }, function () {
+            parent.layer.close();
+        });
+    }
+
+    function canModify(id) {
+        $.get("${base}/order/getOrderById.do",{id:id},function(data)
+        {
+            if (data.status == 6) {
+                window.location.href = "${base}/order/redirect.do"
+            }
+            else {
+                window.location.href = "${base}/order/modify.jsp?id=" + id
+            }
+        });
+    }
+
+</script>
+</body>
+</html>
