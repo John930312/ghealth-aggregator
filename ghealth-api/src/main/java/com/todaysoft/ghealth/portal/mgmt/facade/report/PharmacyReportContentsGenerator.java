@@ -140,10 +140,12 @@ public class PharmacyReportContentsGenerator extends AbstractReportContentsGener
     private TableBookmarkContent getTableBookmarkContents(Integer i, List<Drug> drugs, Map<String, PharmacyTemModel> map, boolean isASME)
     {
         List<String[]> records = new ArrayList<>();
+        boolean isDid = false;
         for (Drug drug : drugs)
         {
             List<String> record = new ArrayList<>();
-            if (isASME)
+            isDid = "MTRNR1".equals(drug.getGeneName());
+            if (isASME || isDid)
             {
                 record.add(drug.getIngredientCn());
                 record.add(drug.getIngredientEn());
@@ -161,7 +163,7 @@ public class PharmacyReportContentsGenerator extends AbstractReportContentsGener
         }
         
         TableBookmarkContent content = new TableBookmarkContent();
-        content.setBookmarkName(MessageFormat.format("DRUG_CATEGORY_{0}", i));
+        content.setBookmarkName(isDid ? MessageFormat.format("DRUG_CATEGORY_{0}", 0) : MessageFormat.format("DRUG_CATEGORY_{0}", i));
         content.setRecords(records);
         return content;
     }

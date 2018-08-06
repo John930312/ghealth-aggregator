@@ -348,19 +348,16 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">上传报告</h4>
             </div>
-            <form id="uploadForm1" action="" enctype="multipart/form-data" method="post">
-                <div class="modal-body">
-                    <input type="file" class="file clearClass" name="uploadData" id="uploadData"
-                           accept=".pdf,.doc,.docx"/>
-                    <input type="hidden" name="id" value=""/>
-                    <input type="hidden" name="code" value=""/>
-                    <div class="error" style="color: red;"></div>
+                <div class="modal-body" id="container">
+                    <div id="ossfile"></div>
+                    <input id="selectfiles" type="file" value='选择文件'/>
+                    <div id="console"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-primary" onclick="subForm(this)">提交</button>
+                    <button id="postfiles" class="btn btn-primary">开始上传</button>
                 </div>
-            </form>
+
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
@@ -376,11 +373,17 @@
 <script src="${system_js}/selectChecked.js"></script>
 <script src="${system_js}/system.js?v=0.2"></script>
 <script src="${plugins}/magicsuggest/magicsuggest-min.js"></script>
+<script src="${plugins}/plupload/js/plupload.full.min.js"></script>
+<script src="${system_js}/upload.js"></script>
 <script>
     var base = "${base}";
     var timer = null;
 
     $(function () {
+
+        $('#uploadModel').on('hide.bs.modal', function (e) {
+           window.location.href = "${base}/order/list.jsp";
+        })
 
         $('.btn-cancel').click(function (e) {
 
@@ -566,35 +569,10 @@
     }
 
     function setOrder(orderId, orderCode) {
-        $("[name='id']").val(orderId);
-        $("[name='code']").val(orderCode);
+        $("#postfiles").attr("data-id",orderId);
+        $("#postfiles").attr("data-code",orderCode);
     }
 
-    function subForm(data) {
-        if(validateUpload(data))
-        {
-            var ajaxFormOption = {
-                type: 'POST',
-                dataType: 'json',
-                url: "${base}/order/upload_report.do", //请求url
-                success: function (data) {
-                    $("#uploadModel").modal("hide");
-                    if (data.mess == "success") {
-                        window.location.href = "${base}/order/list.jsp";
-                    }
-                    else {
-                        layer.alert(data.mess, {
-                            title: "提示"
-                        });
-                    }
-                }
-            };
-
-            $("#uploadForm1").ajaxSubmit(ajaxFormOption);
-
-            $(data).attr("disabled", true);
-        }
-    }
 
     function deleteOrder(id) {
         layer.confirm('确定要删除该订单么？', {
