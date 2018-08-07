@@ -281,8 +281,12 @@ public class OrderService implements IOrderService
                         else if (j == 4)
                         {
                             //出生年月
-                            if (pattern.matcher(data).matches()) {
+                            if (StringUtils.isEmpty(data)) {
                                 model.setMach(true);
+                            } else {
+                                if (pattern.matcher(data).matches()) {
+                                    model.setMach(true);
+                                }
                             }
                             model.setText(ei.getCellValue(ei.getRow(i), j));
 

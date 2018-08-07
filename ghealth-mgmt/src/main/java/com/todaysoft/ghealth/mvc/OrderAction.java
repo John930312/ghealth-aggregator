@@ -75,6 +75,16 @@ public class OrderAction extends BaseAction
         session.setAttribute("s-searcher", searcher);
         return "order/order_list";
     }
+
+    @RequestMapping("/specialList.jsp")
+    public String specialList(OrderSearcher searcher, PagerArgs pagerArgs, ModelMap model, HttpSession session)
+    {
+        Pagination<Order> pagination = service.searchSpecialList(searcher, pagerArgs.getPageNo(), pagerArgs.getPageSize());
+        model.addAttribute("searcher", searcher);
+        model.addAttribute("pagination", pagination);
+        session.setAttribute("s-searcher", searcher);
+        return "order/order_special_list";
+    }
     
     @RequestMapping(value = "/display.jsp", method = RequestMethod.GET)
     public String display(String id, ModelMap model)

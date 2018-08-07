@@ -12,6 +12,7 @@
         <result column="CUSTOMER_PHONE" property="customer.phone"/>
         <result column="CUSTOMER_SEX" property="customer.sex"/>
         <result column="CUSTOMER_EMAIL" property="customer.email"/>
+        <result column="CUSTOMER_BIRTHDAY" property="customer.birthday"/>
         <result column="AGENCY_ID" property="agency.id"/>
         <result column="AGENCY_NAME" property="agency.name"/>
         <result column="AGENCY_CONTACT_PHONE" property="agency.contactPhone"/>
@@ -478,4 +479,128 @@
         WHERE o.DELETED = '0' AND l.DELETED = '0'
         AND o.ID = #{orderId,jdbcType=VARCHAR}
     </select>
+
+    <select id="getOrderCodes" resultType="String">
+        select
+          GROUP_CONCAT(gOrder.CODE SEPARATOR ',') AS CODE
+        FROM ghealth_order gOrder
+        LEFT JOIN ghealth_customer gCustomer ON gOrder.CUSTOMER_ID =gCustomer.ID
+        LEFT JOIN ghealth_agency gAgency ON gOrder.AGENCY_ID = gAgency.ID
+        WHERE gOrder.DELETED = 0
+        AND gOrder.STATUS != 0
+        GROUP BY gCustomer.NAME,gAgency.ID HAVING COUNT(gCustomer.NAME) > 1
+    </select>
+
+    <select id="getOrderDetailsByCodes" resultMap="BaseResultMap" parameterType="java.util.Set">
+        SELECT
+        gOrder.ID,
+        gOrder.CODE,
+        gOrder.SUBMIT_TIME AS SUBMIT_TIME,
+        gOrder.CREATE_TIME AS CREATE_TIME,
+        gCustomer.ID AS CUSTOMER_ID,
+        gCustomer.NAME AS CUSTOMER_NAME,
+        gCustomer.PHONE AS CUSTOMER_PHONE,
+        gCustomer.SEX AS CUSTOMER_SEX,
+        gCustomer.BIRTHDAY AS CUSTOMER_BIRTHDAY,
+        gAgency.ID AS AGENCY_ID,
+        gAgency.NAME AS AGENCY_NAME,
+        gtProduct.ID AS PRODUCT_ID,
+        gtProduct.NAME AS PRODUCT_NAME,
+        gtProduct.CODE AS PRODUCT_CODE
+        FROM GHEALTH_ORDER gOrder
+        LEFT JOIN ghealth_customer gCustomer ON gOrder.CUSTOMER_ID = gCustomer.ID
+        LEFT JOIN ghealth_agency gAgency ON gOrder.AGENCY_ID = gAgency.ID
+        LEFT JOIN ghealth_testing_product gtProduct ON gOrder.PRODUCT_ID = gtProduct.ID
+        WHERE gOrder.CODE IN
+        <foreach collection="codes" item="code" index="index" open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+        AND gOrder.DELETED = 0
+        AND gOrder.STATUS != 0
+        ORDER BY gOrder.CREATE_TIME DESC
+    </select>
+
+   <!-- <select id="getOrderDetailsByCodes" resultMap="BaseResultMap" parameterType="java.util.Set">
+        SELECT
+        b.`ID`,
+        b.`CODE`,
+        b.SUBMIT_TIME,
+        b.CREATE_TIME,
+        b.CUSTOMER_ID,
+        b.CUSTOMER_NAME,
+        b.CUSTOMER_PHONE,
+        b.CUSTOMER_SEX,
+        b.CUSTOMER_BIRTHDAY,
+        b.AGENCY_ID,
+        b.AGENCY_NAME,
+        b.PRODUCT_ID,
+        b.PRODUCT_NAME,
+        b.PRODUCT_CODE
+        FROM (
+        SELECT
+        gCustomer.NAME AS CUSTOMER_NAME,
+        MAX(gOrder.SUBMIT_TIME) AS maxTime,
+        gOrder.SUBMIT_TIME AS SUBMIT_TIME
+        FROM GHEALTH_ORDER gOrder
+        LEFT JOIN ghealth_customer gCustomer ON gOrder.CUSTOMER_ID = gCustomer.ID
+        LEFT JOIN ghealth_agency gAgency ON gOrder.AGENCY_ID = gAgency.ID
+        LEFT JOIN ghealth_testing_product gtProduct ON gOrder.PRODUCT_ID = gtProduct.ID
+        <choose>
+            <when test="codes.size == 1">
+                WHERE gOrder.CODE =
+                <foreach collection="codes" item="code" index="index" open="" close="" separator="">
+                    #{code}
+                </foreach>
+            </when>
+            <otherwise>
+                WHERE gOrder.CODE IN
+                <foreach collection="codes" item="code" index="index" open="(" close=")" separator=",">
+                    #{code}
+                </foreach>
+            </otherwise>
+        </choose>
+        AND gOrder.DELETED = 0
+        AND gOrder.STATUS != 0
+        GROUP BY gCustomer.NAME
+        ORDER BY maxTime DESC ) a INNER JOIN
+        (
+        SELECT
+        gOrder.ID AS `ID`,
+        gOrder.CODE AS `CODE`,
+        gOrder.SUBMIT_TIME AS SUBMIT_TIME,
+        gOrder.CREATE_TIME AS CREATE_TIME,
+        gCustomer.ID AS CUSTOMER_ID,
+        gCustomer.NAME AS CUSTOMER_NAME,
+        gCustomer.PHONE AS CUSTOMER_PHONE,
+        gCustomer.SEX AS CUSTOMER_SEX,
+        gCustomer.BIRTHDAY AS CUSTOMER_BIRTHDAY,
+        gAgency.ID AS AGENCY_ID,
+        gAgency.NAME AS AGENCY_NAME,
+        gtProduct.ID AS PRODUCT_ID,
+        gtProduct.NAME AS PRODUCT_NAME,
+        gtProduct.CODE AS PRODUCT_CODE
+        FROM GHEALTH_ORDER gOrder
+        LEFT JOIN ghealth_customer gCustomer ON gOrder.CUSTOMER_ID = gCustomer.ID
+        LEFT JOIN ghealth_agency gAgency ON gOrder.AGENCY_ID = gAgency.ID
+        LEFT JOIN ghealth_testing_product gtProduct ON gOrder.PRODUCT_ID = gtProduct.ID
+
+        <choose>
+            <when test="codes.size == 1">
+                WHERE gOrder.CODE =
+                <foreach collection="codes" item="code" index="index" open="" close="" separator="">
+                    #{code}
+                </foreach>
+            </when>
+            <otherwise>
+                WHERE gOrder.CODE IN
+                <foreach collection="codes" item="code" index="index" open="(" close=")" separator=",">
+                    #{code}
+                </foreach>
+            </otherwise>
+        </choose>
+        AND gOrder.DELETED = 0
+        AND gOrder.STATUS != 0
+        ) b ON b.CUSTOMER_NAME = a.CUSTOMER_NAME;
+    </select>-->
+
 </mapper>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>订单列表-订单管理</title>
+    <link href="${plugins}/bootstrap/bootstrap.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/font-awesome.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
+    <link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
+    <link href="${system_css}/system.css?v=0.1" rel="stylesheet"></link>
+    <link href="${plugins}/magicsuggest/magicsuggest-min.css" rel="stylesheet"></link>
+    <style>
+        #jcxmBox td {
+            text-align: left;
+        }
+    </style>
+</head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <ol class="breadcrumb">
+                        <li>
+                            <a href="${base}/order/list.jsp">订单管理</a>
+                        </li>
+                        <li class="active">
+                            <strong>特殊订单列表</strong>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="ibox ibox-table">
+                <div class="ibox-title">
+                    <h5>特殊订单列表</h5>
+            </div>
+    <div class="ibox-content">
+        <form action="${base}/order/specialList.jsp" method="post" class="search-form" id="search-form" name="search-form">
+            <div class="row m-b-xs">
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="orderCode"
+                               value="${(searcher.orderCode)!?html}"
+                               placeholder="订单编号">
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="customerName"
+                               value="${(searcher.customerName)!?html}"
+                               placeholder="客户姓名">
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="customerPhone"
+                               value="${(searcher.customerPhone)!?html}"
+                               placeholder="联系电话">
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="agencyName"
+                               value="${(searcher.agencyName)!?html}"
+                               placeholder="代理商">
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="" id="jcxmBox">
+                        <div class="input-append input-group"
+                             style="white-space: nowrap; vertical-align: middle;">
+                            <input type="text" class="form-control" id="pn"
+                                   name='productName' placeholder="检测项目"
+                                   value="${searcher.productName!?html}">
+                            <div class="btn-group"
+                                 style="display: inline-block; margin-left: -1px; vertical-align: middle;">
+                                <button type="button" class="btn btn-default dropdown-toggle"
+                                        data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                </button>
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="Wdate form-control" id="startTime" name="startTime"
+                               style="height: 35px"
+                               value="<#if searcher.startTime??>${searcher.startTime!?string('yyyy-MM-dd')}</#if>"
+                               placeholder="下单开始日期"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endTime\')}'})" readonly/>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <input type="text" class="Wdate form-control" id="endTime" name="endTime"
+                               style="height: 35px"
+                               value="<#if searcher.endTime??>${searcher.endTime!?string('yyyy-MM-dd')}</#if>"
+                               placeholder="下单结束日期"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startTime\')}'})" readonly/>
+                    </div>
+                </div>
+
+                <div class="col-sm-2" style="float: right">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-sm btn-success">
+                            <i class="fa fa-search"></i> 查询
+                        </button>
+                        <button type="reset" class="btn btn-sm btn-success">
+                            <i class="fa fa-repeat"></i> 重置
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr >
+                <th class="index">序号</th>
+                <th>客户姓名</th>
+                <th>性别</th>
+                <th>联系电话</th>
+                <th>出生年月</th>
+                <th>订单编号</th>
+                <th>产品名称</th>
+                <th>代理商</th>
+                <th>下单时间</th>
+                <th class="flexible-btns">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <#if pagination.records?has_content>
+                <#list pagination.records as record>
+                    <tr>
+                        <td>${record_index + 1}</td>
+                        <td>${(record.customer.name)!?html}</td>
+                        <td><@dict_category_value category = "GENDER" value = record.customer.sex/></td>
+                        <td>${(record.customer.phone)!?html}</td>
+                        <td>${(record.customer.birthday)!?html}</td>
+                        <td>${record.code!?html}</td>
+                        <td>${(record.product.name)!?html}</td>
+                        <td>${(record.agency.name)!?html}</td>
+                        <td  >
+                        <!--<#if record.submitTime??>${record.submitTime!?string('yyyy-MM-dd HH:mm:ss')}</#if>-->
+                        ${record.createTime!?string('yyyy-MM-dd HH:mm:ss')}
+                        </td>
+                        <td class="flexible-btns" style="white-space: nowrap">
+                            <a href="${base}/order/display.jsp?id=${record.id}" class="btn btn-sm btn-success">
+                                <i class="fa fa-thn"></i> 详情
+                            </a>
+                        </td>
+                    </tr>
+                </#list>
+        <#else>
+            <tr>
+                <td colspan="14">暂无相关记录</td>
+            </tr>
+            </#if>
+            </tbody>
+            </table>
+            <#include "../inc/pagination.html" />
+    </div>
+</div>
+</div>
+</div>
+</div>
+<script src="${plugins}/jquery/jquery.min.js"></script>
+<script src="${plugins}/jquery/jquery.form.js"></script>
+<script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/bootstrap/bootstrap-suggest.js"></script>
+<script src="${plugins}/bootstrap-dialog/bootstrap-dialog.min.js"></script>
+<script src="${plugins}/pagination/jquery.pagination.js"></script>
+<script src="${plugins}/My97DatePicker/WdatePicker.js"></script>
+<script src="${plugins}/layer/layer.min.js"></script>
+<script src="${system_js}/system.js?v=0.2"></script>
+<script src="${plugins}/magicsuggest/magicsuggest-min.js"></script>
+<script>
+    var base = "${base}";
+    var timer = null;
+
+    $(function () {
+
+        $('.btn-cancel').click(function (e){
+
+            var ids = getSelectedIds(true);
+            if (ids != '') {
+                e.preventDefault();
+                cancelConfirm(ids);
+            }
+            else {
+                layer.alert('选项不符合条件', {
+                    title: "提示"
+                });
+            }
+        });
+
+
+        $("#pn").bsSuggest('init', {
+            url: "${base}/product/getSelectList.do?name=",
+            getDataMethod: "url",
+            idField: "id",
+            keyField: "name",
+            indexKey: 0,
+            effectiveFields: ["name"],
+            listAlign: 'right',
+            effectiveFieldsAlias: {
+                name: "产品名称"
+            }
+        }).on('onDataRequestSuccess', function (e, result) {
+        }).on('onSetSelectValue', function (e, keyword, data) {
+        }).on('onUnsetSelectValue', function () {
+        });
+
+        $('a.order-report').click(function (e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+
+            BootstrapDialog.alert({
+                title: '订单报告',
+                closable: false,
+                buttonLabel: '关闭',
+                onhide: function (dialog) {
+                    if (null != timer) {
+                        window.clearInterval(timer);
+                    }
+                },
+                message: $('<div></div>').load(url)
+            });
+        });
+
+        $('a.order-reports').click(function (e) {
+
+            var ids = getSelectedIds(false);
+            if (ids != '') {
+                e.preventDefault();
+                var url = $(this).attr('href') + "?ids=" + ids;
+
+                BootstrapDialog.alert({
+                    title: '订单报告',
+                    closable: false,
+                    buttonLabel: '关闭',
+                    onhide: function (dialog) {
+                        if (null != timer) {
+                            window.clearInterval(timer);
+                        }
+                    },
+                    message: $('<div></div>').load(url)
+                });
+            }
+            else {
+                $(this).attr('href', 'javascript:;');
+                layer.alert('选项不符合条件', {
+                    title: "提示"
+                });
+            }
+        });
+
+        var p = $('#agencyName').magicSuggest(
+            {
+                width: 190,
+                highlight: true,
+                data: '${base}/agency/json_list.do',
+                method: 'get',
+                queryParam: "name",
+                maxSelection: 1,
+                displayField: "name",
+                allowFreeEntries: false,
+                renderer: function (v) {
+                    return '<div>' + '<div >' + '<div>' + v.name + '</div>' + '</div>'
+                        + '<div style="clear:both;"></div>';
+                }
+            });
+
+        var s = $('#productName').magicSuggest(
+            {
+                width: 190,
+                highlight: true,
+                data: '${base}/product/json_list.do',
+                method: 'get',
+                queryParam: "name",
+                maxSelection: 1,
+                displayField: "name",
+                allowFreeEntries: false,
+                renderer: function (v) {
+                    return '<div>' + '<div >' + '<div  class="probe">' + v.name + '</div>'
+                        + '</div>' + '<div style="clear:both;"></div>';
+                }
+            });
+
+        if ($('#agencyName').val() != null && "" != $('#agencyName').val()) {
+            s.setDataUrlParams({
+                testingType: $('#agencyName').val()
+            });
+        }
+        $('#myModal').on('hide.bs.modal', function () {
+            $('input').val('');
+        });
+    });
+
+    function submitMyForm(obj) {
+        var agency = $('#agencyName').magicSuggest().getSelection()[0];
+        if (undefined != agency) {
+            $('input[name="agencyId"]').val(agency.id);
+        }
+
+        var product = $('#productName').magicSuggest().getSelection()[0];
+        if (undefined != product) {
+            $('input[name="productId"]').val(product.id);
+        }
+        $('#uploadForm').submit();
+        $(obj).attr("disabled", true);
+        $('#myModal').modal("hide");
+    };
+
+
+
+
+    function setOrder(orderId, orderCode) {
+        $("[name='id']").val(orderId);
+        $("[name='code']").val(orderCode);
+    }
+
+
+
+
+
+</script>
+</body>
+</html>

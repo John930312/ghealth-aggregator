@@ -113,10 +113,10 @@ public class OrderMgmtFacade
     
     @Autowired
     private AliyunOSSConfig config;
-    
+
     @Autowired
     private ReportGenerateTaskMapper reportGenerateTaskMapper;
-    
+
     public PagerResponse<Order> pager(QueryOrdersRequest request)
     {
         int pageNo = null == request.getPageNo() ? 1 : request.getPageNo();
@@ -704,7 +704,7 @@ public class OrderMgmtFacade
         }
         handerOssUpload(request, destUri, dest);
     }
-    
+
     private void handerOssUpload(MaintainOrderRequest request, String destUri, File dest)
     {
         ReportGenerator reportGenerator = RootContext.getBean(ReportGenerator.class);
@@ -895,7 +895,19 @@ public class OrderMgmtFacade
         orderHistoryService.deleteByOrderId(request.getId());
         service.modify(order);
     }
-    
+
+    public PagerResponse<Order> specialPager(QueryOrdersRequest request)
+    {
+        int pageNo = null == request.getPageNo() ? 1 : request.getPageNo();
+        int pageSize = null == request.getPageSize() ? 10 : request.getPageSize();
+        OrderSearcher searcher = new OrderSearcher();
+        BeanUtils.copyProperties(request, searcher, "startCreateTime", "endStartTime", "startReportTime", "endReportTime");
+        wrapSearcher(request, searcher);
+        Pager<com.todaysoft.ghealth.mybatis.model.Order> pager = service.getSpecialPager(searcher, pageNo, pageSize);
+        Pager<Order> result = Pager.generate(pager.getPageNo(), pager.getPageSize(), pager.getTotalCount(), wrapper.wrap(pager.getRecords()));
+        return new PagerResponse<Order>(result);
+    }
+
     @Transactional
     public void uploadReport(MaintainOrderRequest request)
     {
@@ -906,7 +918,7 @@ public class OrderMgmtFacade
         details.put("endpoint", config.getEndpoint());
         details.put("bucketName", config.getBucketName());
         details.put("objectKey", objectKey);
-        
+
         //ghealth_object_storage 插入数据
         String objectStorageId = IdGen.uuid();
         ObjectStorage entity = new ObjectStorage();
@@ -914,7 +926,7 @@ public class OrderMgmtFacade
         entity.setStorageType(ObjectStorage.STORAGE_ALI_OSS);
         entity.setStorageDetails(JsonUtils.toJson(details));
         reportGenerateTaskMapper.insertObjectStorageRecord(entity);
-        
+
         //ghealth_order_report_generate_task 插入数据
         ReportGenerateTask task = new ReportGenerateTask();
         Date timestamp = new Date();
@@ -923,7 +935,7 @@ public class OrderMgmtFacade
         task.setCreateTime(timestamp);
         task.setCreatorName("管理员");
         task.setFinishTime(timestamp);
-        
+
         if (objectKey.contains(".pdf"))
         {
             task.setPdfFileUrl(objectStorageId);
@@ -933,7 +945,7 @@ public class OrderMgmtFacade
             task.setWordFileUrl(objectStorageId);
         }
         reportGenerateTaskMapper.insert(task);
-        
+
         com.todaysoft.ghealth.mybatis.model.Order order = service.getOrderById(request.getId());
         order.setReportGenerateTaskId(task.getId());
         order.setReportGenerateTime(timestamp);

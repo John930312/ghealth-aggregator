@@ -68,7 +68,9 @@
                                             <tr>
                                                 <th>产品编码</th>
                                                 <th>产品名称</th>
+                                                <@security_resource resource = "/money/show">
                                                 <th>产品价格</th>
+                                                </@security_resource>
                                                 <th>纸质报告</th>
                                                 <th>下单时间</th>
                                                 <th>订单状态</th>
@@ -78,7 +80,9 @@
                                                     <tr>
                                                         <td>${(data.product.code)!?html}</td>
                                                         <td>${(data.product.name)!?html}</td>
+                                                        <@security_resource resource = "/money/show">
                                                         <td>${(data.product.guidingPrice)!?html}</td>
+                                                        </@security_resource>
                                                         <td>
                                                             <@dict_category_value category="REPORT_PRINT_REQUIRED" value=data.reportPrintRequired/>
                                                         </td>
