@@ -381,10 +381,6 @@
 
     $(function () {
 
-        $('#uploadModel').on('hide.bs.modal', function (e) {
-           window.location.href = "${base}/order/list.jsp";
-        })
-
         $('.btn-cancel').click(function (e) {
 
             var ids = getSelectedIds(true);

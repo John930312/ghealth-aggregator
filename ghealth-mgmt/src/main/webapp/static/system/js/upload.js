@@ -109,6 +109,7 @@ var uploader = new plupload.Uploader({
             else {
                 document.getElementById(file.id).getElementsByTagName('b')[0].innerHTML = info.response;
             }
+              window.location.href = "http://p2fzbi.natappfree.cc/ghealth-mgmt/order/list.jsp";
         },
 
         Error: function (up, err) {
