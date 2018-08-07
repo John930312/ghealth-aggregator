@@ -179,4 +179,10 @@ public class OrderMgmtController
     {
         facade.delete(request);
     }
+
+    @RequestMapping("/uploadReport")
+    public void uploadReport(@RequestBody MaintainOrderRequest request) throws IOException
+    {
+        facade.uploadReport(request);
+    }
 }

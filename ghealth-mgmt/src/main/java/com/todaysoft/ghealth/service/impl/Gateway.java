@@ -49,11 +49,13 @@ public class Gateway
         {
             if (request instanceof SignatureTokenRequest)
             {
-
-                AccountDetails account = (AccountDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                ((SignatureTokenRequest)request).setToken(account.getToken());
+                if (((SignatureTokenRequest)request).isLogin())
+                {
+                    AccountDetails account = (AccountDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                    ((SignatureTokenRequest)request).setToken(account.getToken());
+                }
             }
-
+            
             request.sign(ACCESS_KEY, SECRET_KEY);
             template.postForLocation(getUrl(uri), request);
         }
@@ -112,7 +114,7 @@ public class Gateway
                 AccountDetails account = (AccountDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 ((SignatureTokenRequest)request).setToken(account.getToken());
             }
-
+            
             request.sign(ACCESS_KEY, SECRET_KEY);
             ResponseEntity<T> rsp = template.exchange(getUrl(uri), HttpMethod.POST, new HttpEntity<Object>(request), responseType);
             return rsp.getBody();
@@ -150,8 +152,7 @@ public class Gateway
     private class GatewayResponseErrorHandler extends DefaultResponseErrorHandler
     {
         @Override
-        public void handleError(ClientHttpResponse response)
-            throws IOException
+        public void handleError(ClientHttpResponse response) throws IOException
         {
             try
             {
@@ -162,7 +163,8 @@ public class Gateway
                     case CLIENT_ERROR:
                         throw new ServiceException(ErrorCode.UNDEFINED_ERROR);
                     case SERVER_ERROR:
-                        ErrorResponse rsp = new HttpMessageConverterExtractor<ErrorResponse>(ErrorResponse.class, template.getMessageConverters()).extractData(response);
+                        ErrorResponse rsp =
+                            new HttpMessageConverterExtractor<ErrorResponse>(ErrorResponse.class, template.getMessageConverters()).extractData(response);
                         ServiceException e = new ServiceException(rsp.getErrorCode());
                         throw e;
                     default:

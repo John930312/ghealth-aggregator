@@ -44,6 +44,8 @@ public class MaintainOrderRequest extends SignatureTokenRequest
     
     private String orderIds;
     
+    private String objectKey;
+    
     public String getAgencyId()
     {
         return agencyId;
@@ -202,5 +204,15 @@ public class MaintainOrderRequest extends SignatureTokenRequest
     public void setOrderIds(String orderIds)
     {
         this.orderIds = orderIds;
+    }
+    
+    public String getObjectKey()
+    {
+        return objectKey;
+    }
+    
+    public void setObjectKey(String objectKey)
+    {
+        this.objectKey = objectKey;
     }
 }

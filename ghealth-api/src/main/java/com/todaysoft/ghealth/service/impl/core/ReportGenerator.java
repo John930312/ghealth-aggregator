@@ -216,7 +216,7 @@ public class ReportGenerator
         {
             parentFile = pdf.getParentFile();
         }
-        //FileUtils.deleteQuietly(parentFile);
+        FileUtils.deleteQuietly(parentFile);
         
         ReportGenerateTask task = new ReportGenerateTask();
         task.setId(context.getGenerateKey());
