@@ -171,8 +171,8 @@
     </insert>
 
     <delete id="delete" parameterType="com.todaysoft.ghealth.mybatis.searcher.AgencyProductSearcher" >
-        DELETE ap,op FROM ghealth_agency_product ap,ghealth_agency_product_old_price op
-        WHERE ap.ID =  op.AGENCY_PRODUCT_ID AND ap.AGENCY_ID = #{agencyId,jdbcType=VARCHAR} AND ap.PRODUCT_ID = #{productId,jdbcType=VARCHAR}
+        DELETE ap,op FROM ghealth_agency_product ap LEFT JOIN ghealth_agency_product_old_price op ON ap.ID =  op.AGENCY_PRODUCT_ID
+        WHERE ap.AGENCY_ID = #{agencyId,jdbcType=VARCHAR} AND ap.PRODUCT_ID = #{productId,jdbcType=VARCHAR}
     </delete>
 
 
