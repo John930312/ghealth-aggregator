@@ -47,4 +47,8 @@ public interface OrderMapper
     ObjectStorage getDocReportUrl(String orderId);
 
     List<String> getLoci(String id);
+
+    List<String> getOrderCodes();
+
+    List<Order> getOrderDetailsByCodes(@Param("codes") Set<String> codes);
 }

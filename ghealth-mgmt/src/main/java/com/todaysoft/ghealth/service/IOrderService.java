@@ -67,4 +67,6 @@ public interface IOrderService
     void uploadReport(Order order, MultipartFile file) throws Exception;
 
     void delete(String id);
+
+    Pagination<Order> searchSpecialList(OrderSearcher searcher, int offset, int limit);
 }

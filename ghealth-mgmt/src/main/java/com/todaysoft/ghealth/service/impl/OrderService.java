@@ -498,4 +498,26 @@ public class OrderService implements IOrderService
         request.setId(id);
         gateway.request("/mgmt/order/delete", request);
     }
+
+    @Override
+    public Pagination<Order> searchSpecialList(OrderSearcher searcher, int pageNo, int pageSize)
+    {
+        QueryOrdersRequest request = orderWrapper.searcherWarp(searcher);
+        request.setPageNo(pageNo);
+        request.setPageSize(pageSize);
+        PagerResponse<com.todaysoft.ghealth.base.response.model.Order> response =
+                gateway.request("/mgmt/order/specialPager", request, new ParameterizedTypeReference<PagerResponse<com.todaysoft.ghealth.base.response.model.Order>>()
+                {
+                });
+        Pager<com.todaysoft.ghealth.base.response.model.Order> pager = response.getData();
+
+        Pagination<Order> pagination = new Pagination<Order>(pager.getPageNo(), pager.getPageSize(), pager.getTotalCount());
+
+        if (CollectionUtils.isEmpty(pager.getRecords()))
+        {
+            return pagination;
+        }
+        pagination.setRecords(orderWrapper.wrap(pager.getRecords()));
+        return pagination;
+    }
 }

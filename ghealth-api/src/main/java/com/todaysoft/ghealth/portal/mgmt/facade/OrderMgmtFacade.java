@@ -884,4 +884,16 @@ public class OrderMgmtFacade
         orderHistoryService.deleteByOrderId(request.getId());
         service.modify(order);
     }
+
+    public PagerResponse<Order> specialPager(QueryOrdersRequest request)
+    {
+        int pageNo = null == request.getPageNo() ? 1 : request.getPageNo();
+        int pageSize = null == request.getPageSize() ? 10 : request.getPageSize();
+        OrderSearcher searcher = new OrderSearcher();
+        BeanUtils.copyProperties(request, searcher, "startCreateTime", "endStartTime", "startReportTime", "endReportTime");
+        wrapSearcher(request, searcher);
+        Pager<com.todaysoft.ghealth.mybatis.model.Order> pager = service.getSpecialPager(searcher, pageNo, pageSize);
+        Pager<Order> result = Pager.generate(pager.getPageNo(), pager.getPageSize(), pager.getTotalCount(), wrapper.wrap(pager.getRecords()));
+        return new PagerResponse<Order>(result);
+    }
 }

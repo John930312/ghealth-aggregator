@@ -1,6 +1,7 @@
 package com.todaysoft.ghealth.service;
 
 import com.todaysoft.ghealth.base.request.QueryDetailsRequest;
+import com.todaysoft.ghealth.base.response.Pager;
 import com.todaysoft.ghealth.mgmt.request.MaintainOrderRequest;
 import com.todaysoft.ghealth.mybatis.model.Agency;
 import com.todaysoft.ghealth.mybatis.model.Order;
@@ -55,4 +56,6 @@ public interface IOrderService extends PagerQueryHandler<Order>
     byte[] getPdfReportContents(String id) throws IOException;
 
     List<String> getLoci(String id);
+
+    Pager<Order> getSpecialPager(OrderSearcher searcher, int pageNo, int pageSize);
 }

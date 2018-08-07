@@ -33,6 +33,12 @@ public class OrderMgmtController
     {
         return facade.pager(request);
     }
+
+    @RequestMapping("specialPager")
+    public PagerResponse<Order> specialPager(@RequestBody QueryOrdersRequest request)
+    {
+        return facade.specialPager(request);
+    }
     
     @RequestMapping("/display")
     public ObjectResponse<Order> diaplsy(@RequestBody MaintainOrderRequest request)
