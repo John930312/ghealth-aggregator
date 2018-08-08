@@ -520,4 +520,20 @@ public class OrderService implements IOrderService
         pagination.setRecords(orderWrapper.wrap(pager.getRecords()));
         return pagination;
     }
+
+    @Override
+    public String getReportUrl(String id, String type)
+    {
+        DownloadOrderReportRequest request = new DownloadOrderReportRequest();
+        request.setOrderId(id);
+        request.setType(type);
+        request.setLoginType("1");
+
+        ObjectResponse<String> response =
+                gateway.request("/mgmt/order/getReportUrl", request, new ParameterizedTypeReference<ObjectResponse<String>>()
+                {
+                });
+
+        return response.getData();
+    }
 }

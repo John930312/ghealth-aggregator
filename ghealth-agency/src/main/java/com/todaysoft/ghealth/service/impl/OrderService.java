@@ -185,15 +185,15 @@ public class OrderService implements IOrderService
     }
     
     @Override
-    public OrderReportStreamDTO getReport(String id, String type)
+    public String getReport(String id, String type)
     {
         DownloadOrderReportRequest request = new DownloadOrderReportRequest();
         request.setOrderId(id);
         request.setType(type);
         request.setLoginType("0");
         
-        ObjectResponse<OrderReportStreamDTO> response =
-            gateway.request("/agcy/order/report/stream", request, new ParameterizedTypeReference<ObjectResponse<OrderReportStreamDTO>>()
+        ObjectResponse<String> response =
+            gateway.request("/agcy/order/report/stream", request, new ParameterizedTypeReference<ObjectResponse<String>>()
             {
             });
         return response.getData();

@@ -89,9 +89,9 @@ public class OrderAgcyController
     }
     
     @RequestMapping("/report/stream")
-    public ObjectResponse<OrderReportStreamDTO> getReportStream(@RequestBody DownloadOrderReportRequest request)
+    public ObjectResponse<String> getReportStream(@RequestBody DownloadOrderReportRequest request)
     {
-        return orderMgmtFacade.getReportStream(request);
+        return orderMgmtFacade.getReportUrl(request);
     }
     
     @RequestMapping("/report/generate/details")

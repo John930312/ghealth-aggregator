@@ -39,7 +39,7 @@ public interface IOrderService
     
     ReportGenerateTask getReportGenerateTask(String reportGenerateTaskId);
     
-    OrderReportStreamDTO getReport(String id, String type);
+    String getReport(String id, String type);
     
     void createOrderAtMobile(Order data);
     

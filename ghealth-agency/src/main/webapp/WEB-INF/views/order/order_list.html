@@ -271,14 +271,12 @@
         <@security_resource resource = "/order/report/download.jsp">
         <#if record.status == "5">
             <#if record.havePDF>
-                <a id="download-pdf" class="btn btn-sm btn-primary btn-report-download"
-                   href="${base}/order/report/download.jsp?id=${(record.id)!}&type=pdf">
+                <a id="download-pdf" class="btn btn-sm btn-primary btn-report-download" href="javascript:;" onclick="getDownloadUrl(this,'${record.id}','pdf')">
                     <i class="fa fa-book"></i> PDF下载
                 </a>
             </#if>
             <#if record.haveWord>
-                <a id="download-word" class="btn btn-sm btn-primary btn-report-download"
-                   href="${base}/order/report/download.jsp?id=${(record.id)!}&type=word">
+                <a id="download-word" class="btn btn-sm btn-primary btn-report-download" href="javascript:;" onclick="getDownloadUrl(this,'${record.id}','word')">
                     <i class="fa fa-book"></i> WORD下载
                 </a>
             </#if>
@@ -600,6 +598,18 @@
     function showGuidance()
     {
         $('#guideModal').modal('show')
+    }
+
+    function getDownloadUrl(obj,orderId,downloadType)
+    {
+        $.ajax({
+            url:"${base}/order/report/download.jsp",
+            data:{id:orderId,type:downloadType},
+            async: false,
+            success:function(result){
+                $(obj).attr("href", result);
+            }
+        });
     }
 </script>
 </body>

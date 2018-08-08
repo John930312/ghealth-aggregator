@@ -1,5 +1,6 @@
 package com.todaysoft.ghealth.portal.mgmt.facade;
 
+import com.aliyun.oss.OSSClient;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.todaysoft.ghealth.base.request.QueryDetailsRequest;
 import com.todaysoft.ghealth.base.response.ListResponse;
@@ -51,6 +52,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.*;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -113,10 +115,10 @@ public class OrderMgmtFacade
     
     @Autowired
     private AliyunOSSConfig config;
-
+    
     @Autowired
     private ReportGenerateTaskMapper reportGenerateTaskMapper;
-
+    
     public PagerResponse<Order> pager(QueryOrdersRequest request)
     {
         int pageNo = null == request.getPageNo() ? 1 : request.getPageNo();
@@ -292,42 +294,8 @@ public class OrderMgmtFacade
     
     public ObjectResponse<OrderReportStreamDTO> getReportStream(DownloadOrderReportRequest request)
     {
-        if (StringUtils.isEmpty(request.getOrderId()))
-        {
-            throw new ServiceException(MgmtErrorCode.API_ILLEGAL_ARGUMENT);
-        }
-        
         com.todaysoft.ghealth.mybatis.model.Order order = service.getOrderById(request.getOrderId());
-        
-        if (StringUtils.isEmpty(order.getReportGenerateTaskId()))
-        {
-            throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_UNGENERATED);
-        }
-        
-        ReportGenerateTask task = reportGenerateService.getReportGenerateTask(order.getReportGenerateTaskId());
-        
-        if (null == task || !ReportGenerateTask.STATUS_SUCCESS.equals(task.getStatus()))
-        {
-            throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_UNGENERATED);
-        }
-        
-        String objectStorageKey;
-        
-        if ("word".equals(request.getType()))
-        {
-            objectStorageKey = task.getWordFileUrl();
-        }
-        else
-        {
-            objectStorageKey = task.getPdfFileUrl();
-        }
-        
-        if (StringUtils.isEmpty(objectStorageKey))
-        {
-            throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_UNGENERATED);
-        }
-        
-        ObjectStorage objectStorage = objectStorageService.get(objectStorageKey);
+        ObjectStorage objectStorage = getObjectStorage(request, order);
         StorageObject object = getStorageObject(objectStorage);
         
         try
@@ -348,6 +316,25 @@ public class OrderMgmtFacade
         {
             throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_IO_ERROR);
         }
+    }
+    
+    public ObjectResponse<String> getReportUrl(DownloadOrderReportRequest request)
+    {
+        com.todaysoft.ghealth.mybatis.model.Order order = service.getOrderById(request.getOrderId());
+        ObjectStorage objectStorage = getObjectStorage(request, order);
+        Map<String, String> attributes = JsonUtils.fromJson(objectStorage.getStorageDetails(), new TypeReference<Map<String, String>>()
+        {
+        });
+        if (CollectionUtils.isEmpty(attributes))
+        {
+            throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_UNEXISTS);
+        }
+        OSSClient client = new OSSClient(config.getEndpoint(), config.getAccessKeyId(), config.getAccessKeySecret());
+        //两分钟
+        Date expiration = new Date(System.currentTimeMillis() + 10 * 60 * 1000);
+        URL url = client.generatePresignedUrl(config.getBucketName(), attributes.get("objectKey"), expiration);
+        
+        return new ObjectResponse<>(url.toString());
     }
     
     private StorageObject getStorageObject(ObjectStorage entity)
@@ -704,7 +691,7 @@ public class OrderMgmtFacade
         }
         handerOssUpload(request, destUri, dest);
     }
-
+    
     private void handerOssUpload(MaintainOrderRequest request, String destUri, File dest)
     {
         ReportGenerator reportGenerator = RootContext.getBean(ReportGenerator.class);
@@ -895,7 +882,7 @@ public class OrderMgmtFacade
         orderHistoryService.deleteByOrderId(request.getId());
         service.modify(order);
     }
-
+    
     public PagerResponse<Order> specialPager(QueryOrdersRequest request)
     {
         int pageNo = null == request.getPageNo() ? 1 : request.getPageNo();
@@ -907,7 +894,7 @@ public class OrderMgmtFacade
         Pager<Order> result = Pager.generate(pager.getPageNo(), pager.getPageSize(), pager.getTotalCount(), wrapper.wrap(pager.getRecords()));
         return new PagerResponse<Order>(result);
     }
-
+    
     @Transactional
     public void uploadReport(MaintainOrderRequest request)
     {
@@ -918,7 +905,7 @@ public class OrderMgmtFacade
         details.put("endpoint", config.getEndpoint());
         details.put("bucketName", config.getBucketName());
         details.put("objectKey", objectKey);
-
+        
         //ghealth_object_storage 插入数据
         String objectStorageId = IdGen.uuid();
         ObjectStorage entity = new ObjectStorage();
@@ -926,7 +913,7 @@ public class OrderMgmtFacade
         entity.setStorageType(ObjectStorage.STORAGE_ALI_OSS);
         entity.setStorageDetails(JsonUtils.toJson(details));
         reportGenerateTaskMapper.insertObjectStorageRecord(entity);
-
+        
         //ghealth_order_report_generate_task 插入数据
         ReportGenerateTask task = new ReportGenerateTask();
         Date timestamp = new Date();
@@ -935,7 +922,7 @@ public class OrderMgmtFacade
         task.setCreateTime(timestamp);
         task.setCreatorName("管理员");
         task.setFinishTime(timestamp);
-
+        
         if (objectKey.contains(".pdf"))
         {
             task.setPdfFileUrl(objectStorageId);
@@ -945,11 +932,54 @@ public class OrderMgmtFacade
             task.setWordFileUrl(objectStorageId);
         }
         reportGenerateTaskMapper.insert(task);
-
+        
         com.todaysoft.ghealth.mybatis.model.Order order = service.getOrderById(request.getId());
         order.setReportGenerateTaskId(task.getId());
         order.setReportGenerateTime(timestamp);
         order.setStatus(DataStatus.ORDER_FINISHED);
         service.modify(order);
+    }
+    
+    private ObjectStorage getObjectStorage(DownloadOrderReportRequest request, com.todaysoft.ghealth.mybatis.model.Order order)
+    {
+        if (StringUtils.isEmpty(request.getOrderId()))
+        {
+            throw new ServiceException(MgmtErrorCode.API_ILLEGAL_ARGUMENT);
+        }
+        
+        if (StringUtils.isEmpty(order.getReportGenerateTaskId()))
+        {
+            throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_UNGENERATED);
+        }
+        
+        ReportGenerateTask task = reportGenerateService.getReportGenerateTask(order.getReportGenerateTaskId());
+        
+        if (null == task || !ReportGenerateTask.STATUS_SUCCESS.equals(task.getStatus()))
+        {
+            throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_UNGENERATED);
+        }
+        
+        String objectStorageKey;
+        
+        if ("word".equals(request.getType()))
+        {
+            objectStorageKey = task.getWordFileUrl();
+        }
+        else
+        {
+            objectStorageKey = task.getPdfFileUrl();
+        }
+        
+        if (StringUtils.isEmpty(objectStorageKey))
+        {
+            throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_UNGENERATED);
+        }
+        
+        ObjectStorage objectStorage = objectStorageService.get(objectStorageKey);
+        if (Objects.isNull(objectStorage))
+        {
+            throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_UNEXISTS);
+        }
+        return objectStorage;
     }
 }

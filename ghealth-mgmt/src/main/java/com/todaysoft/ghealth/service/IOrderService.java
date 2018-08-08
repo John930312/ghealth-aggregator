@@ -37,7 +37,7 @@ public interface IOrderService
     ReportGenerateTask getReportGenerateTask(String reportGenerateTaskId);
     
     OrderReportStreamDTO getReport(String id, String type);
-    
+
     List<OrderHistory> getOrderHistoriesByOrderId(String orderId);
     
     String generateReports(String ids);
@@ -69,4 +69,6 @@ public interface IOrderService
     void delete(String id);
 
     Pagination<Order> searchSpecialList(OrderSearcher searcher, int offset, int limit);
+
+    String getReportUrl(String id, String type);
 }

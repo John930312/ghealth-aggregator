@@ -31,10 +31,10 @@
             </button>
         </div>
         <div class="report-status" id="success">
-            <a id="download-pdf" class="btn btn-sm btn-primary btn-report-download" href="${base}/order/report/download.do?id=${(data.id)!}&type=pdf">
+            <a id="download-pdf" class="btn btn-sm btn-primary btn-report-download" href="javascript:;" onclick="getDownloadUrl(this,'${data.id}','pdf')">
                 <i class="fa fa-book"></i> PDF报告
             </a>
-            <a id="download-word" class="btn btn-sm btn-primary btn-report-download" href="${base}/order/report/download.do?id=${(data.id)!}&type=word">
+            <a id="download-word" class="btn btn-sm btn-primary btn-report-download" href="javascript:;" onclick="getDownloadUrl(this,'${data.id}','word')">
                 <i class="fa fa-book"></i> WORD报告
             </a>
             <button class="btn btn-sm btn-primary btn-regenerate">
@@ -298,6 +298,18 @@ function sendMessage(Id) {
         },
 
     })
+}
+
+function getDownloadUrl(obj,orderId,downloadType)
+{
+    $.ajax({
+        url:"${base}/order/report/download.do",
+        data:{id:orderId,type:downloadType},
+        async: false,
+        success:function(result){
+            $(obj).attr("href", result);
+        }
+    });
 }
 
 //-->

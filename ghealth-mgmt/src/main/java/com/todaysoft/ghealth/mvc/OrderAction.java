@@ -75,7 +75,7 @@ public class OrderAction extends BaseAction
         session.setAttribute("s-searcher", searcher);
         return "order/order_list";
     }
-
+    
     @RequestMapping("/specialList.jsp")
     public String specialList(OrderSearcher searcher, PagerArgs pagerArgs, ModelMap model, HttpSession session)
     {
@@ -200,13 +200,10 @@ public class OrderAction extends BaseAction
     }
     
     @RequestMapping("/report/download.do")
-    public View download(String id, String type, ModelMap model)
+    @ResponseBody
+    public String download(String id, String type, ModelMap model)
     {
-        Order order = service.get(id);
-        OrderReportStreamDTO report = service.getReport(id, type);
-        model.put("name", order.getCode() + report.getSuffix());
-        model.addAttribute("inputStream", new ByteArrayInputStream(report.getContent()));
-        return downloadFileView;
+        return service.getReportUrl(id, type);
     }
     
     @RequestMapping("/redirect.do")
@@ -457,14 +454,14 @@ public class OrderAction extends BaseAction
         }
         return mesMap;
     }
-
+    
     @RequestMapping(value = "/delete.jsp", method = RequestMethod.POST)
     public String delete(String id, ModelMap model, HttpSession session)
     {
         service.delete(id);
         return redirectList(model, session, "/order/list.jsp");
     }
-
+    
     @RequestMapping("getOrderById.do")
     @ResponseBody
     public Order getOrderById(String id)

@@ -185,4 +185,10 @@ public class OrderMgmtController
     {
         facade.uploadReport(request);
     }
+
+    @RequestMapping("/getReportUrl")
+    public ObjectResponse<String> getReportUrl(@RequestBody DownloadOrderReportRequest request)
+    {
+        return facade.getReportUrl(request);
+    }
 }
