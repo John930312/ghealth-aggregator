@@ -134,6 +134,7 @@
                 <th>产品名称</th>
                 <th>代理商</th>
                 <th>下单时间</th>
+                <th>订单状态</th>
                 <th class="flexible-btns">操作</th>
             </tr>
             </thead>
@@ -150,8 +151,10 @@
                         <td>${(record.product.name)!?html}</td>
                         <td>${(record.agency.name)!?html}</td>
                         <td  >
-                        <!--<#if record.submitTime??>${record.submitTime!?string('yyyy-MM-dd HH:mm:ss')}</#if>-->
-                        ${record.createTime!?string('yyyy-MM-dd HH:mm:ss')}
+                        <#if record.submitTime??>${record.submitTime!?string('yyyy-MM-dd HH:mm:ss')}</#if>
+                        </td>
+                        <td status="${(record.status)!?html}"><@dict_category_value category="order_status" value =
+                            record.status/>
                         </td>
                         <td class="flexible-btns" style="white-space: nowrap">
                             <a href="${base}/order/display.jsp?id=${record.id}" class="btn btn-sm btn-success">
@@ -184,25 +187,7 @@
 <script src="${system_js}/system.js?v=0.2"></script>
 <script src="${plugins}/magicsuggest/magicsuggest-min.js"></script>
 <script>
-    var base = "${base}";
-    var timer = null;
-
     $(function () {
-
-        $('.btn-cancel').click(function (e){
-
-            var ids = getSelectedIds(true);
-            if (ids != '') {
-                e.preventDefault();
-                cancelConfirm(ids);
-            }
-            else {
-                layer.alert('选项不符合条件', {
-                    title: "提示"
-                });
-            }
-        });
-
 
         $("#pn").bsSuggest('init', {
             url: "${base}/product/getSelectList.do?name=",
@@ -220,119 +205,7 @@
         }).on('onUnsetSelectValue', function () {
         });
 
-        $('a.order-report').click(function (e) {
-            e.preventDefault();
-            var url = $(this).attr('href');
-
-            BootstrapDialog.alert({
-                title: '订单报告',
-                closable: false,
-                buttonLabel: '关闭',
-                onhide: function (dialog) {
-                    if (null != timer) {
-                        window.clearInterval(timer);
-                    }
-                },
-                message: $('<div></div>').load(url)
-            });
-        });
-
-        $('a.order-reports').click(function (e) {
-
-            var ids = getSelectedIds(false);
-            if (ids != '') {
-                e.preventDefault();
-                var url = $(this).attr('href') + "?ids=" + ids;
-
-                BootstrapDialog.alert({
-                    title: '订单报告',
-                    closable: false,
-                    buttonLabel: '关闭',
-                    onhide: function (dialog) {
-                        if (null != timer) {
-                            window.clearInterval(timer);
-                        }
-                    },
-                    message: $('<div></div>').load(url)
-                });
-            }
-            else {
-                $(this).attr('href', 'javascript:;');
-                layer.alert('选项不符合条件', {
-                    title: "提示"
-                });
-            }
-        });
-
-        var p = $('#agencyName').magicSuggest(
-            {
-                width: 190,
-                highlight: true,
-                data: '${base}/agency/json_list.do',
-                method: 'get',
-                queryParam: "name",
-                maxSelection: 1,
-                displayField: "name",
-                allowFreeEntries: false,
-                renderer: function (v) {
-                    return '<div>' + '<div >' + '<div>' + v.name + '</div>' + '</div>'
-                        + '<div style="clear:both;"></div>';
-                }
-            });
-
-        var s = $('#productName').magicSuggest(
-            {
-                width: 190,
-                highlight: true,
-                data: '${base}/product/json_list.do',
-                method: 'get',
-                queryParam: "name",
-                maxSelection: 1,
-                displayField: "name",
-                allowFreeEntries: false,
-                renderer: function (v) {
-                    return '<div>' + '<div >' + '<div  class="probe">' + v.name + '</div>'
-                        + '</div>' + '<div style="clear:both;"></div>';
-                }
-            });
-
-        if ($('#agencyName').val() != null && "" != $('#agencyName').val()) {
-            s.setDataUrlParams({
-                testingType: $('#agencyName').val()
-            });
-        }
-        $('#myModal').on('hide.bs.modal', function () {
-            $('input').val('');
-        });
     });
-
-    function submitMyForm(obj) {
-        var agency = $('#agencyName').magicSuggest().getSelection()[0];
-        if (undefined != agency) {
-            $('input[name="agencyId"]').val(agency.id);
-        }
-
-        var product = $('#productName').magicSuggest().getSelection()[0];
-        if (undefined != product) {
-            $('input[name="productId"]').val(product.id);
-        }
-        $('#uploadForm').submit();
-        $(obj).attr("disabled", true);
-        $('#myModal').modal("hide");
-    };
-
-
-
-
-    function setOrder(orderId, orderCode) {
-        $("[name='id']").val(orderId);
-        $("[name='code']").val(orderCode);
-    }
-
-
-
-
-
 </script>
 </body>
 </html>

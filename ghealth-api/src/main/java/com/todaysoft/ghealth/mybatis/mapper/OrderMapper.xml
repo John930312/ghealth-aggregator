@@ -488,6 +488,7 @@
         LEFT JOIN ghealth_agency gAgency ON gOrder.AGENCY_ID = gAgency.ID
         WHERE gOrder.DELETED = 0
         AND gOrder.STATUS != 0
+        AND gOrder.STATUS != 6
         GROUP BY gCustomer.NAME,gAgency.ID HAVING COUNT(gCustomer.NAME) > 1
     </select>
 
@@ -495,6 +496,7 @@
         SELECT
         gOrder.ID,
         gOrder.CODE,
+        gOrder.STATUS,
         gOrder.SUBMIT_TIME AS SUBMIT_TIME,
         gOrder.CREATE_TIME AS CREATE_TIME,
         gCustomer.ID AS CUSTOMER_ID,
@@ -517,6 +519,7 @@
         </foreach>
         AND gOrder.DELETED = 0
         AND gOrder.STATUS != 0
+        AND gOrder.STATUS != 6
         ORDER BY gOrder.CREATE_TIME DESC
     </select>
 
