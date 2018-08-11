@@ -1,6 +1,7 @@
 package com.todaysoft.ghealth.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.todaysoft.ghealth.base.response.model.OrderUploadRequest;
 import com.todaysoft.ghealth.model.*;
@@ -38,9 +39,11 @@ public interface IOrderService
     List<OrderHistory> getOrderHistoriesByOrderId(String orderId);
     
     ReportGenerateTask getReportGenerateTask(String reportGenerateTaskId);
-    
+
     String getReport(String id, String type);
-    
+
+    OrderReportStreamDTO getReportForCode(String id, String type);
+
     void createOrderAtMobile(Order data);
     
     void upload(List<OrderUploadRequest> datas);

@@ -223,6 +223,16 @@ public class OrderAction extends BaseAction
         return orderService.getReport(id, type);
     }
     
+    @RequestMapping("/report/downloadForCode.jsp")
+    public View downloadForCode(String id, String type, ModelMap model)
+    {
+        Order order = orderService.getOrderById(id);
+        OrderReportStreamDTO report = orderService.getReportForCode(id, type);
+        model.put("name", order.getCode() + report.getSuffix());
+        model.addAttribute("inputStream", new ByteArrayInputStream(report.getContent()));
+        return downloadFileView;
+    }
+    
     @RequestMapping("/redirectMobileHtml.do")
     public String redirectMobileHtml(AgencyAccountDetail data, ModelMap model)
     {

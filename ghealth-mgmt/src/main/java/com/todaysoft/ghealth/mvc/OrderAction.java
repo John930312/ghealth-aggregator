@@ -198,7 +198,18 @@ public class OrderAction extends BaseAction
         
         return rsp;
     }
-    
+
+
+    @RequestMapping("/report/downloadForCode.do")
+    public View downloadForCode(String id, String type, ModelMap model)
+    {
+        Order order = service.get(id);
+        OrderReportStreamDTO report = service.getReport(id, type);
+        model.put("name", order.getCode() + report.getSuffix());
+        model.addAttribute("inputStream", new ByteArrayInputStream(report.getContent()));
+        return downloadFileView;
+    }
+
     @RequestMapping("/report/download.do")
     @ResponseBody
     public String download(String id, String type, ModelMap model)

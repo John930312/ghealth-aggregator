@@ -198,7 +198,22 @@ public class OrderService implements IOrderService
             });
         return response.getData();
     }
-    
+
+    @Override
+    public OrderReportStreamDTO getReportForCode(String id, String type)
+    {
+        DownloadOrderReportRequest request = new DownloadOrderReportRequest();
+        request.setOrderId(id);
+        request.setType(type);
+        request.setLoginType("0");
+
+        ObjectResponse<OrderReportStreamDTO> response =
+                gateway.request("/agcy/order/report/streamForCode", request, new ParameterizedTypeReference<ObjectResponse<OrderReportStreamDTO>>()
+                {
+                });
+        return response.getData();
+    }
+
     @Override
     public void createOrderAtMobile(Order data)
     {

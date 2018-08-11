@@ -21,6 +21,9 @@ import com.todaysoft.ghealth.portal.agcy.facade.OrderAgcyFacade;
 import com.todaysoft.ghealth.portal.mgmt.facade.OrderMgmtFacade;
 import com.todaysoft.ghealth.service.orderEvent.OrderEventLog;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/agcy/order")
 public class OrderAgcyController
@@ -91,7 +94,15 @@ public class OrderAgcyController
     @RequestMapping("/report/stream")
     public ObjectResponse<String> getReportStream(@RequestBody DownloadOrderReportRequest request)
     {
+
         return orderMgmtFacade.getReportUrl(request);
+    }
+
+    @RequestMapping("/report/streamForCode")
+    public ObjectResponse<OrderReportStreamDTO> getReportStreamForCode(@RequestBody DownloadOrderReportRequest request)
+    {
+
+        return orderMgmtFacade.getReportStream(request);
     }
     
     @RequestMapping("/report/generate/details")
@@ -118,7 +129,7 @@ public class OrderAgcyController
     {
         return facade.getOrderReportDatas(request);
     }
-
+    
     @RequestMapping("/delete")
     public void delete(@RequestBody MaintainOrderRequest request)
     {
