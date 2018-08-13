@@ -31,17 +31,17 @@
             </button>
         </div>
         <div class="report-status" id="success">
-            <a id="download-pdf" class="btn btn-sm btn-primary btn-report-download" href="javascript:;" onclick="getDownloadUrl(this,'${data.id}','pdf')">
+            <!--<a id="download-pdf" class="btn btn-sm btn-primary btn-report-download" href="javascript:;" onclick="getDownloadUrl(this,'${data.id}','pdf')">-->
+                <!--<i class="fa fa-book"></i> PDF-->
+            <!--</a>-->
+            <a id="download-pdf1" class="btn btn-sm btn-primary btn-report-download" href="${base}/order/report/downloadForCode.do?id=${(data.id)!}&type=pdf">
                 <i class="fa fa-book"></i> PDF
             </a>
-            <a id="download-pdf1" class="btn btn-sm btn-primary btn-report-download" href="${base}/order/report/downloadForCode.do?id=${(data.id)!}&type=pdf">
-                <i class="fa fa-book"></i> PDF(code)
-            </a>
-            <a id="download-word" class="btn btn-sm btn-primary btn-report-download" href="javascript:;" onclick="getDownloadUrl(this,'${data.id}','word')">
+           <!-- <a id="download-word" class="btn btn-sm btn-primary btn-report-download" href="javascript:;" onclick="getDownloadUrl(this,'${data.id}','word')">
                 <i class="fa fa-book"></i> WORD
-            </a>
+            </a>-->
             <a id="download-word1" class="btn btn-sm btn-primary btn-report-download" href="${base}/order/report/downloadForCode.do?id=${(data.id)!}&type=word">
-                <i class="fa fa-book"></i> WORD(code)
+                <i class="fa fa-book"></i> WORD
             </a>
             <button class="btn btn-sm btn-primary btn-regenerate">
                 <i class="fa fa-book"></i> 重新生成

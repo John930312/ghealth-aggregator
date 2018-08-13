@@ -271,21 +271,21 @@
         <@security_resource resource = "/order/report/download.jsp">
         <#if record.status == "5">
             <#if record.havePDF>
-                <a  class="btn btn-sm btn-primary btn-report-download" href="javascript:;" onclick="getDownloadUrl(this,'${record.id}','pdf')">
+                <!--<a  class="btn btn-sm btn-primary btn-report-download" href="javascript:;" onclick="getDownloadUrl(this,'${record.id}','pdf')">
                     <i class="fa fa-book"></i> PDF
-                </a>
+                </a>-->
                 <a class="btn btn-sm btn-primary btn-report-download"
                    href="${base}/order/report/downloadForCode.jsp?id=${(record.id)!}&type=pdf">
-                    <i class="fa fa-book"></i> PDF(code)
+                    <i class="fa fa-book"></i> PDF
                 </a>
             </#if>
             <#if record.haveWord>
-                <a  class="btn btn-sm btn-primary btn-report-download" href="javascript:;" onclick="getDownloadUrl(this,'${record.id}','word')">
+              <!--  <a  class="btn btn-sm btn-primary btn-report-download" href="javascript:;" onclick="getDownloadUrl(this,'${record.id}','word')">
                     <i class="fa fa-book"></i> WORD
-                </a>
+                </a>-->
                 <a class="btn btn-sm btn-primary btn-report-download"
                    href="${base}/order/report/downloadForCode.jsp?id=${(record.id)!}&type=word">
-                    <i class="fa fa-book"></i> WORD(code)
+                    <i class="fa fa-book"></i> WORD
                 </a>
             </#if>
         </#if>
