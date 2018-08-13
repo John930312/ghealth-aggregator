@@ -14,8 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ZipUtils
 {
-    public static List<File> unzip(File file, String dest, String prefix)
-        throws IOException
+    public static List<File> unzip(File file, String dest, String prefix) throws IOException
     {
         if (null == file || !file.exists())
         {
@@ -42,7 +41,7 @@ public class ZipUtils
             while (entries.hasMoreElements())
             {
                 entry = entries.nextElement();
-                entryName = entry.getName();
+                entryName = entry.getName().substring(entry.getName().indexOf("."));
                 
                 if (StringUtils.isEmpty(prefix))
                 {
@@ -50,7 +49,7 @@ public class ZipUtils
                 }
                 else
                 {
-                    file = new File(dest, prefix + "-" + entryName);
+                    file = new File(dest, prefix + entryName);
                 }
                 
                 entryInputStream = zip.getInputStream(entry);

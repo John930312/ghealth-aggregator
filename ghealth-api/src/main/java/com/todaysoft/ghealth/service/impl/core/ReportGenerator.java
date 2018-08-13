@@ -134,7 +134,8 @@ public class ReportGenerator
         String timestamp = DateFormatUtils.format(new Date(), "yyyyMMddHHmmss");
         File zip = new File(destDirectory, timestamp + ".zip");
         FileUtils.copyInputStreamToFile(rsp.getContent(), zip);
-        List<File> files = ZipUtils.unzip(zip, destDirectory, timestamp);
+        String  fileName = destDirectory.substring(destDirectory.lastIndexOf(File.separator));
+        List<File> files = ZipUtils.unzip(zip, destDirectory, fileName);
         
         return files;
     }

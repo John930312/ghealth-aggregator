@@ -42,7 +42,7 @@ public class OssUploadService implements IOssUploadService
     public Map<String, String> getOssSign(Order order, String fileName)
     {
         String dir = getObjectKey(order.getCode(), aliyunOSSConfig.getDirectoryName());
-        String formateName = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date()) + fileName.substring(fileName.indexOf("."));
+        String formateName = order.getCode() + fileName.substring(fileName.indexOf("."));
         
         Map<String, String> respMap = new LinkedHashMap<>();
         OSSClient client = new OSSClient(aliyunOSSConfig.getEndpoint(), aliyunOSSConfig.getAccessKeyId(), aliyunOSSConfig.getAccessKeySecret());
