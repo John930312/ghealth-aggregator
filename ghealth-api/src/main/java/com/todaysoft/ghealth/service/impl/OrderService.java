@@ -283,6 +283,16 @@ public class OrderService implements IOrderService {
         if (count <= 0) {
             return Pager.empty(pageNo, pageSize);
         }
+        int minPageNo = 1;
+        int maxPageNo = count / pageSize;
+
+        if (maxPageNo == 0 || count % pageSize != 0)
+        {
+            maxPageNo++;
+        }
+
+        pageNo = pageNo < minPageNo ? minPageNo : pageNo;
+        pageNo = pageNo > maxPageNo ? maxPageNo : pageNo;
         List<Order> orderPage = new ArrayList<Order>();
         int currIdx = (pageNo > 1 ? (pageNo - 1) * pageSize : 0);
         for (int i = 0; i < pageSize && i < collect1.size() - currIdx; i++) {
