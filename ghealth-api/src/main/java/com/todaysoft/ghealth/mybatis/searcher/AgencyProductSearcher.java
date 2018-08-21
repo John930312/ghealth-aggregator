@@ -10,6 +10,8 @@ public class AgencyProductSearcher
     
     private String productName;
     
+    private String sex;
+    
     private Integer offset;
     
     private Integer limit;
@@ -72,5 +74,15 @@ public class AgencyProductSearcher
     public void setProductId(String productId)
     {
         this.productId = productId;
+    }
+    
+    public String getSex()
+    {
+        return sex;
+    }
+    
+    public void setSex(String sex)
+    {
+        this.sex = sex;
     }
 }

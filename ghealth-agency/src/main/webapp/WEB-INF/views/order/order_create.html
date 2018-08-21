@@ -84,6 +84,16 @@
                     effectiveFieldsAlias: {name: "姓名", phone: "手机号码"}
                 }).on('onDataRequestSuccess', function (e, result) {
                 }).on('onSetSelectValue', function (e, keyword, data) {
+
+                    if ("customerName" == e.currentTarget.id) {
+
+                        $("#productName").bsSuggest("destroy");
+                        $("#productName").val("");
+                        productOpts.url = "${base}/product/getSelectList.do?productId=" + $("#productId").val() +"&sex=" + data.sex + "&name="
+                        setEmpty();
+                        initBsSuggest(productOpts);
+                    }
+
                     if ("productName" == e.currentTarget.id) {
                         $target.val(data.productId);
                         if (!data.productEnabled) {
@@ -110,7 +120,7 @@
             var productOpts = {
                 source: $("#productName"),
                 target: $('[name="product.id"]'),
-                url: "${base}/product/getSelectList.do?productId=" + $("#productId").val() + "&name=",
+                url: "${base}/product/getSelectList.do?productId=" + $("#productId").val() +"&sex=" + $('#sex').val() + "&name=",
                 effectiveFields: ["productName"],
                 keyField: "productName",
             };
@@ -197,13 +207,7 @@
         function setValue(data) {
 
             if (!data.productEnabled) {
-                $("#productCode").val("");
-                $("#productSexRestraintText").val("")
-                $("#agencyPrice").val("");
-                $("#agencyAccountAmount").val("");
-                $("#testingItems").val("");
-                $("#productId").val("");
-                $("#agencyAuthorizationAmount").val("");
+                setEmpty();
             }
             else {
                 $("#productCode").val(data.productCode);
@@ -236,6 +240,16 @@
                     $("#testingItems").removeAttr("title");
                 }
             }
+        }
+
+        function setEmpty(){
+            $("#productCode").val("");
+            $("#productSexRestraintText").val("")
+            $("#agencyPrice").val("");
+            $("#agencyAccountAmount").val("");
+            $("#testingItems").val("");
+            $("#productId").val("");
+            $("#agencyAuthorizationAmount").val("");
         }
     </script>
 </head>
@@ -274,6 +288,7 @@
                         <input type="hidden" name="actualPrice" id="actualPrice" value=""/>
                         <input type="hidden" id="price" name="price" value="${(data.actualPrice)!?html}"/>
                         <input type="hidden" id="productId" value="${(data.product.id)!?html}"/>
+                        <input type="hidden" id="sex" value="${(data.customer.sex)!?html}"/>
                         <div class="panel-group" id="accordion">
                             <div class="panel panel-default">
                                 <div class="panel-heading">

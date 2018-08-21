@@ -14,6 +14,8 @@ public class ProductSearcher
     
     private String productId;
     
+    private String sex;
+    
     public String getName()
     {
         return name;
@@ -72,5 +74,15 @@ public class ProductSearcher
     public void setProductId(String productId)
     {
         this.productId = productId;
+    }
+    
+    public String getSex()
+    {
+        return sex;
+    }
+    
+    public void setSex(String sex)
+    {
+        this.sex = sex;
     }
 }

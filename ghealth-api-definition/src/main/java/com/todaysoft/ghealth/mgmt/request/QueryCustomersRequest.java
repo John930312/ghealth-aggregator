@@ -13,10 +13,12 @@ public class QueryCustomersRequest extends SignatureTokenListRequest
     private String agencyName;
     
     private String agencyId;
-
+    
     private String startCreateTime;
-
+    
     private String endStartTime;
+    
+    private String sex;
     
     @Override
     protected void setSignFields(Map<String, String> fields)
@@ -26,6 +28,7 @@ public class QueryCustomersRequest extends SignatureTokenListRequest
         fields.put("customerPhone", customerPhone);
         fields.put("agencyName", agencyName);
         fields.put("agencyId", agencyId);
+        fields.put("sex", sex);
         fields.put("startCreateTime", startCreateTime);
         fields.put("endStartTime", endStartTime);
     }
@@ -69,20 +72,34 @@ public class QueryCustomersRequest extends SignatureTokenListRequest
     {
         this.agencyId = agencyId;
     }
-
-    public String getStartCreateTime() {
+    
+    public String getStartCreateTime()
+    {
         return startCreateTime;
     }
-
-    public void setStartCreateTime(String startCreateTime) {
+    
+    public void setStartCreateTime(String startCreateTime)
+    {
         this.startCreateTime = startCreateTime;
     }
-
-    public String getEndStartTime() {
+    
+    public String getEndStartTime()
+    {
         return endStartTime;
     }
-
-    public void setEndStartTime(String endStartTime) {
+    
+    public void setEndStartTime(String endStartTime)
+    {
         this.endStartTime = endStartTime;
+    }
+    
+    public String getSex()
+    {
+        return sex;
+    }
+    
+    public void setSex(String sex)
+    {
+        this.sex = sex;
     }
 }

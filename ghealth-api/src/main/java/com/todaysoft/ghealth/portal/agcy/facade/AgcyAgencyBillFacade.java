@@ -45,7 +45,7 @@ public class AgcyAgencyBillFacade
         PagerQueryer<com.todaysoft.ghealth.mybatis.model.AgencyBill> queryer = new PagerQueryer<com.todaysoft.ghealth.mybatis.model.AgencyBill>(service);
         Pager<com.todaysoft.ghealth.mybatis.model.AgencyBill> pager = queryer.query(searcher, pageNo, pageSize);
         Pager<com.todaysoft.ghealth.base.response.model.AgencyBill> result =
-            Pager.generate(pager.getPageNo(), pager.getPageSize(), pager.getTotalCount(), wrapper.wrap(pager.getRecords()));
+            Pager.generate(pager.getPageNo(), pager.getPageSize(), pager.getTotalCount(), wrapper.wrap(pager.getRecords(),false));
         return new PagerResponse<AgencyBill>(result);
     }
     
@@ -76,6 +76,6 @@ public class AgcyAgencyBillFacade
         BeanUtils.copyProperties(request, searcher, "startTime", "endTime");
         wrapperSearcher(request, searcher);
         searcher.setAgencyId(agencyAccountDetails.getAgencyId());
-        return new ListResponse<>(wrapper.wrap(service.list(searcher)));
+        return new ListResponse<>(wrapper.wrap(service.list(searcher),true));
     }
 }

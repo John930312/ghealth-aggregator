@@ -54,6 +54,7 @@ public class CustomerMgmtFacade
         searcher.setCustomerName(request.getCustomerName());
         searcher.setCustomerPhone(request.getCustomerPhone());
         searcher.setAgencyId(request.getAgencyId());
+        searcher.setSex(request.getSex());
         wrapSearcher(request, searcher);
         PagerQueryer<com.todaysoft.ghealth.mybatis.model.Customer> queryer = new PagerQueryer<com.todaysoft.ghealth.mybatis.model.Customer>(service);
         Pager<com.todaysoft.ghealth.mybatis.model.Customer> pager = queryer.query(searcher, pageNo, pageSize);

@@ -61,8 +61,7 @@ public class AgencyBillService implements IAgencyBillService
         {
             return Collections.emptyList();
         }
-        List<AgencyBill> list = wrapper.wrap(response.getData());
-        return setDownloadValue(list);
+        return wrapper.downloadWrap(response.getData());
     }
 
     @Override

@@ -12,10 +12,13 @@ public class QueryTestingProductsRequest extends SignatureTokenListRequest
     
     private String agencyId;
     
+    private String sex;
+    
     @Override
     protected void setSignFields(Map<String, String> fields)
     {
         super.setSignFields(fields);
+        fields.put("sex", sex);
         fields.put("code", code);
         fields.put("name", name);
         fields.put("agencyId", agencyId);
@@ -49,5 +52,15 @@ public class QueryTestingProductsRequest extends SignatureTokenListRequest
     public void setAgencyId(String agencyId)
     {
         this.agencyId = agencyId;
+    }
+    
+    public String getSex()
+    {
+        return sex;
+    }
+    
+    public void setSex(String sex)
+    {
+        this.sex = sex;
     }
 }

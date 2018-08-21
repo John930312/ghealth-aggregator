@@ -80,6 +80,9 @@
         <if test="_parameter.productId != null and _parameter.productId != ''">
             AND p.id = #{productId}
         </if>
+        <if test="_parameter.sex != null and _parameter.productId != ''">
+            AND p.SEX_RESTRAINT= #{sex}
+        </if>
     </sql>
 
     <select id="count" resultType="int" parameterType="com.todaysoft.ghealth.mybatis.searcher.AgencyProductSearcher">
