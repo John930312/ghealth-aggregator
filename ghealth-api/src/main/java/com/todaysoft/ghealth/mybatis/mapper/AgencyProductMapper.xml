@@ -81,7 +81,7 @@
             AND p.id = #{productId}
         </if>
         <if test="_parameter.sex != null and _parameter.productId != ''">
-            AND p.SEX_RESTRAINT= #{sex}
+            AND (p.SEX_RESTRAINT= #{sex} OR p.SEX_RESTRAINT = 0)
         </if>
     </sql>
 
