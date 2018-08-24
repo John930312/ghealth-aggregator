@@ -129,23 +129,19 @@ public class TestingItemAlgorithmForTuse extends AbstractTestingItemAlgorithm
         }
         if (1 == flag)
         {
-            return "-";
+            return "低风险";
         }
         else if (2 == flag)
         {
-            return "-/+";
+            return "一般风险";
         }
-        else if (3 == flag)
+        else if (3 == flag || 4 == flag)
         {
-            return "+";
-        }
-        else if (4 == flag)
-        {
-            return "++";
+            return "较高风险";
         }
         else
         {
-            return "+++";
+            return "高风险";
         }
     }
 }
