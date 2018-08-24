@@ -1,36 +1,29 @@
 package com.todaysoft.ghealth.portal.mgmt.facade.report;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.todaysoft.ghealth.portal.mgmt.facade.report.algorithm.TuseCancerData;
+import com.todaysoft.document.generate.sdk.request.CaseBookmarkContent;
+import com.todaysoft.document.generate.sdk.request.TextBookmarkContent;
+import com.todaysoft.ghealth.mybatis.model.Customer;
+import com.todaysoft.ghealth.mybatis.model.TestingItem;
+import com.todaysoft.ghealth.service.impl.core.*;
 import com.todaysoft.ghealth.utils.DictUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import com.todaysoft.document.generate.sdk.request.CaseBookmarkContent;
-import com.todaysoft.document.generate.sdk.request.TextBookmarkContent;
-import com.todaysoft.ghealth.mybatis.model.TestingItem;
-import com.todaysoft.ghealth.service.impl.core.ItemLevelEvaluator;
-import com.todaysoft.ghealth.service.impl.core.TestingItemAlgorithmConfig;
-import com.todaysoft.ghealth.service.impl.core.TestingItemEvaluateReferenceValue;
-import com.todaysoft.ghealth.service.impl.core.TestingItemEvaluateResult;
-import com.todaysoft.ghealth.service.impl.core.TestingItemLocusEvaluateConfig;
-import com.todaysoft.ghealth.service.impl.core.TestingItemLocusEvaluateResult;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.MessageFormat;
+import java.util.*;
 
 public class TestingItemContentsGenerator extends AbstractReportContentsGenerator
 {
     private final Integer LevelForThree = 3;
-    
+
     private final Integer LevelForFour = 4;
-    
+
     private final Integer LevelForFive = 5;
-    
+
     private final Integer LevelForNine = 9;
-    
+
     @Override
     protected List<TextBookmarkContent> generateTextBookmarkContents(ReportGenerateContext context)
     {
@@ -38,19 +31,19 @@ public class TestingItemContentsGenerator extends AbstractReportContentsGenerato
         {
             return null;
         }
-        
+
         List<TextBookmarkContent> testingItemContents;
         List<TextBookmarkContent> contents = new ArrayList<TextBookmarkContent>();
-        
+
         for (TestingItemEvaluateResult result : context.getTestingItemEvaluateResults())
         {
             testingItemContents = generateTestingItemTextBookmarkContents(result, context.getCustomer().getSex());
             contents.addAll(testingItemContents);
         }
-        
+
         return contents;
     }
-    
+
     @Override
     protected List<CaseBookmarkContent> generateCaseBookmarkContents(ReportGenerateContext context)
     {
@@ -58,29 +51,30 @@ public class TestingItemContentsGenerator extends AbstractReportContentsGenerato
         {
             return null;
         }
-        
+
         List<CaseBookmarkContent> testingItemContents;
         List<CaseBookmarkContent> contents = new ArrayList<CaseBookmarkContent>();
-        
+
         for (TestingItemEvaluateResult result : context.getTestingItemEvaluateResults())
         {
             testingItemContents = generateTestingItemCaseBookmarkContents(result, context.getCustomer().getSex());
             contents.addAll(testingItemContents);
         }
-        
+
         return contents;
     }
-    
+
     private List<CaseBookmarkContent> generateTestingItemCaseBookmarkContents(TestingItemEvaluateResult result, String sex)
     {
         List<CaseBookmarkContent> contents = new ArrayList<CaseBookmarkContent>();
         String testingItemCode = result.getAlgorithmConfig().getTestingItem().getCode();
-        
+
         int level = getLevelAsThreeIntervals(result, sex);
         contents.add(buildCaseBookmarkContent(testingItemCode, level));
+        contents.add(buildCaseBookmarkContentBySex(testingItemCode, sex));
         return contents;
     }
-    
+
     private int getLevelAsThreeIntervals(TestingItemEvaluateResult result, String sex)
     {
         Double value = getItemCalculatedValue(result, sex);
@@ -89,9 +83,9 @@ public class TestingItemContentsGenerator extends AbstractReportContentsGenerato
             return 0;
         }
         return ItemLevelEvaluator.getLevelInterval(result.getAlgorithmConfig().getTestingItem(), value, LevelForThree);
-        
+
     }
-    
+
     private Double getItemCalculatedValue(TestingItemEvaluateResult result, String sex)
     {
         String evalAlgorithm = result.getAlgorithmConfig().getTestingItem().getEvalAlgorithm();
@@ -99,14 +93,14 @@ public class TestingItemContentsGenerator extends AbstractReportContentsGenerato
         {
             Double referenceValue = null;
             Double evaluateValue = result.getTestingItemEvaluateValue();
-            
+
             if (null == evaluateValue)
             {
                 return null;
             }
-            
+
             TestingItemEvaluateReferenceValue evaluateReference = result.getAlgorithmConfig().getReferenceValue();
-            
+
             if (null == evaluateReference)
             {
                 return null;
@@ -114,13 +108,13 @@ public class TestingItemContentsGenerator extends AbstractReportContentsGenerato
             else
             {
                 referenceValue = evaluateReference.getValue(sex);
-                
+
                 if (null == referenceValue)
                 {
                     return null;
                 }
             }
-            
+
             if (null != evaluateValue && null != referenceValue && referenceValue != 0)
             {
                 return evaluateValue / referenceValue;
@@ -135,16 +129,16 @@ public class TestingItemContentsGenerator extends AbstractReportContentsGenerato
             return result.getTestingItemEvaluateValue();
         }
     }
-    
+
     private CaseBookmarkContent buildCaseBookmarkContent(String testingItemCode, int level)
     {
         Set<String> group = new HashSet<String>();
         group.add(MessageFormat.format("I_{0}_EVALUATE_H", testingItemCode));
         group.add(MessageFormat.format("I_{0}_EVALUATE_N", testingItemCode));
         group.add(MessageFormat.format("I_{0}_EVALUATE_L", testingItemCode));
-        
+
         String matched;
-        
+
         if (level == 0)
         {
             matched = MessageFormat.format("I_{0}_EVALUATE_N", testingItemCode);
@@ -165,12 +159,40 @@ public class TestingItemContentsGenerator extends AbstractReportContentsGenerato
         {
             throw new IllegalStateException();
         }
-        
+
         CaseBookmarkContent content = new CaseBookmarkContent();
         content.setMatchedBookmarkName(matched);
         content.setBookmarkNames(group);
         return content;
     }
+
+    private CaseBookmarkContent buildCaseBookmarkContentBySex(String testingItemCode, String sex)
+    {
+        Set<String> group = new HashSet<String>();
+        group.add(MessageFormat.format("I_{0}_MALE", testingItemCode));
+        group.add(MessageFormat.format("I_{0}_FEMALE", testingItemCode));
+
+        String matched;
+
+        if (Customer.SEX_MALE.equals(sex))
+        {
+            matched = MessageFormat.format("I_{0}_MALE", testingItemCode);
+        }
+        else if (Customer.SEX_FEMALE.equals(sex))
+        {
+            matched = MessageFormat.format("I_{0}_FEMALE", testingItemCode);
+        }
+        else
+        {
+            throw new IllegalStateException();
+        }
+
+        CaseBookmarkContent content = new CaseBookmarkContent();
+        content.setMatchedBookmarkName(matched);
+        content.setBookmarkNames(group);
+        return content;
+    }
+
     
     private List<TextBookmarkContent> generateTestingItemTextBookmarkContents(TestingItemEvaluateResult result, String sex)
     {

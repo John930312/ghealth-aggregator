@@ -11,14 +11,16 @@ public class CustomerSearcher
     private String customerName;
     
     private String customerPhone;
-
+    
     private boolean phoneExactMatches;
-
+    
     private Set<String> excludeKeys;
-
+    
     private String startCreateTime;
-
+    
     private String endStartTime;
+    
+    private String sex;
     
     private Integer offset;
     
@@ -94,36 +96,54 @@ public class CustomerSearcher
         this.customerName = customerName;
         this.customerPhone = customerPhone;
     }
-
-    public boolean isPhoneExactMatches() {
+    
+    public boolean isPhoneExactMatches()
+    {
         return phoneExactMatches;
     }
-
-    public void setPhoneExactMatches(boolean phoneExactMatches) {
+    
+    public void setPhoneExactMatches(boolean phoneExactMatches)
+    {
         this.phoneExactMatches = phoneExactMatches;
     }
-
-    public Set<String> getExcludeKeys() {
+    
+    public Set<String> getExcludeKeys()
+    {
         return excludeKeys;
     }
-
-    public void setExcludeKeys(Set<String> excludeKeys) {
+    
+    public void setExcludeKeys(Set<String> excludeKeys)
+    {
         this.excludeKeys = excludeKeys;
     }
-
-    public String getStartCreateTime() {
+    
+    public String getStartCreateTime()
+    {
         return startCreateTime;
     }
-
-    public void setStartCreateTime(String startCreateTime) {
+    
+    public void setStartCreateTime(String startCreateTime)
+    {
         this.startCreateTime = startCreateTime;
     }
-
-    public String getEndStartTime() {
+    
+    public String getEndStartTime()
+    {
         return endStartTime;
     }
-
-    public void setEndStartTime(String endStartTime) {
+    
+    public void setEndStartTime(String endStartTime)
+    {
         this.endStartTime = endStartTime;
+    }
+    
+    public String getSex()
+    {
+        return sex;
+    }
+    
+    public void setSex(String sex)
+    {
+        this.sex = sex;
     }
 }

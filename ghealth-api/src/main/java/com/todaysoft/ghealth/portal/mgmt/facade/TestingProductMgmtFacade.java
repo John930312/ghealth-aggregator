@@ -214,6 +214,7 @@ public class TestingProductMgmtFacade
         searcher.setAgencyId(request.getAgencyId());
         searcher.setProductCode(request.getCode());
         searcher.setProductName(request.getName());
+        searcher.setSex(request.getSex());
         
         PagerQueryer<com.todaysoft.ghealth.mybatis.model.AgencyProduct> queryer =
             new PagerQueryer<com.todaysoft.ghealth.mybatis.model.AgencyProduct>(agencyProductService);

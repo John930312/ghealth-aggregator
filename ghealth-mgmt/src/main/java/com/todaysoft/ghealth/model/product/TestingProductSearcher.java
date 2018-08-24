@@ -10,6 +10,8 @@ public class TestingProductSearcher
     
     private String productId;
     
+    private String sex;
+    
     public String getAgencyId()
     {
         return agencyId;
@@ -48,5 +50,15 @@ public class TestingProductSearcher
     public void setProductId(String productId)
     {
         this.productId = productId;
+    }
+    
+    public String getSex()
+    {
+        return sex;
+    }
+    
+    public void setSex(String sex)
+    {
+        this.sex = sex;
     }
 }

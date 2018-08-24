@@ -64,6 +64,7 @@ public class AgencyProductAgcyFacade
         int pageSize = null == request.getPageSize() ? 10 : request.getPageSize();
         
         AgencyProductSearcher searcher = new AgencyProductSearcher();
+        searcher.setSex(request.getSex());
         searcher.setAgencyId(agencyId);
         searcher.setProductCode(request.getCode());
         searcher.setProductName(request.getName());

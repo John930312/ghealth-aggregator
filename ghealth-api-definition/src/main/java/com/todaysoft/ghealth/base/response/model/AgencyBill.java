@@ -28,8 +28,14 @@ public class AgencyBill
     private String incomeExpenses;
     
     private String operateName;
-
+    
     private String rechargeType;
+    
+    private String productName;
+    
+    private String agencyName;
+    
+    private String dealOrder;
     
     public String getId()
     {
@@ -150,12 +156,44 @@ public class AgencyBill
     {
         this.operateName = operateName;
     }
-
-    public String getRechargeType() {
+    
+    public String getRechargeType()
+    {
         return rechargeType;
     }
-
-    public void setRechargeType(String rechargeType) {
+    
+    public void setRechargeType(String rechargeType)
+    {
         this.rechargeType = rechargeType;
+    }
+    
+    public String getProductName()
+    {
+        return productName;
+    }
+    
+    public void setProductName(String productName)
+    {
+        this.productName = productName;
+    }
+    
+    public String getAgencyName()
+    {
+        return agencyName;
+    }
+    
+    public void setAgencyName(String agencyName)
+    {
+        this.agencyName = agencyName;
+    }
+    
+    public String getDealOrder()
+    {
+        return dealOrder;
+    }
+    
+    public void setDealOrder(String dealOrder)
+    {
+        this.dealOrder = dealOrder;
     }
 }

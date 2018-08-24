@@ -9,19 +9,19 @@ public class DictUtils
     {
         if (level.equals(1))
         {
-            return "较低";
+            return "低风险";
         }
         else if (level.equals(2))
         {
-            return "一般";
+            return "一般风险";
         }
         else if (level.equals(3))
         {
-            return "关注";
+            return "较高风险";
         }
         else
         {
-            return "密切关注";
+            return "高风险";
         }
     }
     
@@ -49,15 +49,15 @@ public class DictUtils
     {
         if (level.equals(4))
         {
-            return "您同型半胱氨酸代谢能力很差.";
+            return "代谢能力很差.";
         }
         else if (level.equals(3))
         {
-            return "您同型半胱氨酸代谢能力差.";
+            return "代谢能力差.";
         }
         else if (level.equals(2))
         {
-            return "您同型半胱氨酸代谢能力较差.";
+            return "代谢能力较差.";
         }
         else
         {

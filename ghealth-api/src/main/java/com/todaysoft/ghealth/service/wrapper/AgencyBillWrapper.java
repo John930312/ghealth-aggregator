@@ -36,7 +36,7 @@ public class AgencyBillWrapper
     @Autowired
     private ITestingProductService testingProductService;
     
-    public List<AgencyBill> wrap(List<com.todaysoft.ghealth.mybatis.model.AgencyBill> records)
+    public List<AgencyBill> wrap(List<com.todaysoft.ghealth.mybatis.model.AgencyBill> records, boolean isDownload)
     {
         if (CollectionUtils.isEmpty(records))
         {
@@ -47,7 +47,14 @@ public class AgencyBillWrapper
         for (com.todaysoft.ghealth.mybatis.model.AgencyBill record : records)
         {
             AgencyBill = new AgencyBill();
-            wrap(record, AgencyBill);
+            if (isDownload)
+            {
+                downloadWrap(record, AgencyBill);
+            }
+            else
+            {
+                wrap(record, AgencyBill);
+            }
             AgencyBills.add(AgencyBill);
         }
         
@@ -112,4 +119,20 @@ public class AgencyBillWrapper
         target.setBillTime(null == source.getBillTime() ? null : source.getBillTime().getTime());
     }
     
+    private void downloadWrap(com.todaysoft.ghealth.mybatis.model.AgencyBill source, AgencyBill target)
+    {
+        BeanUtils.copyProperties(source, target, "billTime");
+        target.setIncomeExpenses(String.valueOf(source.getAmountAfter().subtract(source.getAmountBefore())));
+        String eventDetails = source.getEventDetails();
+        if (eventDetails.indexOf("-") != -1)
+        {
+            String orderId = eventDetails.substring(0, eventDetails.indexOf("-"));
+            Optional.ofNullable(orderService.getOrderById(orderId)).ifPresent(x -> target.setDealOrder(x.getCode()));
+            String productId = eventDetails.substring(eventDetails.indexOf("-") + 1, eventDetails.length());
+            Optional.ofNullable(testingProductService.get(productId)).ifPresent(x -> target.setProductName(x.getName()));
+        }
+        Optional.ofNullable(source.getAgency()).ifPresent(x -> target.setAgencyName(x.getName()));
+        
+        target.setBillTime(null == source.getBillTime() ? null : source.getBillTime().getTime());
+    }
 }

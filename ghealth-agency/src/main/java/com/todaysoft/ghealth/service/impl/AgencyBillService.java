@@ -59,36 +59,7 @@ public class AgencyBillService implements IAgencyBillService
         {
             return Collections.emptyList();
         }
-        List<AgencyBill> list = wrapper.wrap(response.getData());
-        return setDownloadValue(list);
+        return wrapper.downloadWrap(response.getData());
     }
-    
-    private List<AgencyBill> setDownloadValue(List<AgencyBill> agencyBills)
-    {
-        List<AgencyBill> list = new ArrayList<>();
-        agencyBills.forEach(agencyBill -> {
-            AgencyBill data = new AgencyBill();
-            if (null != agencyBill.getOrder())
-            {
-                data.setAgencyName(agencyBill.getOrder().getAgency().getName());
-                data.setProductName(agencyBill.getOrder().getProduct().getName());
-                data.setDealOrder(agencyBill.getOrder().getCode());
-            }
-            else
-            {
-                data.setDealOrder("充值");
-            }
-            data.setBillTime(agencyBill.getBillTime());
-            String flag = "-";
-            if (agencyBill.getIncreased())
-            {
-                flag = "+";
-            }
-            data.setIncomeExpenses(flag + agencyBill.getIncomeExpenses());
-            data.setAmountAfter(agencyBill.getAmountAfter());
-            
-            list.add(data);
-        });
-        return list;
-    }
+
 }

@@ -78,7 +78,7 @@
             var productOpts = {
                 source: $("#productName"),
                 target: $('[name="product.id"]'),
-                url: "${base}/product/getAgencyProducts.do?agencyId=" + $('#agencyId').val() + "&productId="+$("#productId").val()+"&name=",
+                url: "${base}/product/getAgencyProducts.do?agencyId=" + $('#agencyId').val() + "&productId="+$("#productId").val()+"&sex="+$('#sex').val()+"&name=",
                 effectiveFields: ["productName"],
                 keyField:"productName",
             };
@@ -195,6 +195,7 @@
                         <input name="agency.id" id="agencyId" type="hidden" value="${(data.agency.id)!?html}"/>
                         <input type="hidden" id="price" name="price" value="${(data.actualPrice)!?html}"/>
                         <input type="hidden" id="productId"  value="${(data.product.id)!?html}"/>
+                        <input type="hidden" id="sex"  value="${(data.customer.sex)!?html}"/>
                         <div class="panel-group" id="accordion">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
