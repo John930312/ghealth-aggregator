@@ -479,4 +479,18 @@ public class OrderAction extends BaseAction
     {
         return service.get(id);
     }
+
+    @RequestMapping("/reload.do")
+    public String reload(ModelMap model, HttpSession session)
+    {
+        return redirectList(model, session, "/order/specialList.jsp");
+    }
+
+    @RequestMapping("/setVigilance.do")
+    @ResponseBody
+    public boolean setVigilance(Order request)
+    {
+        return service.setVigilance(request);
+    }
+
 }

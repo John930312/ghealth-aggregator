@@ -39,6 +39,7 @@ public class OrderSimpleWrapper implements Wrapper<Order, OrderSimpleDTO>
             target.setId(source.getId());
             target.setCode(source.getCode());
             target.setStatus(source.getStatus());
+            target.setVigilance(source.getVigilance());
             
             List<LocusGenetype> orderTestingData = testingDataService.getOrderTestingData(target.getId());
             if (!CollectionUtils.isEmpty(orderTestingData))

@@ -64,6 +64,8 @@ public class Order
     private List<OrderHistory> OrderHistoryList;
     
     private byte[] reportContents;
+
+    private String vigilance;
     
     public Long getReportGenerateTime()
     {
@@ -364,5 +366,13 @@ public class Order
     public void setReportContents(byte[] reportContents)
     {
         this.reportContents = reportContents;
+    }
+
+    public String getVigilance() {
+        return vigilance;
+    }
+
+    public void setVigilance(String vigilance) {
+        this.vigilance = vigilance;
     }
 }

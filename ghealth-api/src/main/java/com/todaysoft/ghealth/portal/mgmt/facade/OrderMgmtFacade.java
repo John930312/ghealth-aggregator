@@ -61,64 +61,64 @@ public class OrderMgmtFacade
 {
     @Autowired
     private IAccountService accountService;
-    
+
     @Autowired
     private IOrderService service;
-    
+
     @Autowired
     private OrderWrapper wrapper;
-    
+
     @Autowired
     private ReportGenerateTaskWrapper reportGenerateTaskWrapper;
-    
+
     @Autowired
     private OrderSimpleWrapper orderSimpleWrapper;
-    
+
     @Autowired
     private IReportTemplateService reportTemplateService;
-    
+
     @Autowired
     private ICustomerService customerService;
-    
+
     @Autowired
     private ITestingDataService testingDataService;
-    
+
     @Autowired
     private ITestingItemService testingItemService;
-    
+
     @Autowired
     private ITestingProductService testingProductService;
-    
+
     @Autowired
     private IReportGenerateService reportGenerateService;
-    
+
     @Autowired
     private IOrderHistoryService orderHistoryService;
-    
+
     @Autowired
     private IAgencyService agencyService;
-    
+
     @Autowired
     private AgencyBillFacade agencyBillFacade;
-    
+
     @Autowired
     private IObjectStorageService objectStorageService;
-    
+
     @Autowired
     private IItemLocusService testingItemLocusService;
-    
+
     @Autowired
     private IAgencyBillService agencyBillService;
-    
+
     @Autowired
     private ReportGeneratedSend reportGeneratedSend;
-    
+
     @Autowired
     private AliyunOSSConfig config;
-    
+
     @Autowired
     private ReportGenerateTaskMapper reportGenerateTaskMapper;
-    
+
     public PagerResponse<Order> pager(QueryOrdersRequest request)
     {
         int pageNo = null == request.getPageNo() ? 1 : request.getPageNo();
@@ -131,13 +131,13 @@ public class OrderMgmtFacade
         Pager<Order> result = Pager.generate(pager.getPageNo(), pager.getPageSize(), pager.getTotalCount(), wrapper.wrap(pager.getRecords()));
         return new PagerResponse<Order>(result);
     }
-    
+
     public ObjectResponse<Order> display(MaintainOrderRequest request)
     {
         com.todaysoft.ghealth.mybatis.model.Order order = service.getOrderById(request.getId());
         return new ObjectResponse<Order>(wrapper.wrap(order));
     }
-    
+
     public ListResponse<Order> list(QueryOrdersRequest request)
     {
         OrderSearcher searcher = new OrderSearcher();
@@ -145,20 +145,20 @@ public class OrderMgmtFacade
         wrapSearcher(request, searcher);
         return new ListResponse<Order>(wrapper.wrap(service.list(searcher)));
     }
-    
+
     public ListResponse<OrderSimpleDTO> list(QueryOrderByCodesRequest request)
     {
         List<com.todaysoft.ghealth.mybatis.model.Order> orders = service.list(request.getCodes());
         return new ListResponse<OrderSimpleDTO>(orderSimpleWrapper.wrap(orders));
     }
-    
+
     private String transferLongToDate(String dateFormat, Long millSec)
     {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
         Date date = new Date(millSec);
         return sdf.format(date);
     }
-    
+
     private void wrapSearcher(QueryOrdersRequest request, OrderSearcher searcher)
     {
         if (StringUtils.isNotEmpty(request.getEndStartTime()))
@@ -178,7 +178,7 @@ public class OrderMgmtFacade
             searcher.setStartReportTime(transferLongToDate("yyyy-MM-dd 00:00:00", Long.valueOf(request.getStartReportTime())));
         }
     }
-    
+
     public ListResponse<Order> getOrdersByIds(MaintainOrderRequest request)
     {
         List<Order> orders = new ArrayList<Order>();
@@ -194,14 +194,14 @@ public class OrderMgmtFacade
         }
         return new ListResponse<>(Collections.emptyList());
     }
-    
+
     public ObjectResponse<String> generateReport(MaintainOrderRequest request)
     {
         ReportGenerateContext context = getReportGenerateContext(request);
         String taskId = reportGenerateService.generate(context);
         return new ObjectResponse<String>(taskId);
     }
-    
+
     public ListResponse<String> generateReports(MaintainOrderRequest request)
     {
         List<String> taskIds = new ArrayList<>();
@@ -217,26 +217,26 @@ public class OrderMgmtFacade
         }
         return new ListResponse<String>(taskIds);
     }
-    
+
     public ObjectResponse<String> regenerateReport(MaintainOrderRequest request)
     {
         ReportGenerateContext context = getReportGenerateContext(request);
         String taskId = reportGenerateService.generate(context);
         return new ObjectResponse<String>(taskId);
     }
-    
+
     public ObjectResponse<ReportGenerateTaskDTO> getReportGenerateTask(QueryDetailsRequest request)
     {
         if (StringUtils.isEmpty(request.getId()))
         {
             throw new ServiceException(MgmtErrorCode.API_ILLEGAL_ARGUMENT);
         }
-        
+
         ReportGenerateTask entity = reportGenerateService.getReportGenerateTask(request.getId());
         if (ReportGenerateTask.STATUS_SUCCESS.equals(entity.getStatus()))
         {
             com.todaysoft.ghealth.mybatis.model.Order order = service.getOrderDataByTaskId(request.getId());
-            
+
             boolean flag = false;
             if (order.getStatus().equals("4"))
             {
@@ -254,7 +254,7 @@ public class OrderMgmtFacade
         }
         return new ObjectResponse<ReportGenerateTaskDTO>(reportGenerateTaskWrapper.wrap(entity));
     }
-    
+
     public ListResponse<ReportGenerateTaskDTO> getReportGenerateTasks(QueryDetailsRequest request)
     {
         if (StringUtils.isEmpty(request.getId()))
@@ -275,7 +275,7 @@ public class OrderMgmtFacade
                 {
                     flag = true;
                 }
-                
+
                 if (ReportGenerateTask.STATUS_SUCCESS.equals(entity.getStatus()))
                 {
                     service.setOrderStautsSuccessed(request);
@@ -283,21 +283,21 @@ public class OrderMgmtFacade
                     {
                         reportGeneratedSend.sending(order);
                     }
-                    
+
                 }
                 list.add(reportGenerateTaskWrapper.wrap(entity));
             }
-            
+
         }
         return new ListResponse<ReportGenerateTaskDTO>(list);
     }
-    
+
     public ObjectResponse<OrderReportStreamDTO> getReportStream(DownloadOrderReportRequest request)
     {
         com.todaysoft.ghealth.mybatis.model.Order order = service.getOrderById(request.getOrderId());
         ObjectStorage objectStorage = getObjectStorage(request, order);
         StorageObject object = getStorageObject(objectStorage);
-        
+
         try
         {
             String suffix = object.getSuffix();
@@ -317,7 +317,7 @@ public class OrderMgmtFacade
             throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_IO_ERROR);
         }
     }
-    
+
     public ObjectResponse<String> getReportUrl(DownloadOrderReportRequest request)
     {
         com.todaysoft.ghealth.mybatis.model.Order order = service.getOrderById(request.getOrderId());
@@ -333,21 +333,21 @@ public class OrderMgmtFacade
         //两分钟
         Date expiration = new Date(System.currentTimeMillis() + 10 * 60 * 1000);
         URL url = client.generatePresignedUrl(config.getBucketName(), attributes.get("objectKey"), expiration);
-        
+
         return new ObjectResponse<>(url.toString());
     }
-    
+
     private StorageObject getStorageObject(ObjectStorage entity)
     {
         if (null == entity)
         {
             return null;
         }
-        
+
         Map<String, String> attributes = JsonUtils.fromJson(entity.getStorageDetails(), new TypeReference<Map<String, String>>()
         {
         });
-        
+
         if (ObjectStorage.STORAGE_ALI_OSS.equals(entity.getStorageType()))
         {
             AliyunStorageObject object = new AliyunStorageObject(attributes.get("endpoint"), attributes.get("bucketName"), attributes.get("objectKey"));
@@ -365,90 +365,90 @@ public class OrderMgmtFacade
             throw new IllegalStateException();
         }
     }
-    
+
     private ReportGenerateContext getReportGenerateContext(MaintainOrderRequest request)
     {
         String id = request.getId();
-        
+
         if (StringUtils.isEmpty(id))
         {
             throw new ServiceException(MgmtErrorCode.API_ILLEGAL_ARGUMENT);
         }
-        
+
         ManagementAccountDetails account = accountService.getManagementAccountDetails(request.getToken());
-        
+
         if (null == account)
         {
             throw new IllegalStateException();
         }
-        
+
         com.todaysoft.ghealth.mybatis.model.Order order = service.getOrderById(id);
-        
+
         if (null == order)
         {
             throw new ServiceException(MgmtErrorCode.REPORT_GENERATE_ORDER_NOT_EXISTS);
         }
-        
+
         List<LocusGenetype> genetypes = testingDataService.getOrderTestingData(order.getId());
-        
+
         if (CollectionUtils.isEmpty(genetypes))
         {
             throw new ServiceException(MgmtErrorCode.REPORT_GENERATE_TESTING_DATA_NOT_EXISTS);
         }
-        
+
         Customer customer = order.getCustomer();
-        
+
         if (null == customer || StringUtils.isEmpty(customer.getId()))
         {
             throw new ServiceException(MgmtErrorCode.REPORT_GENERATE_CUSTOMER_NOT_EXISTS);
         }
-        
+
         customer = customerService.get(customer.getId());
-        
+
         if (null == customer)
         {
             throw new ServiceException(MgmtErrorCode.REPORT_GENERATE_CUSTOMER_NOT_EXISTS);
         }
-        
+
         Product product = order.getProduct();
-        
+
         if (null == product || StringUtils.isEmpty(product.getId()))
         {
             throw new ServiceException(MgmtErrorCode.REPORT_GENERATE_PRODUCT_NOT_EXISTS);
         }
-        
+
         product = testingProductService.get(product.getId());
-        
+
         if (null == product)
         {
             throw new ServiceException(MgmtErrorCode.REPORT_GENERATE_PRODUCT_NOT_EXISTS);
         }
-        
+
         ReportTemplate template = reportTemplateService.getReportTemplate(product.getId(), null == order.getAgency() ? null : order.getAgency().getId());
-        
+
         if (null == template || StringUtils.isEmpty(template.getTsdgKey()))
         {
             throw new ServiceException(MgmtErrorCode.REPORT_GENERATE_TEMPLATE_NOT_EXISTS);
         }
-        
+
         List<com.todaysoft.ghealth.mybatis.model.TestingItem> testingItems = testingItemService.getItemsForProduct(product.getId());
-        
+
         if (CollectionUtils.isEmpty(testingItems))
         {
             throw new ServiceException(MgmtErrorCode.REPORT_GENERATE_TESING_ITEMS_NOT_EXISTS);
         }
-        
+
         if (StringUtils.isEmpty(customer.getSex()) && testingItemService.isRequiredSexForGenerate(testingItems))
         {
             throw new ServiceException(MgmtErrorCode.REPORT_GENERATE_CUSTOMER_SEX_UNDEFINED);
         }
-        
+
         TestingItemAlgorithmConfig algorithmConfig;
         List<TestingItemAlgorithmConfig> testingItemAlgorithmConfigs = new ArrayList<>();
         for (com.todaysoft.ghealth.mybatis.model.TestingItem testingItem : testingItems)
         {
             AbstractTestingItemAlgorithm algorithm = TestingItemAlgorithmFactory.getAlgorithm(testingItem);
-            
+
             algorithmConfig = algorithm.getTestingItemAlgorithmConfig(testingItem);
             ItemLocusSearcher searcher = new ItemLocusSearcher();
             searcher.setItemId(testingItem.getId());
@@ -456,17 +456,17 @@ public class OrderMgmtFacade
             algorithmConfig.setAlgorithm(algorithm);
             algorithmConfig.setTestingItem(testingItem);
             algorithmConfig.setLocusConfig(algorithm.getLocusConfig(testingItem.getName(), records));
-            
+
             testingItemAlgorithmConfigs.add(algorithmConfig);
         }
-        
+
         Map<String, String> genetypeMappings = new HashMap<String, String>();
         genetypes.forEach(genetype -> genetypeMappings.put(genetype.getLocus(), genetype.getGenetype()));
-        
+
         RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
         String destUri = "/report/" + order.getCode();
         String destDirectory = ((ServletRequestAttributes)attributes).getRequest().getServletContext().getRealPath(destUri);
-        
+
         ReportGenerateContext context = new ReportGenerateContext();
         context.setOrder(order);
         context.setProduct(product);
@@ -480,13 +480,13 @@ public class OrderMgmtFacade
         context.setDestDirectory(destDirectory);
         return context;
     }
-    
+
     public ListResponse<OrderHistory> getOrderHistoriesByOrderId(MaintainOrderRequest request)
     {
         List<com.todaysoft.ghealth.mybatis.model.OrderHistory> list = orderHistoryService.getOrderHistoriesByOrderId(request.getId());
         return new ListResponse<>(wrapper.wrapOrderHistory(list));
     }
-    
+
     @Transactional
     public String modify(MaintainOrderRequest request)
     {
@@ -496,7 +496,7 @@ public class OrderMgmtFacade
             return request.getId();
         }
         ManagementAccountDetails account = accountService.getManagementAccountDetails(request.getToken());
-        
+
         if (null == account)
         {
             throw new IllegalStateException();
@@ -513,13 +513,13 @@ public class OrderMgmtFacade
         service.modify(data);
         return data.getId();
     }
-    
+
     public ObjectResponse<Boolean> isUniqueCode(MaintainOrderRequest request)
     {
         Boolean isUniqueCode = service.isUniqueCode(request.getId(), request.getCode());
         return new ObjectResponse<>(isUniqueCode);
     }
-    
+
     private com.todaysoft.ghealth.mybatis.model.Order wrapOrder(MaintainOrderRequest request)
     {
         com.todaysoft.ghealth.mybatis.model.Order data = new com.todaysoft.ghealth.mybatis.model.Order();
@@ -537,21 +537,21 @@ public class OrderMgmtFacade
         data.setActualPrice(request.getActualPrice());
         return data;
     }
-    
+
     public ListResponse<OrderHistory> getOrderHistories(MaintainOrderHistoryRequest request)
     {
         List<com.todaysoft.ghealth.mybatis.model.OrderHistory> list =
             orderHistoryService.getOrderHistories(request.getName(), request.getYear(), request.getMonth());
         return new ListResponse<>(wrapper.wrapOrderHistory(list));
     }
-    
+
     public ListResponse<OrderHistory> getOrderHistoryLists(MaintainOrderHistoryRequest request)
     {
         List<com.todaysoft.ghealth.mybatis.model.OrderHistory> list =
             orderHistoryService.getOrderHistoryLists(request.getName(), request.getYear(), request.getMonth(), request.getDay());
         return new ListResponse<>(wrapper.wrapOrderHistory(list));
     }
-    
+
     public ListResponse<OrderHistory> getOrderHistory(QueryOrderHistoryRequest request)
     {
         StatisticsSearcher searcher = new StatisticsSearcher();
@@ -560,7 +560,7 @@ public class OrderMgmtFacade
         List<com.todaysoft.ghealth.mybatis.model.OrderHistory> list = orderHistoryService.getOrderHistory(searcher);
         return new ListResponse<>(wrapper.wrapOrderHistory(list));
     }
-    
+
     private void wrapSearcherOrder(QueryOrderHistoryRequest request, StatisticsSearcher searcher)
     {
         if (StringUtils.isNotEmpty(request.getEndTime()))
@@ -572,43 +572,43 @@ public class OrderMgmtFacade
             searcher.setStartTime(transferLongToDate("yyyy-MM-dd 00:00:00", Long.valueOf(request.getStartTime())));
         }
     }
-    
+
     public ObjectResponse<String> getPath(MaintainOrderRequest request)
     {
         com.todaysoft.ghealth.mybatis.model.Order order = service.getOrderById(request.getId());
-        
+
         if (StringUtils.isEmpty(order.getReportGenerateTaskId()))
         {
             throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_UNGENERATED);
         }
-        
+
         ReportGenerateTask task = reportGenerateService.getReportGenerateTask(order.getReportGenerateTaskId());
-        
+
         if (null == task || !ReportGenerateTask.STATUS_SUCCESS.equals(task.getStatus()))
         {
             throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_UNGENERATED);
         }
-        
+
         String uri = task.getPdfFileUrl();
-        
+
         RequestAttributes attributes = RequestContextHolder.currentRequestAttributes();
         String path = ((ServletRequestAttributes)attributes).getRequest().getServletContext().getRealPath(uri);
         return new ObjectResponse<String>(path);
     }
-    
+
     @Transactional
     public String cancel(MaintainOrderRequest request)
     {
         ManagementAccountDetails account = accountService.getManagementAccountDetails(request.getToken());
         com.todaysoft.ghealth.mybatis.model.Order data = service.getOrderById(request.getId());
-        
+
         if (canCancel(data))
         {
             Agency agency = agencyService.get(data.getAgency().getId());
             AgencyBill agencyBill = new AgencyBill();
             BigDecimal accountAmount = agency.getAccountAmount().add(data.getActualPrice());
             agencyBill.setAmountBefore(agency.getAccountAmount());
-            
+
             agencyBill.setAgency(agency);
             agencyBill.setBillType(DataStatus.BILL_REFUND);
             agencyBill.setIncreased(DataStatus.BALANCE_PLUS);
@@ -618,7 +618,7 @@ public class OrderMgmtFacade
             agencyBill.setBillTime(new Date());
             agencyBill.setOperateName(account.getName());
             agencyBillFacade.create(agencyBill);
-            
+
             agency.setAccountAmount(accountAmount);
             agencyService.modify(agency, null);
         }
@@ -628,7 +628,7 @@ public class OrderMgmtFacade
         service.modify(data);
         return data.getId();
     }
-    
+
     private boolean canCancel(com.todaysoft.ghealth.mybatis.model.Order data)
     {
         boolean flag = true;
@@ -643,19 +643,19 @@ public class OrderMgmtFacade
         }
         return flag;
     }
-    
+
     public ObjectResponse<Order> getByCode(MaintainOrderRequest request)
     {
         com.todaysoft.ghealth.mybatis.model.Order order = service.getByCode(request.getCode());
         return new ObjectResponse<Order>(wrapper.wrap(order));
     }
-    
+
     public ObjectResponse<String> dataDetails(MaintainOrderRequest request)
     {
         String dataDetail = service.dataDetails(request.getId());
         return new ObjectResponse<String>(dataDetail);
     }
-    
+
     public void upload(MaintainOrderRequest request) throws IOException
     {
         String suffix = request.getFileName().substring(request.getFileName().indexOf("."), request.getFileName().length());
@@ -664,10 +664,10 @@ public class OrderMgmtFacade
         String destDirectory = ((ServletRequestAttributes)attributes).getRequest().getServletContext().getRealPath(destUri);
         File f = new File(destDirectory);
         f.mkdirs();
-        
+
         String fileName = new StringBuilder().append(DateFormatUtils.format(new Date(), "yyyyMMddHHmmss")).append(suffix).toString();
         File dest = new File(destDirectory, fileName);
-        
+
         OutputStream out = null;
         try
         {
@@ -691,36 +691,36 @@ public class OrderMgmtFacade
         }
         handerOssUpload(request, destUri, dest);
     }
-    
+
     private void handerOssUpload(MaintainOrderRequest request, String destUri, File dest)
     {
         ReportGenerator reportGenerator = RootContext.getBean(ReportGenerator.class);
-        
+
         ReportGenerateContext context = new ReportGenerateContext();
         com.todaysoft.ghealth.mybatis.model.Order order = new com.todaysoft.ghealth.mybatis.model.Order();
         BeanUtils.copyProperties(request, order);
         order.setStatus(DataStatus.ORDER_FINISHED);
         context.setOrder(order);
         context.setDestUri(destUri);
-        
+
         final List<File> files = Arrays.asList(dest);
         reportGenerator.generateSuccess(context, files, true);
         order = service.getOrderById(order.getId());
         reportGeneratedSend.sending(order);
     }
-    
+
     public ListResponse<List<String>> getStatisticsExcels(QueryOrderHistoryRequest request)
     {
         StatisticsSearcher searcher = new StatisticsSearcher();
         BeanUtils.copyProperties(request, searcher, "startTime", "endTime");
         wrapSearcherOrder(request, searcher);
-        
+
         Map<String, String> map = new HashMap<>();
         map.put("2", "订单提交");
         map.put("3", "订单签收");
         map.put("4", "订单寄送");
         map.put("6", "生成报告");
-        
+
         List<String> agenciesIds = new ArrayList<String>();
         List<String> set = new ArrayList<>(map.keySet());
         for (int i = 0; i < set.size(); i++)
@@ -738,41 +738,41 @@ public class OrderMgmtFacade
                     {
                         agenciesIds.add(order.getAgency().getId());
                     }
-                    
+
                 }
             }
         }
-        
+
         List<List<String>> statisticsExcels = new ArrayList<>();
         Agency agency;
         CustomerSearcher customerSearcher = new CustomerSearcher();
         customerSearcher.setStartCreateTime(searcher.getStartTime());
         customerSearcher.setEndStartTime(searcher.getEndTime());
         int newCustomerNums = 0;
-        
+
         Integer quantity = 0;
         Integer signNum = 0;
         Integer sendNum = 0;
         Integer reportedNum = 0;
-        
+
         AgencyBillSearcher billSearcher = new AgencyBillSearcher();
         billSearcher.setStartTime(searcher.getStartTime());
         billSearcher.setEndTime(searcher.getEndTime());
         BigDecimal totalRecharge = BigDecimal.valueOf(0);
         BigDecimal totalConsume = BigDecimal.valueOf(0);
-        
+
         for (String agencyId : agenciesIds)
         {
             List<String> list = new ArrayList<>();
             agency = agencyService.getReportData(agencyId);
             list.add(agency.getName());
-            
+
             //新增客户数
             customerSearcher.setAgencyId(agencyId);
             int newCustomerNum = customerService.customerCount(customerSearcher);
             list.add(String.valueOf(newCustomerNum));
             newCustomerNums += newCustomerNum;
-            
+
             //提交、签收、寄出、报告数量
             OrderSearcher orderSearcher = new OrderSearcher();
             orderSearcher.setAgencyId(agencyId);
@@ -802,7 +802,7 @@ public class OrderMgmtFacade
                     }
                 }
             }
-            
+
             //充值、消费金额
             billSearcher.setAgencyId(agencyId);
             List<AgencyBill> agencyBills = agencyBillService.list(billSearcher);
@@ -827,12 +827,12 @@ public class OrderMgmtFacade
             list.add(String.valueOf(consume));
             totalRecharge = totalRecharge.add(recharge);
             totalConsume = totalConsume.add(consume);
-            
+
             //账户余额
             list.add(agency.getAccountAmount().toString());
             statisticsExcels.add(list);
         }
-        
+
         List<String> list = new ArrayList<>();
         list.add("总汇");
         list.add(String.valueOf(newCustomerNums));
@@ -843,10 +843,10 @@ public class OrderMgmtFacade
         list.add(String.valueOf(totalRecharge));
         list.add(String.valueOf(totalConsume));
         statisticsExcels.add(list);
-        
+
         return new ListResponse<>(statisticsExcels);
     }
-    
+
     private Integer statisticsNum(List<String> orderIds, StatisticsSearcher searcher)
     {
         Integer num = 0;
@@ -863,11 +863,11 @@ public class OrderMgmtFacade
         }
         return num;
     }
-    
+
     public void delete(MaintainOrderRequest request)
     {
         ManagementAccountDetails account = accountService.getManagementAccountDetails(request.getToken());
-        
+
         if (null == account)
         {
             throw new IllegalStateException();
@@ -882,7 +882,7 @@ public class OrderMgmtFacade
         orderHistoryService.deleteByOrderId(request.getId());
         service.modify(order);
     }
-    
+
     public PagerResponse<Order> specialPager(QueryOrdersRequest request)
     {
         int pageNo = null == request.getPageNo() ? 1 : request.getPageNo();
@@ -894,7 +894,7 @@ public class OrderMgmtFacade
         Pager<Order> result = Pager.generate(pager.getPageNo(), pager.getPageSize(), pager.getTotalCount(), wrapper.wrap(pager.getRecords()));
         return new PagerResponse<Order>(result);
     }
-    
+
     @Transactional
     public void uploadReport(MaintainOrderRequest request)
     {
@@ -905,7 +905,7 @@ public class OrderMgmtFacade
         details.put("endpoint", config.getEndpoint());
         details.put("bucketName", config.getBucketName());
         details.put("objectKey", objectKey);
-        
+
         //ghealth_object_storage 插入数据
         String objectStorageId = IdGen.uuid();
         ObjectStorage entity = new ObjectStorage();
@@ -913,7 +913,7 @@ public class OrderMgmtFacade
         entity.setStorageType(ObjectStorage.STORAGE_ALI_OSS);
         entity.setStorageDetails(JsonUtils.toJson(details));
         reportGenerateTaskMapper.insertObjectStorageRecord(entity);
-        
+
         //ghealth_order_report_generate_task 插入数据
         ReportGenerateTask task = new ReportGenerateTask();
         Date timestamp = new Date();
@@ -922,7 +922,7 @@ public class OrderMgmtFacade
         task.setCreateTime(timestamp);
         task.setCreatorName("管理员");
         task.setFinishTime(timestamp);
-        
+
         if (objectKey.contains(".pdf"))
         {
             task.setPdfFileUrl(objectStorageId);
@@ -932,35 +932,35 @@ public class OrderMgmtFacade
             task.setWordFileUrl(objectStorageId);
         }
         reportGenerateTaskMapper.insert(task);
-        
+
         com.todaysoft.ghealth.mybatis.model.Order order = service.getOrderById(request.getId());
         order.setReportGenerateTaskId(task.getId());
         order.setReportGenerateTime(timestamp);
         order.setStatus(DataStatus.ORDER_FINISHED);
         service.modify(order);
     }
-    
+
     private ObjectStorage getObjectStorage(DownloadOrderReportRequest request, com.todaysoft.ghealth.mybatis.model.Order order)
     {
         if (StringUtils.isEmpty(request.getOrderId()))
         {
             throw new ServiceException(MgmtErrorCode.API_ILLEGAL_ARGUMENT);
         }
-        
+
         if (StringUtils.isEmpty(order.getReportGenerateTaskId()))
         {
             throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_UNGENERATED);
         }
-        
+
         ReportGenerateTask task = reportGenerateService.getReportGenerateTask(order.getReportGenerateTaskId());
-        
+
         if (null == task || !ReportGenerateTask.STATUS_SUCCESS.equals(task.getStatus()))
         {
             throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_UNGENERATED);
         }
-        
+
         String objectStorageKey;
-        
+
         if ("word".equals(request.getType()))
         {
             objectStorageKey = task.getWordFileUrl();
@@ -969,12 +969,12 @@ public class OrderMgmtFacade
         {
             objectStorageKey = task.getPdfFileUrl();
         }
-        
+
         if (StringUtils.isEmpty(objectStorageKey))
         {
             throw new ServiceException(MgmtErrorCode.REPORT_DOWNLOAD_UNGENERATED);
         }
-        
+
         ObjectStorage objectStorage = objectStorageService.get(objectStorageKey);
         if (Objects.isNull(objectStorage))
         {
@@ -982,4 +982,52 @@ public class OrderMgmtFacade
         }
         return objectStorage;
     }
+
+    public ObjectResponse<Boolean> setVigilance(MaintainOrderRequest request)
+    {
+        com.todaysoft.ghealth.mybatis.model.Order order = service.getOrderById(request.getId());
+        order.setVigilance(request.getVigilance());
+        service.modify(order);
+        return new ObjectResponse<>(true);
+    }
+
+    public ObjectResponse<Map<String, List<OrderSimpleDTO>>> map(QueryOrderByCodesRequest request)
+    {
+        Map<String, List<OrderSimpleDTO>> map = new HashMap<String, List<OrderSimpleDTO>>();
+        OrderSearcher searcher;
+        List<OrderSimpleDTO> mapOrderList;
+        List<com.todaysoft.ghealth.mybatis.model.Order> orders = service.list(request.getCodes());
+        for (com.todaysoft.ghealth.mybatis.model.Order order :orders)
+        {
+            if (order.getVigilance().equals("1"))
+            {
+                searcher = new OrderSearcher();
+                searcher.setCustomerId(order.getCustomer().getId());
+                searcher.setAgencyId(order.getAgency().getId());
+                String specialOrderCodes = service.vigilanceList(searcher);
+                Set<String> orderCodes = new HashSet<String>();
+                List<String> list = Arrays.asList(specialOrderCodes.split(","));
+                for (String code : list) {
+                    orderCodes.add(code);
+                }
+                List<com.todaysoft.ghealth.mybatis.model.Order> specialOrders = service.list(orderCodes);
+                List<OrderSimpleDTO> orderList = orderSimpleWrapper.wrap(specialOrders);
+                mapOrderList = new ArrayList<OrderSimpleDTO>();
+                for (OrderSimpleDTO specialOrder : orderList)
+                {
+                    //基因型为空 从对比列表中去除
+                    if (null != specialOrder.getLocusGenetypeDTOS() && !order.getCode().equals(specialOrder.getCode()))
+                    {
+                        mapOrderList.add(specialOrder);
+                    }
+                }
+                if (mapOrderList.size() > 0)
+                {
+                    map.put(order.getCode(), mapOrderList);
+                }
+            }
+        }
+        return new ObjectResponse<Map<String, List<OrderSimpleDTO>>>(map);
+    }
+
 }

@@ -50,7 +50,7 @@
                         <#if signInHistoryList?has_content> <#list signInHistoryList as record>
                             <tr>
                                 <td> ${record_index + 1}</td>
-                                <td>${(record.order.code)!?html}</td>
+                                <td <#if (record.order.vigilance)??&&(record.order.vigilance=='1')><#if (record.order.status)??&&(record.order.status!='5')>style="background-color: #ff9f95;"</#if></#if>>${(record.order.code)!?html}</td>
                                 <td>${(record.order.product.name)!?html}</td>
                                 <td>${(record.order.customer.name)!?html}</td>
                                 <td>${(record.order.agency.name)!?html}</td>

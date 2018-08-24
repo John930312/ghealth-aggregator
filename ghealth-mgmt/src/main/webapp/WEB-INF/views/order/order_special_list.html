@@ -135,6 +135,7 @@
                 <th>代理商</th>
                 <th>下单时间</th>
                 <th>订单状态</th>
+                <th>警惕状态</th>
                 <th class="flexible-btns">操作</th>
             </tr>
             </thead>
@@ -147,16 +148,31 @@
                         <td><@dict_category_value category = "GENDER" value = record.customer.sex/></td>
                         <td>${(record.customer.phone)!?html}</td>
                         <td>${(record.customer.birthday)!?html}</td>
-                        <td>${record.code!?html}</td>
+                        <td <#if record.vigilance??&&record.vigilance=='1'><#if record.status??&&record.status!='5'>style="background-color: #ff9f95;"</#if></#if>>${record.code!?html}</td>
                         <td>${(record.product.name)!?html}</td>
                         <td>${(record.agency.name)!?html}</td>
                         <td  >
                         <#if record.submitTime??>${record.submitTime!?string('yyyy-MM-dd HH:mm:ss')}</#if>
                         </td>
-                        <td status="${(record.status)!?html}"><@dict_category_value category="order_status" value =
-                            record.status/>
+                        <td status="${(record.status)!?html}" >
+                        <@dict_category_value category="order_status" value =record.status/>
                         </td>
+                        <td><#if record.vigilance??&&record.vigilance=='0'>非警惕<#else>警惕中</#if></td>
                         <td class="flexible-btns" style="white-space: nowrap">
+                            <!--<a  onclick="vigilant('${record.id!?html}')"> class="btn btn-sm btn-success">-->
+                                <!--<i class="fa fa-thn"></i> 警惕-->
+                            <!--</a>-->
+                            <#if record.vigilance??&&record.vigilance=='1'>
+                                <a  class="btn btn-sm label-warning"
+                                   onclick="setVigilance('${record.id}','0','${base}/order/setVigilance.do','${base}/order/reload.do')">
+                                    <i class="fa fa-times"></i> 不警惕
+                                </a>
+                                <#else>
+                                    <a class="btn btn-sm label-primary"
+                                       onclick="setVigilance('${record.id}','1','${base}/order/setVigilance.do','${base}/order/reload.do')">
+                                        <i class="fa fa-check"></i> 警惕
+                                    </a>
+                            </#if>
                             <a href="${base}/order/display.jsp?id=${record.id}" class="btn btn-sm btn-success">
                                 <i class="fa fa-thn"></i> 详情
                             </a>
@@ -206,6 +222,34 @@
         });
 
     });
+
+    function setVigilance(id, vigilance, setVigilance_url, redirect_url) {
+        var confirm_val;
+        if (vigilance=='0') {
+            confirm_val = "确定要去除该数据警惕状态么";
+        }
+        else {
+            confirm_val = "确定要警惕该数据么";
+        }
+        layer.confirm(confirm_val, {
+            btn: ['确认', '取消'] //按钮
+        }, function () {
+            $.post(setVigilance_url, {
+                id: id, vigilance: vigilance
+            }, function (flag) {
+                if (flag) {
+                    window.location.href = redirect_url;
+                } else {
+                    layer.alert("警惕状态更改失败", {
+                        title: "提示"
+                    });
+                }
+            });
+        }, function () {
+            layer.close();
+        });
+
+    }
 </script>
 </body>
 </html>

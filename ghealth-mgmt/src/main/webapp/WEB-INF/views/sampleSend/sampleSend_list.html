@@ -143,7 +143,7 @@
                                     <input type="checkbox" class="check-instance" value="${record.code}" />
                                 </td>
                                 <td>${record_index + 1}</td>
-                                <td>${record.code!?html}</td>
+                                <td <#if record.vigilance??&&record.vigilance=='1'>style="background-color: #ff9f95;"</#if>>${record.code!?html}</td>
                                 <td>${(record.product.name)!?html}</td>
                                 <td>${(record.customer.name)!?html}</td>
                                 <td>${record.agency.name!?html}</td>

@@ -45,6 +45,8 @@ public class MaintainOrderRequest extends SignatureTokenRequest
     private String orderIds;
     
     private String objectKey;
+
+    private String vigilance;
     
     public String getAgencyId()
     {
@@ -214,5 +216,13 @@ public class MaintainOrderRequest extends SignatureTokenRequest
     public void setObjectKey(String objectKey)
     {
         this.objectKey = objectKey;
+    }
+
+    public String getVigilance() {
+        return vigilance;
+    }
+
+    public void setVigilance(String vigilance) {
+        this.vigilance = vigilance;
     }
 }

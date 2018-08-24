@@ -20,7 +20,9 @@ public class TestingDataUploadDetails extends TestingDataUploadForm
     private List<TestingDataUploadHeader<Order>> columns;
     
     private Map<String, TestingDataUploadGenetype> genetypes;
-    
+
+    private  Map<String,List<String>> resultMap;
+
     public TestingDataUploadGenetype getGenetype(int row, int column)
     {
         if (CollectionUtils.isEmpty(genetypes))
@@ -91,5 +93,13 @@ public class TestingDataUploadDetails extends TestingDataUploadForm
     public void setGenetypes(Map<String, TestingDataUploadGenetype> genetypes)
     {
         this.genetypes = genetypes;
+    }
+
+    public Map<String, List<String>> getResultMap() {
+        return resultMap;
+    }
+
+    public void setResultMap(Map<String, List<String>> resultMap) {
+        this.resultMap = resultMap;
     }
 }

@@ -121,6 +121,7 @@ public class OrderService implements IOrderService
             order.setId(record.getId());
             order.setCode(record.getCode());
             order.setStatus(record.getStatus());
+            order.setVigilance(record.getVigilance());
             order.setLocusGenetypeDTOS(record.getLocusGenetypeDTOS());
             mappings.put(order.getCode(), order);
         }
@@ -535,5 +536,80 @@ public class OrderService implements IOrderService
                 });
 
         return response.getData();
+    }
+
+    @Override
+    public boolean setVigilance(Order order)
+    {
+        MaintainOrderRequest request = new MaintainOrderRequest();
+        BeanUtils.copyProperties(order, request);
+        ObjectResponse<Boolean> response =
+                gateway.request("/mgmt/order/setVigilance", request, new ParameterizedTypeReference<ObjectResponse<Boolean>>()
+                {
+                });
+        return response.getData();
+    }
+
+    @Override
+    public Map<String, List<Order>> getSpecialOrdersAsCodeMappings(List<String> codes)
+    {
+        if (CollectionUtils.isEmpty(codes))
+        {
+            return Collections.emptyMap();
+        }
+
+        Set<String> args = new HashSet<String>();
+
+        for (String code : codes)
+        {
+            if (!StringUtils.isEmpty(code))
+            {
+                args.add(code);
+            }
+        }
+
+        if (CollectionUtils.isEmpty(args))
+        {
+            return Collections.emptyMap();
+        }
+
+        QueryOrderByCodesRequest request = new QueryOrderByCodesRequest();
+        request.setCodes(args);
+
+        ObjectResponse<Map<String,List<OrderSimpleDTO>>> response =
+                gateway.request("/mgmt/order/list/specialCodes", request, new ParameterizedTypeReference<ObjectResponse<Map<String,List<OrderSimpleDTO>>>>()
+                {
+                });
+
+        Map<String,List<OrderSimpleDTO>> records = response.getData();
+
+        if (CollectionUtils.isEmpty(records))
+        {
+            return Collections.emptyMap();
+        }
+
+        List<Order> orderList;
+        Order order;
+        Map<String, List<Order>> mappings = new HashMap<String, List<Order>>();
+
+        for ( Map.Entry<String,List<OrderSimpleDTO>> record : records.entrySet())
+        {
+            orderList = new ArrayList<Order>();
+            record.getValue();
+            for (OrderSimpleDTO orderSimpleDTO : record.getValue())
+            {
+                order = new Order();
+                order.setId(orderSimpleDTO.getId());
+                order.setCode(orderSimpleDTO.getCode());
+                order.setStatus(orderSimpleDTO.getStatus());
+                order.setVigilance(orderSimpleDTO.getVigilance());
+                order.setLocusGenetypeDTOS(orderSimpleDTO.getLocusGenetypeDTOS());
+                orderList.add(order);
+            }
+
+            mappings.put(record.getKey(), orderList);
+        }
+
+        return mappings;
     }
 }

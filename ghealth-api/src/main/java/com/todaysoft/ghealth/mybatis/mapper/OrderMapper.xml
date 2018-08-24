@@ -19,6 +19,7 @@
         <result column="CODE" property="code"/>
         <result column="ACTUAL_PRICE" property="actualPrice"/>
         <result column="STATUS" property="status"/>
+        <result column="VIGILANCE" property="vigilance"/>
         <result column="SUBMIT_TIME" property="submitTime"/>
         <result column="CREATOR_NAME" property="creatorName"/>
         <result column="SAMPLE_TYPE" property="sampleType"/>
@@ -44,6 +45,7 @@
         gOrder.ID AS ID,
         gOrder.CODE AS CODE,
         gOrder.STATUS AS STATUS,
+        gOrder.VIGILANCE AS VIGILANCE,
         gOrder.SAMPLE_TYPE AS SAMPLE_TYPE,
         gOrder.CREATE_TIME AS CREATE_TIME,
         gOrder.CREATOR_NAME AS CREATOR_NAME,
@@ -239,6 +241,9 @@
             <if test="status != null">
                 STATUS = #{status,jdbcType=VARCHAR},
             </if>
+            <if test="vigilance != null">
+                VIGILANCE = #{vigilance,jdbcType=VARCHAR},
+            </if>
             <if test="submitTime != null">
                 SUBMIT_TIME = #{submitTime,jdbcType=TIMESTAMP},
             </if>
@@ -385,7 +390,7 @@
     </select>
 
     <select id="getOrdersByCodes" resultMap="BaseResultMap" parameterType="java.util.Set">
-        SELECT t.ID, t.CODE, t.STATUS FROM GHEALTH_ORDER t
+        SELECT t.ID, t.CODE, t.STATUS,t.VIGILANCE,t.CUSTOMER_ID,t.AGENCY_ID FROM GHEALTH_ORDER t
         <choose>
             <when test="codes == null or codes.size == 0">
                 WHERE 1 = 2
@@ -480,12 +485,16 @@
         AND o.ID = #{orderId,jdbcType=VARCHAR}
     </select>
 
-    <select id="getOrderCodes" resultType="String">
-        select
+    <sql id="Base_Column_SPECIAL_List">
+         select
           GROUP_CONCAT(gOrder.CODE SEPARATOR ',') AS CODE
         FROM ghealth_order gOrder
         LEFT JOIN ghealth_customer gCustomer ON gOrder.CUSTOMER_ID =gCustomer.ID
         LEFT JOIN ghealth_agency gAgency ON gOrder.AGENCY_ID = gAgency.ID
+    </sql>
+
+    <select id="getOrderCodes" resultType="String">
+        <include refid="Base_Column_SPECIAL_List"></include>
         WHERE gOrder.DELETED = 0
         AND gOrder.STATUS != 0
         AND gOrder.STATUS != 6
@@ -497,6 +506,7 @@
         gOrder.ID,
         gOrder.CODE,
         gOrder.STATUS,
+        gOrder.VIGILANCE AS VIGILANCE,
         gOrder.SUBMIT_TIME AS SUBMIT_TIME,
         gOrder.CREATE_TIME AS CREATE_TIME,
         gCustomer.ID AS CUSTOMER_ID,
@@ -606,4 +616,12 @@
         ) b ON b.CUSTOMER_NAME = a.CUSTOMER_NAME;
     </select>-->
 
+    <select id="getVigilanceList" resultType="String" parameterType="com.todaysoft.ghealth.mybatis.searcher.OrderSearcher">
+        <include refid="Base_Column_SPECIAL_List"></include>
+        WHERE gOrder.DELETED = 0
+        AND gOrder.VIGILANCE = '1'
+        AND gOrder.CUSTOMER_ID = #{customerId,jdbcType=VARCHAR}
+        AND gOrder.AGENCY_ID = #{agencyId,jdbcType=VARCHAR}
+        GROUP BY gCustomer.NAME,gAgency.ID HAVING COUNT(gCustomer.NAME) > 1
+    </select>
 </mapper>

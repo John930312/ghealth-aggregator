@@ -11,7 +11,9 @@ public class OrderSimpleDTO
     private String code;
     
     private String status;
-    
+
+    private String vigilance;
+
     private List<LocusGenetypeDTO> locusGenetypeDTOS;
     
     public String getId()
@@ -52,5 +54,13 @@ public class OrderSimpleDTO
     public void setLocusGenetypeDTOS(List<LocusGenetypeDTO> locusGenetypeDTOS)
     {
         this.locusGenetypeDTOS = locusGenetypeDTOS;
+    }
+
+    public String getVigilance() {
+        return vigilance;
+    }
+
+    public void setVigilance(String vigilance) {
+        this.vigilance = vigilance;
     }
 }

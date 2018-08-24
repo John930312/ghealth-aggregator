@@ -70,7 +70,10 @@ public class Order
     
     //订单上传数据
     private List<LocusGenetypeDTO> locusGenetypeDTOS;
-    
+
+    //警惕状态
+    private String vigilance;
+
     public SignInHistory getSignInHistory()
     {
         return signInHistory;
@@ -356,5 +359,13 @@ public class Order
     public void setLocusGenetypeDTOS(List<LocusGenetypeDTO> locusGenetypeDTOS)
     {
         this.locusGenetypeDTOS = locusGenetypeDTOS;
+    }
+
+    public String getVigilance() {
+        return vigilance;
+    }
+
+    public void setVigilance(String vigilance) {
+        this.vigilance = vigilance;
     }
 }

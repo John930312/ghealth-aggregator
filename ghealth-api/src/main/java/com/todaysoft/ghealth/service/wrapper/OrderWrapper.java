@@ -124,6 +124,7 @@ public class OrderWrapper
         target.setCode(source.getCode());
         target.setActualPrice(source.getActualPrice());
         target.setStatus(source.getStatus());
+        target.setVigilance(source.getVigilance());
         target.setReportPrintRequired(source.getReportPrintRequired());
         target.setSampleType(source.getSampleType());
         target.setCreatorName(source.getCreatorName());

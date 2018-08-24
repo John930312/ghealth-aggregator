@@ -71,4 +71,8 @@ public interface IOrderService
     Pagination<Order> searchSpecialList(OrderSearcher searcher, int offset, int limit);
 
     String getReportUrl(String id, String type);
+
+    boolean setVigilance(Order request);
+
+    Map<String,List<Order>> getSpecialOrdersAsCodeMappings(List<String> orderCodes);
 }

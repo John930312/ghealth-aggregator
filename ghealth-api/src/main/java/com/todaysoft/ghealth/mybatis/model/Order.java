@@ -53,6 +53,8 @@ public class Order
     private BigDecimal price;
 
     private Integer reportDownloadCount;
+
+    private String vigilance;
     
     public String getId()
     {
@@ -288,5 +290,13 @@ public class Order
 
     public void setReportDownloadCount(Integer reportDownloadCount) {
         this.reportDownloadCount = reportDownloadCount;
+    }
+
+    public String getVigilance() {
+        return vigilance;
+    }
+
+    public void setVigilance(String vigilance) {
+        this.vigilance = vigilance;
     }
 }

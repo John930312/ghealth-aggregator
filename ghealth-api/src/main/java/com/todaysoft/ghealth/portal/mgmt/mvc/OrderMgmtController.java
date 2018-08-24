@@ -20,6 +20,7 @@ import com.todaysoft.ghealth.portal.mgmt.facade.OrderMgmtFacade;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/mgmt/order")
@@ -191,4 +192,17 @@ public class OrderMgmtController
     {
         return facade.getReportUrl(request);
     }
+
+    @RequestMapping("/setVigilance")
+    public ObjectResponse<Boolean> setVigilance(@RequestBody MaintainOrderRequest request)
+    {
+        return facade.setVigilance(request);
+    }
+
+    @RequestMapping("/list/specialCodes")
+    public ObjectResponse<Map<String,List<OrderSimpleDTO>>> map(@RequestBody QueryOrderByCodesRequest request)
+    {
+        return facade.map(request);
+    }
+
 }

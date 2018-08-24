@@ -307,6 +307,12 @@ public class OrderService implements IOrderService {
         return pagers;
     }
 
+    @Override
+    public String vigilanceList(OrderSearcher searcher)
+    {
+        return  mapper.getVigilanceList(searcher);
+    }
+
     private List<Order> getFilterDatas(List<Order> orders, OrderSearcher searcher) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm");
         if (!StringUtils.isEmpty(searcher.getProductName())) {

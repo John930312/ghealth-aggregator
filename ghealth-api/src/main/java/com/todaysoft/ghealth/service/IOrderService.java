@@ -58,4 +58,6 @@ public interface IOrderService extends PagerQueryHandler<Order>
     List<String> getLoci(String id);
 
     Pager<Order> getSpecialPager(OrderSearcher searcher, int pageNo, int pageSize);
+
+    String vigilanceList(OrderSearcher searcher);
 }

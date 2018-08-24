@@ -51,4 +51,6 @@ public interface OrderMapper
     List<String> getOrderCodes();
 
     List<Order> getOrderDetailsByCodes(@Param("codes") Set<String> codes);
+
+    String getVigilanceList(OrderSearcher searcher);
 }
