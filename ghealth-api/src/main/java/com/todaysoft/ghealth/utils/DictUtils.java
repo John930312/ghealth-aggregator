@@ -49,19 +49,19 @@ public class DictUtils
     {
         if (level.equals(4))
         {
-            return "代谢能力很差.";
+            return "代谢能力很差";
         }
         else if (level.equals(3))
         {
-            return "代谢能力差.";
+            return "代谢能力差";
         }
         else if (level.equals(2))
         {
-            return "代谢能力较差.";
+            return "代谢能力较差";
         }
         else
         {
-            return "如果检测结果都是正常.";
+            return "如果检测结果都是正常";
         }
     }
     
