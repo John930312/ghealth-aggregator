@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -997,33 +998,35 @@ public class OrderMgmtFacade
         OrderSearcher searcher;
         List<OrderSimpleDTO> mapOrderList;
         List<com.todaysoft.ghealth.mybatis.model.Order> orders = service.list(request.getCodes());
-        for (com.todaysoft.ghealth.mybatis.model.Order order :orders)
-        {
-            if (order.getVigilance().equals("1"))
+        if (Objects.nonNull(orders)) {
+            for (com.todaysoft.ghealth.mybatis.model.Order order :orders)
             {
-                searcher = new OrderSearcher();
-                searcher.setCustomerId(order.getCustomer().getId());
-                searcher.setAgencyId(order.getAgency().getId());
-                String specialOrderCodes = service.vigilanceList(searcher);
-                Set<String> orderCodes = new HashSet<String>();
-                List<String> list = Arrays.asList(specialOrderCodes.split(","));
-                for (String code : list) {
-                    orderCodes.add(code);
-                }
-                List<com.todaysoft.ghealth.mybatis.model.Order> specialOrders = service.list(orderCodes);
-                List<OrderSimpleDTO> orderList = orderSimpleWrapper.wrap(specialOrders);
-                mapOrderList = new ArrayList<OrderSimpleDTO>();
-                for (OrderSimpleDTO specialOrder : orderList)
+                if (order.getVigilance().equals("1"))
                 {
-                    //基因型为空 从对比列表中去除
-                    if (null != specialOrder.getLocusGenetypeDTOS() && !order.getCode().equals(specialOrder.getCode()))
-                    {
-                        mapOrderList.add(specialOrder);
+                    searcher = new OrderSearcher();
+                    searcher.setCustomerId(order.getCustomer().getId());
+                    searcher.setAgencyId(order.getAgency().getId());
+                    String specialOrderCodes = service.vigilanceList(searcher);
+                    Set<String> orderCodes = new HashSet<String>();
+                    List<String> list = Arrays.asList(specialOrderCodes.split(","));
+                    for (String code : list) {
+                        orderCodes.add(code);
                     }
-                }
-                if (mapOrderList.size() > 0)
-                {
-                    map.put(order.getCode(), mapOrderList);
+                    List<com.todaysoft.ghealth.mybatis.model.Order> specialOrders = service.list(orderCodes);
+                    List<OrderSimpleDTO> orderList = orderSimpleWrapper.wrap(specialOrders);
+                    mapOrderList = new ArrayList<OrderSimpleDTO>();
+                    for (OrderSimpleDTO specialOrder : orderList)
+                    {
+                        //基因型为空 从对比列表中去除
+                        if (null != specialOrder.getLocusGenetypeDTOS() && !order.getCode().equals(specialOrder.getCode()))
+                        {
+                            mapOrderList.add(specialOrder);
+                        }
+                    }
+                    if (mapOrderList.size() > 0)
+                    {
+                        map.put(order.getCode(), mapOrderList);
+                    }
                 }
             }
         }
