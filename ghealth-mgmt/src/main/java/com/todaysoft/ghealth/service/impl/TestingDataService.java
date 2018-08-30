@@ -147,27 +147,27 @@ public class TestingDataService implements ITestingDataService
                 MutableBoolean flag = new MutableBoolean(false);
                 genetypeMutable.setValue(genetypeText);
 
-                if (order.getVigilance().equals("1"))
-                {
-                    //基因型
-                    genetypeText = entry.getValue().toUpperCase();
-                    locusGenetypeDTO = new LocusGenetypeDTO();
-                    locusGenetypeDTO.setLocus(locusNames.get(rowIndex));
-                    locusGenetypeDTO.setGenetype(entry.getValue().toUpperCase());
-                    genetypeDTOList = new ArrayList<LocusGenetypeDTO>();
-                    if (null == locusCodeMappings || !locusCodeMappings.containsKey(orderCode))
-                    {
-                        genetypeDTOList.add(locusGenetypeDTO);
-                    }else {
-                        genetypeDTOList.addAll(locusCodeMappings.get(orderCode));
-                        genetypeDTOList.add(locusGenetypeDTO);
-                    }
-                    locusCodeMappings.put(orderCode,genetypeDTOList);
-
-                }
                 // 验证 数据上传前后是否一致
                 if (!Objects.isNull(order))
                 {
+                    if (order.getVigilance().equals("1"))
+                    {
+                        //基因型
+                        genetypeText = entry.getValue().toUpperCase();
+                        locusGenetypeDTO = new LocusGenetypeDTO();
+                        locusGenetypeDTO.setLocus(locusNames.get(rowIndex));
+                        locusGenetypeDTO.setGenetype(entry.getValue().toUpperCase());
+                        genetypeDTOList = new ArrayList<LocusGenetypeDTO>();
+                        if (null == locusCodeMappings || !locusCodeMappings.containsKey(orderCode))
+                        {
+                            genetypeDTOList.add(locusGenetypeDTO);
+                        }else {
+                            genetypeDTOList.addAll(locusCodeMappings.get(orderCode));
+                            genetypeDTOList.add(locusGenetypeDTO);
+                        }
+                        locusCodeMappings.put(orderCode,genetypeDTOList);
+                    }
+
                     List<LocusGenetypeDTO> locusGenetypeDTOS = order.getLocusGenetypeDTOS();
                     if (!CollectionUtils.isEmpty(locusGenetypeDTOS))
                     {
