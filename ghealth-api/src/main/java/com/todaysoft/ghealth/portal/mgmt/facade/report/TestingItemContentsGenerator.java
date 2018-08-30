@@ -429,11 +429,11 @@ public class TestingItemContentsGenerator extends AbstractReportContentsGenerato
                                     .count();
                                 if (count.equals(0))
                                 {
-                                    remark = "如果检测结果都是正常。";
+                                    remark = "如果检测结果都是正常";
                                 }
                                 else
                                 {
-                                    remark = "您同型半胱氨酸代谢能力略有降低。";
+                                    remark = "代谢能力略有降低";
                                 }
                             }
                             else

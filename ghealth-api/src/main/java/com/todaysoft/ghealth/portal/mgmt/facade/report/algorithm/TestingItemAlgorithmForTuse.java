@@ -70,8 +70,10 @@ public class TestingItemAlgorithmForTuse extends AbstractTestingItemAlgorithm
                 rs1799793Mutable.setValue(rs1799793.equals("AA"));
             }
         }
-        
-        Optional<CancerData> cancerData = tuseCancerDatas.stream().filter(a -> rs1042522Mutable.getValue().equals(a.getGeneType())).findFirst();
+
+        Predicate<CancerData> equals1 = a -> rs1042522Mutable.getValue().equals(a.getGeneType());
+        Predicate<CancerData> equals2 = a -> rs1042522Mutable.getValue().equals(StringUtils.reverse(a.getGeneType()));
+        Optional<CancerData> cancerData = tuseCancerDatas.stream().filter(equals1.or(equals2)).findFirst();
         
         List<TuseCancerData> list = Collections.EMPTY_LIST;
         Predicate<TuseCancerData> filter1 = x -> x.getSex().equals(0);
