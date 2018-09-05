@@ -10,6 +10,7 @@ import com.todaysoft.ghealth.base.response.PagerResponse;
 import com.todaysoft.ghealth.base.response.dto.OrderSimpleDTO;
 import com.todaysoft.ghealth.base.response.model.Order;
 import com.todaysoft.ghealth.base.response.model.OrderHistory;
+import com.todaysoft.ghealth.base.response.model.Statistics;
 import com.todaysoft.ghealth.config.AliyunOSSConfig;
 import com.todaysoft.ghealth.config.RootContext;
 import com.todaysoft.ghealth.mgmt.model.OrderReportStreamDTO;
@@ -47,6 +48,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StopWatch;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -54,6 +56,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.io.*;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -119,6 +122,9 @@ public class OrderMgmtFacade
 
     @Autowired
     private ReportGenerateTaskMapper reportGenerateTaskMapper;
+
+    @Autowired
+    private IDictService dictService;
 
     public PagerResponse<Order> pager(QueryOrdersRequest request)
     {
@@ -543,7 +549,19 @@ public class OrderMgmtFacade
     {
         List<com.todaysoft.ghealth.mybatis.model.OrderHistory> list =
             orderHistoryService.getOrderHistories(request.getName(), request.getYear(), request.getMonth());
-        return new ListResponse<>(wrapper.wrapOrderHistory(list));
+        List<com.todaysoft.ghealth.mybatis.model.OrderHistory> orderHistories = new ArrayList<com.todaysoft.ghealth.mybatis.model.OrderHistory>();
+        List<String> orderCode = new ArrayList<>();
+
+        if (!CollectionUtils.isEmpty(list)) {
+            list.forEach(x -> {
+                if (!x.getOrder().getStatus().equals("6") && !orderCode.contains(x.getOrder().getCode()))
+                {
+                    orderCode.add(x.getOrder().getCode());
+                    orderHistories.add(x);
+                }
+            });
+        }
+        return new ListResponse<>(wrapper.wrapOrderHistory(orderHistories));
     }
 
     public ListResponse<OrderHistory> getOrderHistoryLists(MaintainOrderHistoryRequest request)
@@ -1035,4 +1053,90 @@ public class OrderMgmtFacade
         return new ObjectResponse<Map<String, List<OrderSimpleDTO>>>(map);
     }
 
+    public ListResponse<List<String>> getExcels(QueryOrderHistoryRequest request) {
+        StatisticsSearcher searcher = new StatisticsSearcher();
+        BeanUtils.copyProperties(request, searcher, "startTime", "endTime");
+        wrapSearcherOrder(request, searcher);
+        List<com.todaysoft.ghealth.mybatis.model.OrderHistory> orderHistories = orderHistoryService.getOrderHistory(searcher);
+        List<List<String>> statisticsExcels = new ArrayList<>();
+        List<String> orderCode = new ArrayList<>();
+        DictSearcher dictSearcher = new DictSearcher();
+        dictSearcher.setCategory("ORDER_STATUS");
+
+        if (!CollectionUtils.isEmpty(orderHistories)) {
+            for (com.todaysoft.ghealth.mybatis.model.OrderHistory orderHistory : orderHistories) {
+                if (!orderHistory.getOrder().getStatus().equals("6")&&!orderCode.contains(orderHistory.getOrder().getCode())) {
+                        com.todaysoft.ghealth.mybatis.model.Order order = service.getOrderById(orderHistory.getOrderId());
+                        orderCode.add(order.getCode());
+                        List<String> list = new ArrayList<>();
+                        list.add(order.getCode());
+                        list.add(order.getCustomer().getName() + order.getCustomer().getPhone());
+                        list.add(order.getProduct().getName());
+                        if (order.getReportPrintRequired() == 0) {
+                            list.add("不需要");
+                        } else {
+                            list.add("需要");
+                        }
+                        list.add(order.getAgency().getName());
+                        list.add(order.getActualPrice().toString());
+                        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                        list.add(df.format(orderHistory.getEventTime()));
+
+
+                        dictSearcher.setDictValue(order.getStatus());
+                        Dict dict = dictService.findByCategoryAndValue(dictSearcher);
+                        list.add(dict.getDictText());
+
+                        statisticsExcels.add(list);
+                    }
+
+            }
+
+        }
+        return new ListResponse<>(statisticsExcels);
+    }
+
+    public ObjectResponse<Statistics> getStatisticsDetails(QueryOrderHistoryRequest request) {
+        List<String> list = new ArrayList<>();
+        list.add("2");
+        list.add("3");
+        list.add("4");
+        list.add("6");
+        Map<String, String> map = new HashMap<>();
+        Statistics statistics = new Statistics();
+
+        StatisticsSearcher searcher = new StatisticsSearcher();
+        BeanUtils.copyProperties(request, searcher, "startTime", "endTime");
+        wrapSearcherOrder(request, searcher);
+        for (String status : list) {
+            List<String> orderCode = new ArrayList<>();
+            searcher.setTitle(status);
+            List<com.todaysoft.ghealth.mybatis.model.OrderHistory> orderHistories = orderHistoryService.getOrderHistory(searcher);
+            if (!CollectionUtils.isEmpty(orderHistories)) {
+                orderHistories.forEach(x -> {
+                    if (!x.getOrder().getStatus().equals("6") && !orderCode.contains(x.getOrder().getCode())) {
+                        orderCode.add(x.getOrder().getCode());
+                    }
+                });
+            }
+            Integer number = 0;
+            if (orderHistories != null) {
+                number = orderCode.size();
+            }
+            if (status == "2") {
+                statistics.setOrderForm(number);
+            }
+            if (status == "3") {
+                statistics.setOrderSignIn(number);
+            }
+            if (status == "4") {
+                statistics.setOrderDelivery(number);
+            }
+            if (status == "6") {
+                statistics.setReport(number);
+            }
+
+        }
+        return new ObjectResponse<>(statistics);
+    }
 }

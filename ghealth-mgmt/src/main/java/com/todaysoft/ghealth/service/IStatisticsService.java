@@ -1,6 +1,6 @@
 package com.todaysoft.ghealth.service;
 
-import com.todaysoft.ghealth.model.statistics.Statistics;
+import com.todaysoft.ghealth.base.response.model.Statistics;
 import com.todaysoft.ghealth.model.statistics.StatisticsExcel;
 import com.todaysoft.ghealth.model.statistics.StatisticsSearcher;
 

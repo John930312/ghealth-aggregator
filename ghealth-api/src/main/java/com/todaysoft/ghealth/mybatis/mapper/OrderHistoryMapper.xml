@@ -9,15 +9,18 @@
     <result column="EVENT_DETAILS" property="eventDetails" jdbcType="VARCHAR" />
     <result column="EVENT_TIME" property="eventTime" jdbcType="TIMESTAMP" />
     <result column="OPERATOR_NAME" property="operatorName" jdbcType="VARCHAR" />
+    <result column="CODE" property="order.code" jdbcType="VARCHAR" />
+    <result column="STATUS" property="order.status" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
    SELECT
-   *
-   from ghealth_order_history
+   h.*,o.CODE AS CODE,o.STATUS AS STATUS
+   from ghealth_order_history h
+   LEFT JOIN ghealth_order o ON h.ORDER_ID = o.ID
   </sql>
   <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
     <include refid="Base_Column_List" />
-    where ID = #{id,jdbcType=VARCHAR}
+    where h.ID = #{id,jdbcType=VARCHAR}
   </select>
   <delete id="delete" parameterType="java.lang.String" >
     delete from ghealth_order_history
@@ -105,39 +108,39 @@
 
   <select id="getOrderHistoriesByOrderId" resultMap="BaseResultMap" parameterType="java.lang.String" >
     <include refid="Base_Column_List" />
-    where ORDER_ID = #{orderId,jdbcType=VARCHAR}
-    ORDER BY EVENT_TIME;
+    where h.ORDER_ID = #{orderId,jdbcType=VARCHAR}
+    ORDER BY h.EVENT_TIME;
   </select>
 
   <select id="getOrderHistories" resultMap="BaseResultMap" parameterType="java.lang.String" >
     <include refid="Base_Column_List" />
-    where EVENT_TYPE = #{name,jdbcType=VARCHAR} AND
-    YEAR(EVENT_TIME)=#{year,jdbcType=VARCHAR} AND
-    MONTH(EVENT_TIME)=#{month,jdbcType=VARCHAR}
+    where h.EVENT_TYPE = #{name,jdbcType=VARCHAR} AND
+    YEAR(h.EVENT_TIME)=#{year,jdbcType=VARCHAR} AND
+    MONTH(h.EVENT_TIME)=#{month,jdbcType=VARCHAR}
   </select>
 
 
   <select id="getOrderHistoryLists" resultMap="BaseResultMap" parameterType="java.lang.String" >
     <include refid="Base_Column_List" />
-    where EVENT_TYPE = #{name,jdbcType=VARCHAR} AND
-    YEAR(EVENT_TIME)=#{year,jdbcType=VARCHAR} AND
-    MONTH(EVENT_TIME)=#{month,jdbcType=VARCHAR} AND
-    DAY (EVENT_TIME)=#{day,jdbcType=VARCHAR}
+    where h.EVENT_TYPE = #{name,jdbcType=VARCHAR} AND
+    YEAR(h.EVENT_TIME)=#{year,jdbcType=VARCHAR} AND
+    MONTH(h.EVENT_TIME)=#{month,jdbcType=VARCHAR} AND
+    DAY (h.EVENT_TIME)=#{day,jdbcType=VARCHAR}
   </select>
 
 
   <sql id="SearchFilters">
     WHERE 1 = 1
     <if test="_parameter.title != null and _parameter.title != ''">
-      AND EVENT_TYPE = #{title}
+      AND h.EVENT_TYPE = #{title}
     </if>
     <if test="_parameter.startTime != null">
       <bind name="startTimePattern" value="_parameter.startTime" />
-      <![CDATA[   and DATE_FORMAT(EVENT_TIME, '%Y-%m-%d %H:%M:%S')>=  DATE_FORMAT(#{startTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
+      <![CDATA[   and DATE_FORMAT(h.EVENT_TIME, '%Y-%m-%d %H:%M:%S')>=  DATE_FORMAT(#{startTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
     </if>
     <if test="_parameter.endTime != null">
       <bind name="endTimePattern" value="_parameter.endTime" />
-      <![CDATA[   and DATE_FORMAT(EVENT_TIME, '%Y-%m-%d %H:%M:%S') <  DATE_FORMAT(#{endTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
+      <![CDATA[   and DATE_FORMAT(h.EVENT_TIME, '%Y-%m-%d %H:%M:%S') <  DATE_FORMAT(#{endTimePattern}, '%Y-%m-%d %H:%M:%S')   ]]>
     </if>
   </sql>
 
@@ -148,8 +151,8 @@
 
   <select id="getOrderIds" resultType="String" parameterType="com.todaysoft.ghealth.mybatis.searcher.StatisticsSearcher" >
     SELECT
-    ORDER_ID
-    from ghealth_order_history
+    h.ORDER_ID
+    from ghealth_order_history h
     <include refid="SearchFilters"></include>
   </select>
 

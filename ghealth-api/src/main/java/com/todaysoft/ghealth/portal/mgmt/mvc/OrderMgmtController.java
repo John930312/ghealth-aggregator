@@ -1,5 +1,6 @@
 package com.todaysoft.ghealth.portal.mgmt.mvc;
 
+import com.todaysoft.ghealth.base.response.model.Statistics;
 import com.todaysoft.ghealth.mgmt.request.*;
 import com.todaysoft.ghealth.service.orderEvent.OrderEventLog;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -203,6 +204,18 @@ public class OrderMgmtController
     public ObjectResponse<Map<String,List<OrderSimpleDTO>>> map(@RequestBody QueryOrderByCodesRequest request)
     {
         return facade.map(request);
+    }
+
+    @RequestMapping("/getExcels")
+    public ListResponse<List<String>> getExcels(@RequestBody QueryOrderHistoryRequest request)
+    {
+        return facade.getExcels(request);
+    }
+
+    @RequestMapping("/getStatisticsDetails")
+    public ObjectResponse<Statistics> getStatisticsDetails(@RequestBody QueryOrderHistoryRequest request)
+    {
+        return facade.getStatisticsDetails(request);
     }
 
 }

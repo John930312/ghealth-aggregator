@@ -1,6 +1,6 @@
 package com.todaysoft.ghealth.mvc;
 
-import com.todaysoft.ghealth.model.statistics.Statistics;
+import com.todaysoft.ghealth.base.response.model.Statistics;
 import com.todaysoft.ghealth.model.statistics.StatisticsExcel;
 import com.todaysoft.ghealth.model.statistics.StatisticsSearcher;
 import com.todaysoft.ghealth.service.IStatisticsService;
@@ -95,9 +95,6 @@ public class StatisticsAction extends BaseAction {
                 eeu.exportExcel(workbook, i, map.get(status), headers, data, fos);
             }
 
-            for(int i =0;i<list.size();i++) {
-
-            }
             //原理就是将所有的数据一起写入，然后再关闭输入流。
             workbook.write(fos);
             fos.close();

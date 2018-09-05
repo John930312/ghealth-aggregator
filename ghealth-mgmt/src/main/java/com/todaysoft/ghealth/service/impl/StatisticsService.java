@@ -1,10 +1,11 @@
 package com.todaysoft.ghealth.service.impl;
 
 import com.todaysoft.ghealth.base.response.ListResponse;
+import com.todaysoft.ghealth.base.response.ObjectResponse;
+import com.todaysoft.ghealth.base.response.model.Statistics;
 import com.todaysoft.ghealth.mgmt.request.QueryOrderHistoryRequest;
 import com.todaysoft.ghealth.model.Order;
 import com.todaysoft.ghealth.model.OrderHistory;
-import com.todaysoft.ghealth.model.statistics.Statistics;
 import com.todaysoft.ghealth.model.statistics.StatisticsExcel;
 import com.todaysoft.ghealth.model.statistics.StatisticsModel;
 import com.todaysoft.ghealth.model.statistics.StatisticsSearcher;
@@ -148,74 +149,28 @@ public class StatisticsService implements IStatisticsService {
     @Override
     public Statistics get(StatisticsSearcher searcher)
     {
-        List<String> list = new ArrayList<>();
-        list.add("2");
-        list.add("3");
-        list.add("4");
-        list.add("6");
-        Map<String,String> map = new HashMap<>();
-        Statistics statistics = new Statistics();
-        for(String status : list) {
-            searcher.setTitle(status);
-            List<OrderHistory> orderHistories = service.getOrderHistory(searcher);
-            Integer number = 0;
-            if (orderHistories != null) {
-                number = orderHistories.size();
-            }
-            if(status=="2"){
-                statistics.setOrderForm(number);
-            }
-            if(status=="3"){
-                statistics.setOrderSignIn(number);
-            }
-            if(status=="4"){
-                statistics.setOrderDelivery(number);
-            }
-            if(status=="6"){
-                statistics.setReport(number);
-            }
+        QueryOrderHistoryRequest request = orderWrapper.searcherOrderHistoryWarp(searcher);
+        ObjectResponse<Statistics> response =
+                gateway.request("/mgmt/order/getStatisticsDetails", request, new ParameterizedTypeReference<ObjectResponse<Statistics>>()
+                {
+                });
 
-        }
-
-        return statistics;
-
+        return response.getData();
     }
 
     @Override
-    public List<List<String>> list(StatisticsSearcher searcher) {
-
-        List<OrderHistory> orderHistories = service.getOrderHistory(searcher);
-        List<List<String>> statisticsExcels = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(orderHistories)) {
-
-            for (OrderHistory orderHistory : orderHistories) {
-                Order order = service.get(orderHistory.getOrderId());
-
-                List<String> list = new ArrayList<>();
-                list.add(order.getCode());
-                list.add(order.getCustomer().getName() + order.getCustomer().getPhone());
-                list.add(order.getProduct().getName());
-                if (order.getReportPrintRequired() == 0) {
-                    list.add("不需要");
-                } else {
-                    list.add("需要");
-                }
-                list.add(order.getAgency().getName());
-                list.add(order.getActualPrice().toString());
-                DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                list.add(df.format(orderHistory.getEventTime()));
-
-                list.add(dictService.getDictByCategoryAndValue("ORDER_STATUS", order.getStatus()).getDictText());
-
-
-                statisticsExcels.add(list);
-
-
-
-            }
-
+    public List<List<String>> list(StatisticsSearcher searcher)
+    {
+        QueryOrderHistoryRequest request = orderWrapper.searcherOrderHistoryWarp(searcher);
+        ListResponse<List<String>> response =
+                gateway.request("/mgmt/order/getExcels", request, new ParameterizedTypeReference<ListResponse<List<String>>>()
+                {
+                });
+        if (null == response.getData())
+        {
+            return Collections.emptyList();
         }
-        return statisticsExcels;
+        return response.getData();
     }
 
 

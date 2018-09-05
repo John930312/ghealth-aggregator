@@ -2,96 +2,90 @@ package com.todaysoft.ghealth.mybatis.model;
 
 import java.util.Date;
 
-public class OrderHistory
-{
+public class OrderHistory {
     public static final String EVENT_ORDER_SUBMIT = "2";
-    
+
     public static final String EVENT_SAMPLE_SIGN = "3";
-    
+
     public static final String EVENT_SAMPLE_DELIVERY = "4";
-    
+
     private String id;
-    
+
     private String orderId;
-    
+
     private String title;
-    
+
     private String eventType;
-    
+
     private String eventDetails;
-    
+
     private Date eventTime;
 
     private String operatorName;
 
+    private Order order;
 
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
-    
-    public void setId(String id)
-    {
+
+    public void setId(String id) {
         this.id = id;
     }
-    
-    public String getOrderId()
-    {
+
+    public String getOrderId() {
         return orderId;
     }
-    
-    public void setOrderId(String orderId)
-    {
+
+    public void setOrderId(String orderId) {
         this.orderId = orderId;
     }
-    
-    public String getTitle()
-    {
+
+    public String getTitle() {
         return title;
     }
-    
-    public void setTitle(String title)
-    {
+
+    public void setTitle(String title) {
         this.title = title;
     }
-    
-    public String getEventType()
-    {
+
+    public String getEventType() {
         return eventType;
     }
-    
-    public void setEventType(String eventType)
-    {
+
+    public void setEventType(String eventType) {
         this.eventType = eventType;
     }
-    
-    public String getEventDetails()
-    {
+
+    public String getEventDetails() {
         return eventDetails;
     }
-    
-    public void setEventDetails(String eventDetails)
-    {
+
+    public void setEventDetails(String eventDetails) {
         this.eventDetails = eventDetails;
     }
-    
-    public Date getEventTime()
-    {
+
+    public Date getEventTime() {
         return eventTime;
     }
-    
-    public void setEventTime(Date eventTime)
-    {
+
+    public void setEventTime(Date eventTime) {
         this.eventTime = eventTime;
     }
-    
-    public String getOperatorName()
-    {
+
+    public String getOperatorName() {
         return operatorName;
     }
-    
-    public void setOperatorName(String operatorName)
-    {
+
+    public void setOperatorName(String operatorName) {
         this.operatorName = operatorName;
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 }
