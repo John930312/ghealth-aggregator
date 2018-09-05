@@ -126,6 +126,8 @@ public class OrderMgmtFacade
     @Autowired
     private IDictService dictService;
 
+    private static Logger log = LoggerFactory.getLogger(OrderMgmtFacade.class);
+
     public PagerResponse<Order> pager(QueryOrdersRequest request)
     {
         int pageNo = null == request.getPageNo() ? 1 : request.getPageNo();
@@ -1070,8 +1072,15 @@ public class OrderMgmtFacade
                         orderCode.add(order.getCode());
                         List<String> list = new ArrayList<>();
                         list.add(order.getCode());
-                        list.add(order.getCustomer().getName() + order.getCustomer().getPhone());
-                        list.add(order.getProduct().getName());
+
+                        log.error("当前订单："+order.getId());
+
+                        if (Objects.nonNull(order.getCustomer())) {
+                            list.add(order.getCustomer().getName() + order.getCustomer().getPhone());
+                        }
+                        if (Objects.nonNull(order.getProduct())) {
+                            list.add(order.getProduct().getName());
+                        }
                         if (order.getReportPrintRequired() == 0) {
                             list.add("不需要");
                         } else {
