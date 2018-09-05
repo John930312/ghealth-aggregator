@@ -109,7 +109,7 @@ var uploader = new plupload.Uploader({
             else {
                 document.getElementById(file.id).getElementsByTagName('b')[0].innerHTML = info.response;
             }
-              window.location.href = base + "/order/reload.do";
+              window.location.href = base + "/order/reload_list.do";
         },
 
         Error: function (up, err) {
