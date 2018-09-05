@@ -44,11 +44,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StopWatch;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -125,8 +123,6 @@ public class OrderMgmtFacade
 
     @Autowired
     private IDictService dictService;
-
-    private static Logger log = LoggerFactory.getLogger(OrderMgmtFacade.class);
 
     public PagerResponse<Order> pager(QueryOrdersRequest request)
     {
@@ -1072,8 +1068,6 @@ public class OrderMgmtFacade
                         orderCode.add(order.getCode());
                         List<String> list = new ArrayList<>();
                         list.add(order.getCode());
-
-                        log.error("当前订单："+order.getId());
 
                         if (Objects.nonNull(order.getCustomer())) {
                             list.add(order.getCustomer().getName() + order.getCustomer().getPhone());
