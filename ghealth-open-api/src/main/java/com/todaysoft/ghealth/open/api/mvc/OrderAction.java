@@ -2,12 +2,9 @@ package com.todaysoft.ghealth.open.api.mvc;
 
 import java.util.List;
 
+import com.todaysoft.ghealth.open.api.restful.request.GhealthDatas;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.hsgene.restful.response.DataResponse;
 import com.hsgene.restful.util.CountRecords;
@@ -46,5 +43,17 @@ public class OrderAction
     public DataResponse<List<TestingItemReportDTO>> getTestingItemsReport(@PathVariable String id, CredentialsHolder holder)
     {
         return orderService.getTestingItemsReport(id);
+    }
+    
+    @GetMapping("/getEntityByCode/{code}")
+    public DataResponse<OrderDTO> getEntityByCode(@PathVariable String code, CredentialsHolder holder)
+    {
+        return orderService.getEntityByCode(code);
+    }
+    
+    @PostMapping("/createDatas")
+    public DataResponse<String> createDatas(@RequestBody GhealthDatas datas, CredentialsHolder holder)
+    {
+        return orderService.createDatas(datas);
     }
 }

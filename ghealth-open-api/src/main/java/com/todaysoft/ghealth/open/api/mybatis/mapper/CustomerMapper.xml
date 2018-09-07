@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.todaysoft.ghealth.open.api.mybatis.mapper.CustomerMapper">
+
+    <resultMap id="PrimaryEntity" type="com.todaysoft.ghealth.open.api.mybatis.model.PrimaryEntity">
+        <id column="ID" property="id"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="CREATOR_NAME" property="creatorName"/>
+        <result column="UPDATE_TIME" property="updateTime"/>
+        <result column="UPDATOR_NAME" property="updatorName"/>
+        <result column="DELETED" property="deleted"/>
+        <result column="DELETE_TIME" property="deleteTime"/>
+        <result column="DELETOR_NAME" property="deletorName"/>
+    </resultMap>
+
+    <resultMap id="CustomerEntity" type="com.todaysoft.ghealth.open.api.mybatis.model.Customer" extends="PrimaryEntity">
+        <id column="ID" property="id" jdbcType="VARCHAR"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="PHONE" property="phone" jdbcType="VARCHAR"/>
+        <result column="EMAIL" property="email" jdbcType="VARCHAR"/>
+        <result column="SEX" property="sex" jdbcType="VARCHAR"/>
+        <result column="BIRTHDAY" property="birthday" jdbcType="VARCHAR"/>
+        <result column="PROVINCE" property="province" jdbcType="VARCHAR"/>
+        <result column="CITY" property="city" jdbcType="VARCHAR"/>
+        <result column="COUNTY" property="county" jdbcType="VARCHAR"/>
+        <result column="ADDRESS" property="address" jdbcType="VARCHAR"/>
+        <result column="REMARK" property="remark" jdbcType="VARCHAR"/>
+        <result column="AGENCY_ID" property="agencyId" jdbcType="VARCHAR"/>
+        <result column="AGENCY_CODE" property="agencyCode" jdbcType="VARCHAR"/>
+        <result column="AGENCY_ABBR" property="agencyAbbr" jdbcType="VARCHAR"/>
+        <result column="VOCATION" property="vocation" jdbcType="VARCHAR"/>
+        <result column="COMPANY" property="company" jdbcType="VARCHAR"/>
+        <result column="MARITAL_STATUS" property="maritalStatus" jdbcType="VARCHAR"/>
+        <result column="NATION" property="nation" jdbcType="VARCHAR"/>
+        <result column="DISTRICT" property="district" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <insert id="create" parameterType="com.todaysoft.ghealth.open.api.mybatis.model.CustomerRequest">
+        INSERT INTO GHEALTH_CUSTOMER
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="name != null">
+                NAME,
+            </if>
+            <if test="phone != null">
+                PHONE,
+            </if>
+            <if test="email != null">
+                EMAIL,
+            </if>
+            <if test="sex != null">
+                SEX,
+            </if>
+            <if test="vocation != null">
+                VOCATION,
+            </if>
+            <if test="company != null">
+                COMPANY,
+            </if>
+            <if test="maritalStatus != null">
+                MARITAL_STATUS,
+            </if>
+            <if test="nation != null">
+                NATION,
+            </if>
+            <if test="birthday != null">
+                BIRTHDAY,
+            </if>
+            <if test="province != null">
+                PROVINCE,
+            </if>
+            <if test="city != null">
+                CITY,
+            </if>
+            <if test="county != null">
+                COUNTY,
+            </if>
+            <if test="address != null">
+                ADDRESS,
+            </if>
+            <if test="remark != null">
+                REMARK,
+            </if>
+            <if test="agencyId != null">
+                AGENCY_ID,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME,
+            </if>
+            <if test="updateTime != null">
+                UPDATE_TIME,
+            </if>
+            <if test="updatorName != null">
+                UPDATOR_NAME,
+            </if>
+            <if test="deleted != null">
+                DELETED,
+            </if>
+            <if test="deleteTime != null">
+                DELETE_TIME,
+            </if>
+            <if test="deletorName != null">
+                DELETOR_NAME,
+            </if>
+            <if test="district != null">
+                DISTRICT,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                #{phone, jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                #{email, jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                #{sex, jdbcType=VARCHAR},
+            </if>
+            <if test="vocation != null">
+                #{vocation, jdbcType=VARCHAR},
+            </if>
+            <if test="company != null">
+                #{company, jdbcType=VARCHAR},
+            </if>
+            <if test="maritalStatus != null">
+                #{maritalStatus, jdbcType=VARCHAR},
+            </if>
+            <if test="nation != null">
+                #{nation, jdbcType=VARCHAR},
+            </if>
+            <if test="birthday != null">
+                #{birthday, jdbcType=VARCHAR},
+            </if>
+            <if test="province != null">
+                #{province, jdbcType=VARCHAR},
+            </if>
+            <if test="city != null">
+                #{city, jdbcType=VARCHAR},
+            </if>
+            <if test="county != null">
+                #{county, jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                #{address, jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null">
+                #{remark, jdbcType=VARCHAR},
+            </if>
+            <if test="agencyId != null">
+                #{agencyId, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName, jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="updatorName != null">
+                #{updatorName, jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                #{deleted, jdbcType=BIT},
+            </if>
+            <if test="deleteTime != null">
+                #{deleteTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="deletorName != null">
+                #{deletorName, jdbcType=VARCHAR},
+            </if>
+            <if test="district != null">
+                #{district, jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="existCustomer" resultType="java.lang.Integer" parameterType="java.lang.String">
+        SELECT count(ID) FROM GHEALTH_CUSTOMER   WHERE PHONE = #{phone, jdbcType=VARCHAR} AND NAME = #{name,jdbcType=VARCHAR};
+    </select>
+</mapper>

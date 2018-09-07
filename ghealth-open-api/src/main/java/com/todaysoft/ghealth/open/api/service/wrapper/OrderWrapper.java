@@ -11,19 +11,22 @@ public class OrderWrapper extends Wrapper<Order, OrderDTO>
 {
     @Autowired
     private AgencyWrapper agencyWrapper;
-
+    
     @Autowired
     private ProductWrapper productWrapper;
-
+    
     @Autowired
     private CustomerWrapper customerWrapper;
-
+    
+    @Autowired
+    private OrderHistoryWrapper orderHistoryWrapper;
+    
     @Override
     protected String[] getIgnoreProperties()
     {
-        return new String[] { "agency", "product", "customer", "submitTime", "createTime" };
+        return new String[] {"agency", "product", "customer", "orderHistoryList", "submitTime", "createTime"};
     }
-
+    
     @Override
     protected void setIgnoreProperties(Order source, OrderDTO target)
     {
@@ -33,5 +36,7 @@ public class OrderWrapper extends Wrapper<Order, OrderDTO>
         target.setAgency(agencyWrapper.wrap(source.getAgency()));
         target.setProduct(productWrapper.wrap(source.getProduct()));
         target.setCustomer(customerWrapper.wrap(source.getCustomer()));
+        target.setOrderHistoryList(orderHistoryWrapper.wrap(source.getOrderHistoryList()));
+        
     }
 }
