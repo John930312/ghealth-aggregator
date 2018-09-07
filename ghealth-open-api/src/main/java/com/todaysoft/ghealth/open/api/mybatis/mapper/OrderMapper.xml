@@ -415,4 +415,149 @@
         LEFT JOIN GHEALTH_CANCER c ON ti.CATEGORY = '1' AND ti.CATEGORY_MAPPING = c.ID
         WHERE oei.ORDER_ID = #{id}
     </select>
+
+
+    <select id="getEntityByCode" resultMap="OrderEntity" parameterType="java.lang.String">
+        SELECT
+        <include refid="OrderColumns">
+            <property name="order" value="o" />
+        </include>
+        ,
+        <include refid="AgencyColumns">
+            <property name="agency" value="a" />
+        </include>
+        ,
+        <include refid="ProductColumns">
+            <property name="product" value="p" />
+        </include>
+        ,
+        <include refid="CustomerColumns">
+            <property name="customer" value="c" />
+        </include>
+        FROM GHEALTH_ORDER o
+        LEFT JOIN GHEALTH_AGENCY a ON o.AGENCY_ID = a.ID
+        LEFT JOIN GHEALTH_TESTING_PRODUCT p ON o.PRODUCT_ID = p.ID
+        LEFT JOIN GHEALTH_CUSTOMER c ON o.CUSTOMER_ID = c.ID
+        WHERE o.CODE = #{code}
+        AND o.DELETED = '0'
+    </select>
+
+    <resultMap id="ObjectStorageEntity" type="com.todaysoft.ghealth.open.api.mybatis.model.ObjectStorage">
+        <id column="ID" property="id" />
+        <result column="STORAGE_TYPE" property="storageType" />
+        <result column="STORAGE_DETAILS" property="storageDetails" />
+    </resultMap>
+
+    <select id="getPdfReportUrl" resultMap="ObjectStorageEntity" parameterType="java.lang.String">
+        SELECT
+        s.STORAGE_DETAILS,
+        s.STORAGE_TYPE,
+        s.ID
+        FROM
+        ghealth_order o
+        LEFT JOIN ghealth_order_report_generate_task t
+        INNER JOIN ghealth_object_storage s ON t.PDF_FILE_URL = s.ID
+        ON o.REPORT_GENERATE_TASK = t.ID
+        WHERE o.id = #{orderId,jdbcType=VARCHAR}
+    </select>
+
+
+    <insert id="create" parameterType="com.todaysoft.ghealth.open.api.mybatis.model.OrderRequest">
+        INSERT INTO GHEALTH_ORDER
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="product.id != null">
+                PRODUCT_ID,
+            </if>
+            <if test="customer.id != null">
+                CUSTOMER_ID,
+            </if>
+            <if test="agency.id != null">
+                AGENCY_ID,
+            </if>
+            <if test="code != null">
+                CODE,
+            </if>
+            <if test="actualPrice != null">
+                ACTUAL_PRICE,
+            </if>
+            <if test="status != null">
+                STATUS,
+            </if>
+            <if test="submitTime != null">
+                SUBMIT_TIME,
+            </if>
+            <if test="submitorName != null">
+                SUBMITOR_NAME,
+            </if>
+            <if test="createTime != null">
+                CREATE_TIME,
+            </if>
+            <if test="creatorName != null">
+                CREATOR_NAME,
+            </if>
+
+            <if test="deleted != null">
+                DELETED,
+            </if>
+            <if test="reportPrintRequired != null">
+                REPORT_PRINT_REQUIRED,
+            </if>
+            <if test="sampleType != null">
+                SAMPLE_TYPE,
+            </if>
+            <if test="reportDownloadCount != null">
+                REPORT_DOWNLOAD_COUNT,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="product.id != null">
+                #{product.id,jdbcType=VARCHAR},
+            </if>
+            <if test="customer.id != null">
+                #{customer.id,jdbcType=VARCHAR},
+            </if>
+            <if test="agency.id != null">
+                #{agency.id,jdbcType=VARCHAR},
+            </if>
+            <if test="code != null">
+                #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="actualPrice != null">
+                #{actualPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="submitTime != null">
+                #{submitTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="submitorName != null">
+                #{submitorName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creatorName != null">
+                #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null">
+                #{deleted,jdbcType=BIT},
+            </if>
+            <if test="reportPrintRequired != null">
+                #{reportPrintRequired,jdbcType=BIT},
+            </if>
+            <if test="sampleType != null">
+                #{sampleType,jdbcType=VARCHAR},
+            </if>
+            <if test="reportDownloadCount != null">
+                #{reportDownloadCount,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
 </mapper>

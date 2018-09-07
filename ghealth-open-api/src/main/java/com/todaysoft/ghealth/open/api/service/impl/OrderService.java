@@ -1,12 +1,18 @@
 package com.todaysoft.ghealth.open.api.service.impl;
 
 import java.math.RoundingMode;
+import java.net.URL;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
+import com.aliyun.oss.OSSClient;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.todaysoft.ghealth.open.api.mybatis.mapper.CustomerMapper;
+import com.todaysoft.ghealth.open.api.mybatis.mapper.OrderHistoryMapper;
+import com.todaysoft.ghealth.open.api.mybatis.model.*;
+import com.todaysoft.ghealth.open.api.restful.request.GhealthDatas;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -14,10 +20,6 @@ import org.springframework.util.CollectionUtils;
 import com.hsgene.restful.response.DataResponse;
 import com.hsgene.restful.util.CountRecords;
 import com.todaysoft.ghealth.open.api.mybatis.mapper.OrderMapper;
-import com.todaysoft.ghealth.open.api.mybatis.model.Customer;
-import com.todaysoft.ghealth.open.api.mybatis.model.Order;
-import com.todaysoft.ghealth.open.api.mybatis.model.OrderQuery;
-import com.todaysoft.ghealth.open.api.mybatis.model.TestingItemEvaluation;
 import com.todaysoft.ghealth.open.api.restful.model.OrderDTO;
 import com.todaysoft.ghealth.open.api.restful.model.TestingItemReportDTO;
 import com.todaysoft.ghealth.open.api.restful.request.OrderQueryRequest;
@@ -39,6 +41,16 @@ public class OrderService implements IOrderService
     
     @Autowired
     private OrderQueryParser orderQueryParser;
+    
+    @Autowired
+    private OrderHistoryMapper orderHistoryMapper;
+    
+    @Autowired
+    private CustomerMapper customerMapper;
+    
+    private final String AGENCY_ID = "123456789";
+    
+    private final String AGENCY_NAME = "123456789";
     
     @Override
     public DataResponse<CountRecords<OrderDTO>> list(OrderQueryRequest request)
@@ -148,6 +160,83 @@ public class OrderService implements IOrderService
         }
         
         return new DataResponse<List<TestingItemReportDTO>>(data);
+    }
+    
+    @Override
+    public DataResponse<OrderDTO> getEntityByCode(String code)
+    {
+        
+        Order order = orderMapper.getEntityByCode(code);
+        
+        ObjectStorage objectStorage = orderMapper.getPdfReportUrl(order.getId());
+        Optional.ofNullable(getPdfUrl(objectStorage)).ifPresent(x -> order.setPdfUrl(x));
+        
+        List<OrderHistory> orderHistoryList = orderHistoryMapper.getOrderHistoriesByOrderId(order.getId());
+        if (!CollectionUtils.isEmpty(orderHistoryList))
+        {
+            order.setOrderHistoryList(orderHistoryList);
+        }
+        
+        return new DataResponse<OrderDTO>(orderWrapper.wrap(order));
+    }
+    
+    @Override
+    public DataResponse<String> createDatas(GhealthDatas datas)
+    {
+        Customer customer = datas.getCustomer();
+        CustomerRequest customerRequest = new CustomerRequest();
+        BeanUtils.copyProperties(customer, customerRequest);
+        customerRequest.setCreateTime(new Date());
+        customerRequest.setCreatorName(AGENCY_NAME);
+        customerRequest.setDeleted(false);
+        customerRequest.setAgencyId(AGENCY_ID);
+        
+        if (customerMapper.existCustomer(customer.getPhone(), customer.getName()) <= 0)
+        {
+            customerMapper.create(customerRequest);
+        }
+        
+        OrderRequest request = datas.getOrder();
+        Agency agency = new Agency();
+        agency.setId(AGENCY_ID);
+        request.setAgency(agency);
+        
+        request.setCreateTime(new Date());
+        request.setCreatorName(AGENCY_NAME);
+        request.setDeleted(false);
+        request.setStatus("0");
+        request.setReportDownloadCount(0);
+        orderMapper.create(request);
+        return new DataResponse<>(request.getId());
+    }
+    
+    private String getPdfUrl(ObjectStorage objectStorage)
+    {
+        String accessKeyId = "LTAIpKd6ic9Sz1pU";
+        String endpoint = "oss-cn-hangzhou.aliyuncs.com";
+        String accessKeySecret = "Ozb9ASafcNKR3UBkQTraBOFz4mGKKg";
+        if (Objects.isNull(objectStorage))
+        {
+            return null;
+        }
+        
+        Map<String, String> attributes = JsonUtils.fromJson(objectStorage.getStorageDetails(), new TypeReference<Map<String, String>>()
+        {
+        });
+        
+        if (CollectionUtils.isEmpty(attributes))
+        {
+            return null;
+        }
+        
+        OSSClient client = new OSSClient(endpoint, accessKeyId, accessKeySecret);
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.SECOND, 60 * 3);
+        
+        URL url = client.generatePresignedUrl(attributes.get("bucketName"), attributes.get("objectKey"), calendar.getTime());
+        return url.toString();
     }
     
     private GradeConfig getConfigForFiveGrades(String gradeConfig)
