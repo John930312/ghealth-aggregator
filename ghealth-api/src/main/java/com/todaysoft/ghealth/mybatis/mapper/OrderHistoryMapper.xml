@@ -156,6 +156,13 @@
     <include refid="SearchFilters"></include>
   </select>
 
-
+  <select id="getOrderHistoriesByOrderIdAndFinish" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    SELECT
+    h.*
+    from ghealth_order_history h
+    where h.ORDER_ID = #{orderId,jdbcType=VARCHAR}
+    AND h.EVENT_TYPE = '6'
+    ORDER BY h.EVENT_TIME;
+  </select>
 
 </mapper>

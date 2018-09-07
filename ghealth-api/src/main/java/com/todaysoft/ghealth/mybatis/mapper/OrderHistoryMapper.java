@@ -27,4 +27,6 @@ public interface OrderHistoryMapper
     List<String> getOrderIds(StatisticsSearcher searcher);
 
     int deleteByOrderId(String id);
+
+    List<OrderHistory> getOrderHistoriesByOrderIdAndFinish(String orderId);
 }
