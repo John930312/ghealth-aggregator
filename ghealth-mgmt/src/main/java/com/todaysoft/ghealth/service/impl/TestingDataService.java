@@ -379,7 +379,10 @@ public class TestingDataService implements ITestingDataService
                 List<LocusGenetypeDTO> locusGenetypeDTOS = column.getData().getLocusGenetypeDTOS();
                 if (overUpload)
                 {
-                    locusGenetypeDTOS = locusGenetypeDTOS.stream().filter(x -> !distinctLocus.contains(x.getLocus())).collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(locusGenetypeDTOS))
+                    {
+                        locusGenetypeDTOS = locusGenetypeDTOS.stream().filter(x -> !distinctLocus.contains(x.getLocus())).collect(Collectors.toList());
+                    }
                 }
 
                 if (!CollectionUtils.isEmpty(locusGenetypeDTOS))
