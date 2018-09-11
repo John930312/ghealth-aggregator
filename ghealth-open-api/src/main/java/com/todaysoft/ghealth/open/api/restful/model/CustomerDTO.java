@@ -18,9 +18,15 @@ public class CustomerDTO
     
     private String province;
     
+    private String provinceText;
+    
     private String city;
     
+    private String cityText;
+    
     private String county;
+    
+    private String countyText;
     
     private String address;
     
@@ -168,5 +174,35 @@ public class CustomerDTO
     public void setCreatorName(String creatorName)
     {
         this.creatorName = creatorName;
+    }
+    
+    public String getProvinceText()
+    {
+        return provinceText;
+    }
+    
+    public void setProvinceText(String provinceText)
+    {
+        this.provinceText = provinceText;
+    }
+    
+    public String getCityText()
+    {
+        return cityText;
+    }
+    
+    public void setCityText(String cityText)
+    {
+        this.cityText = cityText;
+    }
+    
+    public String getCountyText()
+    {
+        return countyText;
+    }
+    
+    public void setCountyText(String countyText)
+    {
+        this.countyText = countyText;
     }
 }
