@@ -90,7 +90,7 @@ public class TimedMessage
     public void sendForFestival()
     {
         //节日问候
-        List<SmsSend> smsSendList = getWantedFestivalTime(10);
+        List<SmsSend> smsSendList = getWantedFestivalTime(13);
         if (!CollectionUtils.isEmpty(smsSendList))
         {
             smsSendList.forEach(x -> {
