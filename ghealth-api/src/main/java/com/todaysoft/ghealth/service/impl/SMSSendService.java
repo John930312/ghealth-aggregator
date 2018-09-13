@@ -37,4 +37,10 @@ public class SMSSendService implements ISMSSendService
     {
         return mapper.getDatasInTime(searcher);
     }
+    
+    @Override
+    public List<SmsSend> getFestivalDatasInTime(SmsSendSearcher searcher)
+    {
+        return mapper.getFestivalDatasInTime(searcher);
+    }
 }

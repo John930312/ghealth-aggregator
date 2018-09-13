@@ -1,0 +1,74 @@
+<style>
+    <!--
+    .modal-body {
+        padding: 10px;
+    }
+
+    .report-status {
+        display: none;
+        text-align: center;
+    }
+
+    -->
+
+</style>
+<div class="row">
+    <div class="col-lg-12">
+        <form id="festivalForm" class="form-horizontal m-t" action="${base}/shortMessage/festival_create.jsp"
+              method="post">
+            <input type="hidden" name="${(REPEAT_SUBMIT_TOKEN)!}" value="${(Request[REPEAT_SUBMIT_TOKEN])!}"/>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label required-label">推送代理：</label>
+                    <div class="col-sm-6">
+                        <select class="form-control selectpicker show-tick " id="deliveryMode" name="agencyId" multiple
+                                data-live-search="true">
+                            <#if agencies?has_content>
+                                <#list agencies as agency>
+                                    <option value="${(agency.id)!?html}">${(agency.name)!?html}</option>
+                                </#list>
+                            </#if>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label required-label">节日模板选择：</label>
+                    <div class="col-sm-6">
+                        <select class="form-control" name="templateId">
+                            <option value="">节日模板选择：</option>
+                            <@dict_category category = "FESTIVAL_TEMPLATE">
+                            <#list entries as entry>
+                                <option value="${(entry.dictValue)!html}">${(entry.dictText)!html}</option>
+                            </#list>
+                        </@dict_category>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label required-label">发送日期：</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="Wdate form-control" id="createTime" name="createTime"
+                               style="height: 35px" placeholder="发送日期"
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true})"/>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script>
+    $(document).ready(function () {
+        $(".selectpicker").selectpicker({
+            width: 300,
+            actionsBox: true, //在下拉选项添加选中所有和取消选中的按钮
+        })
+
+    });
+</script>
+
+
+</html>

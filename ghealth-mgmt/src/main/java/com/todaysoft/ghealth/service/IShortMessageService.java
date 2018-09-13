@@ -2,6 +2,7 @@ package com.todaysoft.ghealth.service;
 
 import com.todaysoft.ghealth.model.shortMessage.ShortMessage;
 import com.todaysoft.ghealth.model.shortMessage.ShortMessageForm;
+import com.todaysoft.ghealth.model.shortMessage.SmsSend;
 
 import java.util.List;
 
@@ -20,5 +21,5 @@ public interface IShortMessageService {
 
     ShortMessage getShortMessage(String agencyId);
 
-
+    void create(SmsSend data);
 }

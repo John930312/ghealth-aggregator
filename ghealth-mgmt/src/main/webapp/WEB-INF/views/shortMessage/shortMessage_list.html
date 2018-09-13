@@ -11,6 +11,8 @@
     <link href="${plugins}/hplus/animate.min.css" rel="stylesheet"></link>
     <link href="${plugins}/hplus/hplus.min.css" rel="stylesheet"></link>
     <link href="${system_css}/system.css?v=0.1" rel="stylesheet"></link>
+    <link href="${system_css}/bootstrap-multiselect.css" rel="stylesheet"></link>
+    <link href="${system_css}/bootstrap-select.min.css" rel="stylesheet"></link>
     <link href="${plugins}/icheckbox/icheckbox.css" rel="stylesheet"></link>
     <link href="${plugins}/magicsuggest/magicsuggest-min.css" rel="stylesheet"></link>
 
@@ -36,6 +38,11 @@
             <div class="ibox ibox-table">
                 <div class="ibox-title">
                     <h5>全局配置</h5>
+                    <@security_resource resource = "/shortMessage/festival_create.jsp">
+                    <a href="${base}/shortMessage/festival_create.jsp" class="btn btn-sm btn-success festival-create">
+                        <i class="fa fa-plus"></i> 节日祝福
+                    </a>
+                </@security_resource>
                 </div>
                 <form action="${base}/shortMessage/modify.jsp" method="post" id="quanjuForm">
                     <div class="ibox-content">
@@ -315,8 +322,13 @@
 <script src="${plugins}/magicsuggest/magicsuggest-min.js"></script>
 <script src="${plugins}/icheckbox/icheckbox.min.js"></script>
 <script src="${plugins}/layer/layer.min.js"></script>
+<script src="${plugins}/bootstrap-dialog/bootstrap-dialog.min.js"></script>
+<script src="${system_js}/bootstrap-multiselect.js"></script>
+<script src="${system_js}/bootstrap-select.js"></script>
+<script src="${system_js}/selectChecked.js"></script>
+<script src="${plugins}/My97DatePicker/WdatePicker.js"></script>
 <script>
-
+    var timer = null;
     function test(e)
     {
         var $tr = $(e).closest('tr');
@@ -663,6 +675,30 @@
     })
     }
 
+    $('a.festival-create').click(function (e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        BootstrapDialog.alert({
+            title: '节日问候',
+            closable: false,
+            buttons: [{
+                label: "提交",
+                cssClass: "btn-primary",   //给按钮添加类名  可以通过此方式给按钮添加样式
+                action: function (dialog) {
+                    $('#festivalForm').submit();
+                    dialog.close();
+                }
+            }
+            ],
+            buttonLabel: '关闭',
+            onhide: function (dialog) {
+                if (null != timer) {
+                    window.clearInterval(timer);
+                }
+            },
+            message: $('<div></div>').load(url)
+        });
+    });
 
 
 

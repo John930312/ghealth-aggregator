@@ -12,4 +12,6 @@ public interface SmsSendMapper
     void modify(SmsSend record);
     
     List<SmsSend> getDatasInTime(SmsSendSearcher searcher);
+    
+    List<SmsSend> getFestivalDatasInTime(SmsSendSearcher searcher);
 }

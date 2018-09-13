@@ -16,4 +16,6 @@ public interface ISMSSendService
     void modify(SmsSend data);
 
     List<SmsSend> getDatasInTime(SmsSendSearcher searcher);
+    
+    List<SmsSend> getFestivalDatasInTime(SmsSendSearcher searcher);
 }

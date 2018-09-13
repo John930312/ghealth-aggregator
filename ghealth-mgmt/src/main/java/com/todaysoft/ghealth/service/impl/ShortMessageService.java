@@ -5,11 +5,13 @@ import com.todaysoft.ghealth.base.response.ListResponse;
 import com.todaysoft.ghealth.base.response.ObjectResponse;
 import com.todaysoft.ghealth.base.response.model.AgencyDetails;
 import com.todaysoft.ghealth.mgmt.request.MaintainShortMessageRequest;
+import com.todaysoft.ghealth.mgmt.request.MaintainSmsSendRequest;
 import com.todaysoft.ghealth.mgmt.request.QueryShortMessageRequest;
 import com.todaysoft.ghealth.model.shortMessage.*;
 import com.todaysoft.ghealth.service.IShortMessageService;
 import com.todaysoft.ghealth.service.wrapper.ShortMessageWrapper;
 import com.todaysoft.ghealth.utils.JsonUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -156,5 +158,13 @@ public class ShortMessageService implements IShortMessageService{
         return wrapper.wrap(response.getData());
     }
 
+    @Override
+    public void create(SmsSend data)
+    {
+        MaintainSmsSendRequest request = new MaintainSmsSendRequest();
+        BeanUtils.copyProperties(data, request, "createTime");
+        request.setCreateTime(null == data.getCreateTime() ? null : String.valueOf(data.getCreateTime().getTime()));
+        gateway.request("/mgmt/smsSend/create", request);
+    }
 
 }

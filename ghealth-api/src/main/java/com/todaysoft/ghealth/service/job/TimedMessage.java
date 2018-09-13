@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -43,7 +44,7 @@ public class TimedMessage
     private Predicate<SmsSend> predicate = x -> MESSAGE_SEND_REPORT.equals(x.getStatus());
     
     /**
-     * 定时任务，每天11:30
+     * 定时任务，每天8:30
      */
     @Scheduled(cron = "0 30 8 ? * *")
     public void sendInMorning()
@@ -82,6 +83,27 @@ public class TimedMessage
         messageSend(getWantedTime(3));
     }
     
+    /**
+     * 定时任务，每天9:30
+     */
+    @Scheduled(cron = "0 0 12 ? * *")
+    public void sendForFestival()
+    {
+        //节日问候
+        List<SmsSend> smsSendList = getWantedFestivalTime(10);
+        if (!CollectionUtils.isEmpty(smsSendList))
+        {
+            smsSendList.forEach(x -> {
+                ccpRestApi.messageSend(x.getPhone(), x.getTemplateId(), new String[] {String.valueOf(smsSendList.size())});
+                if (logger.isDebugEnabled())
+                {
+                    logger.debug("messageSend: phone->" + x.getPhone() + " templateId->" + x.getTemplateId() + " agrs->" + smsSendList.size());
+                }
+                sendService.modify(x);
+            });
+        }
+    }
+    
     private List<SmsSend> getWantedTime(Integer minusHour)
     {
         LocalDateTime beforeNow = LocalDateTime.now().minus(minusHour, ChronoUnit.HOURS).plus(1, ChronoUnit.SECONDS);
@@ -91,6 +113,17 @@ public class TimedMessage
         searcher.setAfter(new Date());
         
         return sendService.getDatasInTime(searcher);
+    }
+    
+    private List<SmsSend> getWantedFestivalTime(Integer minusHour)
+    {
+        LocalDateTime beforeNow = LocalDateTime.now().minus(minusHour, ChronoUnit.HOURS).plus(1, ChronoUnit.SECONDS);
+        
+        SmsSendSearcher searcher = new SmsSendSearcher();
+        searcher.setBefore(Date.from(beforeNow.atZone(ZoneId.systemDefault()).toInstant()));
+        searcher.setAfter(new Date());
+        
+        return sendService.getFestivalDatasInTime(searcher);
     }
     
     private void messageSend(List<SmsSend> datas)
