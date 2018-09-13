@@ -35,7 +35,7 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label required-label">节日模板选择：</label>
                     <div class="col-sm-6">
-                        <select class="form-control" name="templateId">
+                        <select class="form-control" id="templateId" name="templateId">
                             <option value="">节日模板选择：</option>
                             <@dict_category category = "FESTIVAL_TEMPLATE">
                             <#list entries as entry>
@@ -51,7 +51,7 @@
                     <div class="col-sm-6">
                         <input type="text" class="Wdate form-control" id="createTime" name="createTime"
                                style="height: 35px" placeholder="发送日期"
-                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true})"/>
+                               onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:true})" required data-msg="请填写发送日期！"/>
                     </div>
                 </div>
 

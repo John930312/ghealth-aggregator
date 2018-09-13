@@ -317,6 +317,9 @@
 
 <script src="${plugins}/jquery/jquery.min.js"></script>
 <script src="${plugins}/bootstrap/bootstrap.min.js"></script>
+<script src="${plugins}/validation/jquery.validate.min.js"></script>
+<script src="${plugins}/validation/additional-methods.min.js"></script>
+<script src="${plugins}/validation/localization/messages_zh.min.js"></script>
 <script src="${plugins}/pagination/jquery.pagination.js"></script>
 <script src="${system_js}/system.js?v=0.1"></script>
 <script src="${plugins}/magicsuggest/magicsuggest-min.js"></script>
@@ -684,9 +687,25 @@
             buttons: [{
                 label: "提交",
                 cssClass: "btn-primary",   //给按钮添加类名  可以通过此方式给按钮添加样式
-                action: function (dialog) {
-                    $('#festivalForm').submit();
-                    dialog.close();
+                action: function (dialog)
+                {
+                    var agency = $("#deliveryMode").val();
+                    var templateId = $("#templateId").val();
+                    var createTime = $("#createTime").val();
+                    if (agency==""||agency==null){
+                        layer.confirm("请选择代理商！", {title: "提示"});
+                        return false;
+                    } else if (templateId==""||templateId==null){
+                        layer.confirm("请选择短信模板！", {title: "提示"});
+                        return false;
+                    } else if (createTime==""||createTime==null){
+                        layer.confirm("请选择发送日期！", {title: "提示"});
+                        return false;
+                    } else
+                    {
+                        $("#festivalForm").submit();
+                        dialog.close();
+                    }
                 }
             }
             ],
