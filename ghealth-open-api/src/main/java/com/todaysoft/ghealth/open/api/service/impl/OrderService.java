@@ -209,7 +209,15 @@ public class OrderService implements IOrderService
         orderMapper.create(request);
         return new DataResponse<>(request.getId());
     }
-    
+
+    @Override
+    public DataResponse<Boolean> validateHaveCode(String code)
+    {
+        OrderQuery query = new OrderQuery();
+        query.setOrderCode(code);
+        return new DataResponse<>(orderMapper.count(query) == 0);
+    }
+
     private String getPdfUrl(ObjectStorage objectStorage)
     {
         String accessKeyId = "LTAIpKd6ic9Sz1pU";

@@ -2,6 +2,7 @@ package com.todaysoft.ghealth.open.api.mvc;
 
 import java.util.List;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.todaysoft.ghealth.open.api.restful.request.GhealthDatas;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -55,5 +56,11 @@ public class OrderAction
     public DataResponse<String> createDatas(@RequestBody GhealthDatas datas, CredentialsHolder holder)
     {
         return orderService.createDatas(datas);
+    }
+
+    @GetMapping("/validateHaveCode/{code}")
+    public DataResponse<Boolean> validateHaveCode(@PathVariable String code)
+    {
+        return orderService.validateHaveCode(code);
     }
 }
