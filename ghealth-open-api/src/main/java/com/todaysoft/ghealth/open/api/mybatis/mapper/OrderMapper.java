@@ -19,4 +19,6 @@ public interface OrderMapper
     Order getEntityByCode(String code);
 
     ObjectStorage getPdfReportUrl(String orderId);
+
+    long countByCode(String code);
 }
