@@ -560,4 +560,8 @@
             </if>
         </trim>
     </insert>
+
+    <select id="countByCode" resultType="java.lang.Long" parameterType="java.lang.String">
+        SELECT count(o.id) FROM GHEALTH_ORDER o WHERE o.code = #{code} AND o.deleted = false;
+    </select>
 </mapper>

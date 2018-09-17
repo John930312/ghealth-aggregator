@@ -1,27 +1,16 @@
 package com.todaysoft.ghealth.open.api.service.impl;
 
-import java.math.RoundingMode;
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.*;
-
 import com.aliyun.oss.OSSClient;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.todaysoft.ghealth.open.api.mybatis.mapper.CustomerMapper;
-import com.todaysoft.ghealth.open.api.mybatis.mapper.OrderHistoryMapper;
-import com.todaysoft.ghealth.open.api.mybatis.model.*;
-import com.todaysoft.ghealth.open.api.restful.request.GhealthDatas;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
 import com.hsgene.restful.response.DataResponse;
 import com.hsgene.restful.util.CountRecords;
+import com.todaysoft.ghealth.open.api.mybatis.mapper.CustomerMapper;
+import com.todaysoft.ghealth.open.api.mybatis.mapper.OrderHistoryMapper;
 import com.todaysoft.ghealth.open.api.mybatis.mapper.OrderMapper;
+import com.todaysoft.ghealth.open.api.mybatis.model.*;
 import com.todaysoft.ghealth.open.api.restful.model.OrderDTO;
 import com.todaysoft.ghealth.open.api.restful.model.TestingItemReportDTO;
+import com.todaysoft.ghealth.open.api.restful.request.GhealthDatas;
 import com.todaysoft.ghealth.open.api.restful.request.OrderQueryRequest;
 import com.todaysoft.ghealth.open.api.service.IOrderService;
 import com.todaysoft.ghealth.open.api.service.bean.EvaluatedGradeDetails;
@@ -29,6 +18,18 @@ import com.todaysoft.ghealth.open.api.service.bean.GradeConfig;
 import com.todaysoft.ghealth.open.api.service.bean.GradeInterval;
 import com.todaysoft.ghealth.open.api.service.parser.OrderQueryParser;
 import com.todaysoft.ghealth.open.api.service.wrapper.OrderWrapper;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.math.RoundingMode;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.*;
 
 @Service
 public class OrderService implements IOrderService
@@ -51,6 +52,8 @@ public class OrderService implements IOrderService
     private final String AGENCY_ID = "123456789";
     
     private final String AGENCY_NAME = "123456789";
+    
+    private static Logger log = LoggerFactory.getLogger(OrderService.class);
     
     @Override
     public DataResponse<CountRecords<OrderDTO>> list(OrderQueryRequest request)
@@ -169,7 +172,11 @@ public class OrderService implements IOrderService
         Order order = orderMapper.getEntityByCode(code);
         
         ObjectStorage objectStorage = orderMapper.getPdfReportUrl(order.getId());
-        Optional.ofNullable(getPdfUrl(objectStorage)).ifPresent(x -> order.setPdfUrl(x));
+
+        if (Objects.nonNull(objectStorage))
+        {
+            Optional.ofNullable(getPdfUrl(objectStorage)).ifPresent(x -> order.setPdfUrl(x));
+        }
         
         List<OrderHistory> orderHistoryList = orderHistoryMapper.getOrderHistoriesByOrderId(order.getId());
         if (!CollectionUtils.isEmpty(orderHistoryList))
@@ -208,6 +215,13 @@ public class OrderService implements IOrderService
         request.setReportDownloadCount(0);
         orderMapper.create(request);
         return new DataResponse<>(request.getId());
+    }
+    
+    @Override
+    public DataResponse<Boolean> validateHaveCode(String code)
+    {
+        long count = orderMapper.countByCode(code);
+        return new DataResponse<>(count == 0);
     }
     
     private String getPdfUrl(ObjectStorage objectStorage)
