@@ -88,11 +88,11 @@ public class TimedMessage
      * 定时任务，每天9:30
      */
 //    @Scheduled(cron = "0 30 9 ? * *")
-    @Scheduled(cron = "0 20 14 ? * *")
+    @Scheduled(cron = "0 0/2 * ? * *")
     public void sendForFestival()
     {
         //节日问候
-        List<SmsSend> smsSendList = getWantedFestivalTime(15);
+        List<SmsSend> smsSendList = getWantedFestivalTime(18);
 
         if (!CollectionUtils.isEmpty(smsSendList))
         {
