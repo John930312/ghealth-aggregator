@@ -15,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -86,20 +87,35 @@ public class TimedMessage
     /**
      * 定时任务，每天9:30
      */
-    @Scheduled(cron = "0 30 9 ? * *")
+//    @Scheduled(cron = "0 30 9 ? * *")
+    @Scheduled(cron = "0 20 14 ? * *")
     public void sendForFestival()
     {
         //节日问候
-        List<SmsSend> smsSendList = getWantedFestivalTime(10);
+        List<SmsSend> smsSendList = getWantedFestivalTime(15);
+
         if (!CollectionUtils.isEmpty(smsSendList))
         {
-            smsSendList.forEach(x -> {
-                ccpRestApi.messageSend(x.getPhone(), x.getTemplateId(), new String[] {String.valueOf(smsSendList.size())});
-                if (logger.isDebugEnabled())
-                {
-                    logger.debug("messageSend: phone->" + x.getPhone() + " templateId->" + x.getTemplateId() + " agrs->" + smsSendList.size());
-                }
-                sendService.modify(x);
+            //根据模板分组
+            Map<String, List<SmsSend>> agencyMap = smsSendList.stream().collect(groupingBy(SmsSend::getTemplateId));
+
+            agencyMap.forEach((k, v) ->
+            {
+                //同模板去重复手机
+                List<String> phones =  new ArrayList<String>();
+                v.forEach(t -> {
+                    if (!phones.contains(t.getPhone()))
+                    {
+                        ccpRestApi.messageSend(t.getPhone(), k, new String[] {String.valueOf(v.size())});
+                        if (logger.isDebugEnabled())
+                        {
+                            logger.debug("messageSend: phone->" + t.getPhone() + " templateId->" + t + " agrs->" + v.size());
+                        }
+                        sendService.modify(t);
+                        phones.add(t.getPhone());
+                    }
+                });
+
             });
         }
     }
