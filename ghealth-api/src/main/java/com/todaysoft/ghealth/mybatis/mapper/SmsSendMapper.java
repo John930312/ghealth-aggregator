@@ -14,4 +14,6 @@ public interface SmsSendMapper
     List<SmsSend> getDatasInTime(SmsSendSearcher searcher);
     
     List<SmsSend> getFestivalDatasInTime(SmsSendSearcher searcher);
+
+    String getTemplateIdByDate(String date);
 }

@@ -1,5 +1,6 @@
 package com.todaysoft.ghealth.portal.mgmt.mvc;
 
+import com.todaysoft.ghealth.base.response.ObjectResponse;
 import com.todaysoft.ghealth.mgmt.request.MaintainOrderRequest;
 import com.todaysoft.ghealth.mgmt.request.MaintainSmsSendRequest;
 import com.todaysoft.ghealth.portal.mgmt.facade.SmsSendFacade;
@@ -41,5 +42,11 @@ public class SmsSendController
     public void create(@RequestBody MaintainSmsSendRequest request)
     {
         facade.create(request);
+    }
+
+    @RequestMapping("/isUniqueTemplate")
+    public ObjectResponse<Boolean> isUniqueTemplate(@RequestBody MaintainSmsSendRequest request)
+    {
+        return facade.isUniqueTemplate(request);
     }
 }

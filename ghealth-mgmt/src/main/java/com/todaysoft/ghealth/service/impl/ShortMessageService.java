@@ -17,6 +17,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -165,6 +166,18 @@ public class ShortMessageService implements IShortMessageService{
         BeanUtils.copyProperties(data, request, "createTime");
         request.setCreateTime(null == data.getCreateTime() ? null : String.valueOf(data.getCreateTime().getTime()));
         gateway.request("/mgmt/smsSend/create", request);
+    }
+
+    @Override
+    public Boolean isUniqueTemplate(Date createTime, String templateId)
+    {
+        MaintainSmsSendRequest request = new MaintainSmsSendRequest();
+        request.setCreateTime(null == createTime ? null : String.valueOf(createTime.getTime()));
+        request.setTemplateId(templateId);
+        ObjectResponse<Boolean> response = gateway.request("/mgmt/smsSend/isUniqueTemplate", request, new ParameterizedTypeReference<ObjectResponse<Boolean>>()
+        {
+        });
+        return response.getData();
     }
 
 }

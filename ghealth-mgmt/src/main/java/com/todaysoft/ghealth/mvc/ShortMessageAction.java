@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -101,5 +102,10 @@ public class ShortMessageAction extends BaseAction
         service.create(data);
         return redirectList(model, session, "/shortMessage/list.jsp");
     }
-    
+
+    @ResponseBody
+    @RequestMapping("/validateTemplate.do")
+    public Boolean isUniqueTemplate(Date createTime, String templateId) {
+        return service.isUniqueTemplate(createTime, templateId);
+    }
 }

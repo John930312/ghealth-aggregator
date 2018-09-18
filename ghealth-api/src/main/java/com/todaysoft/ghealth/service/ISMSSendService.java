@@ -3,6 +3,7 @@ package com.todaysoft.ghealth.service;
 import com.todaysoft.ghealth.mybatis.model.SmsSend;
 import com.todaysoft.ghealth.mybatis.searcher.SmsSendSearcher;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,4 +19,6 @@ public interface ISMSSendService
     List<SmsSend> getDatasInTime(SmsSendSearcher searcher);
     
     List<SmsSend> getFestivalDatasInTime(SmsSendSearcher searcher);
+
+    Boolean isUniqueTemplate(String date, String templateId);
 }

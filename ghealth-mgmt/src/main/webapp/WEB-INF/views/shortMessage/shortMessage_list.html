@@ -692,6 +692,10 @@
                     var agency = $("#deliveryMode").val();
                     var templateId = $("#templateId").val();
                     var createTime = $("#createTime").val();
+                    var options=$('#templateId option:selected');
+                    var templateName = options.text();
+
+                    var id = $("#templateId").html();
                     if (agency==""||agency==null){
                         layer.confirm("请选择代理商！", {title: "提示"});
                         return false;
@@ -703,8 +707,27 @@
                         return false;
                     } else
                     {
-                        $("#festivalForm").submit();
-                        dialog.close();
+                        var code = $.trim($('#code').val());
+                        $.ajax({
+                            type:'GET',
+                            url:'${base}/shortMessage/validateTemplate.do?createTime='+createTime+'&templateId='+templateId,
+                            success:function(flag){
+                                if(flag){
+                                    layer.confirm('确认生成'+templateName+'短信任务嘛？', { btn: ['确定','取消']}, function(){
+                                        $("#festivalForm").submit();
+                                        dialog.close();
+                                    });
+                                }else{
+                                    layer.alert("当前所选日期已存在其他节日祝福，请重试！", {
+                                        title: "提示"
+                                    });
+                                }
+                            },
+                            error: function (){
+                                alert('some error!');
+                            }
+                        });
+
                     }
                 }
             }

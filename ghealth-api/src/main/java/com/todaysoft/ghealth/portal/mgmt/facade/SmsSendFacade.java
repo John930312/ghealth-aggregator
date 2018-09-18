@@ -1,5 +1,6 @@
 package com.todaysoft.ghealth.portal.mgmt.facade;
 
+import com.todaysoft.ghealth.base.response.ObjectResponse;
 import com.todaysoft.ghealth.mgmt.request.MaintainOrderRequest;
 import com.todaysoft.ghealth.mgmt.request.MaintainSmsSendRequest;
 import com.todaysoft.ghealth.mybatis.model.Agency;
@@ -7,6 +8,7 @@ import com.todaysoft.ghealth.mybatis.model.Customer;
 import com.todaysoft.ghealth.mybatis.model.Order;
 import com.todaysoft.ghealth.mybatis.model.SmsSend;
 import com.todaysoft.ghealth.mybatis.searcher.CustomerSearcher;
+import com.todaysoft.ghealth.mybatis.searcher.SmsSendSearcher;
 import com.todaysoft.ghealth.service.IAgencyService;
 import com.todaysoft.ghealth.service.ICustomerService;
 import com.todaysoft.ghealth.service.IOrderService;
@@ -131,5 +133,16 @@ public class SmsSendFacade
             });
         }
     }
-    
+
+    public ObjectResponse<Boolean> isUniqueTemplate(MaintainSmsSendRequest request)
+    {
+        return new ObjectResponse<Boolean>(sendService.isUniqueTemplate(transferLongToDate("yyyy-MM-dd 00:00:00", Long.valueOf(request.getCreateTime())), request.getTemplateId()));
+    }
+
+    private String transferLongToDate(String dateFormat, Long millSec)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        Date date = new Date(millSec);
+        return sdf.format(date);
+    }
 }

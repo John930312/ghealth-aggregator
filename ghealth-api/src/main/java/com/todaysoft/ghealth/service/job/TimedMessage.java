@@ -3,6 +3,7 @@ package com.todaysoft.ghealth.service.job;
 import com.todaysoft.ghealth.mybatis.model.SmsSend;
 import com.todaysoft.ghealth.mybatis.searcher.SmsSendSearcher;
 import com.todaysoft.ghealth.service.ISMSSendService;
+import com.todaysoft.ghealth.service.impl.ServiceException;
 import com.todaysoft.ghealth.service.sms.CcpRestApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +100,11 @@ public class TimedMessage
             //根据模板分组
             Map<String, List<SmsSend>> agencyMap = smsSendList.stream().collect(groupingBy(SmsSend::getTemplateId));
 
+            if(agencyMap.size() >1)
+            {
+                throw new ServiceException("some error");
+            }
+
             agencyMap.forEach((k, v) ->
             {
                 //同模板去重复手机
@@ -106,10 +112,10 @@ public class TimedMessage
                 v.forEach(t -> {
                     if (!phones.contains(t.getPhone()))
                     {
-                        ccpRestApi.messageSend(t.getPhone(), k, new String[] {String.valueOf(v.size())});
+                        ccpRestApi.messageSend(t.getPhone(), k, null);
                         if (logger.isDebugEnabled())
                         {
-                            logger.debug("messageSend: phone->" + t.getPhone() + " templateId->" + t + " agrs->" + v.size());
+                            logger.debug("messageSend: phone->" + t.getPhone() + " templateId->" + t );
                         }
                         sendService.modify(t);
                         phones.add(t.getPhone());

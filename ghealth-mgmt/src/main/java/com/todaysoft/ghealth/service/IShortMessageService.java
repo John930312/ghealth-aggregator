@@ -4,6 +4,7 @@ import com.todaysoft.ghealth.model.shortMessage.ShortMessage;
 import com.todaysoft.ghealth.model.shortMessage.ShortMessageForm;
 import com.todaysoft.ghealth.model.shortMessage.SmsSend;
 
+import java.util.Date;
 import java.util.List;
 
 public interface IShortMessageService {
@@ -22,4 +23,6 @@ public interface IShortMessageService {
     ShortMessage getShortMessage(String agencyId);
 
     void create(SmsSend data);
+    
+    Boolean isUniqueTemplate(Date createTime, String templateId);
 }

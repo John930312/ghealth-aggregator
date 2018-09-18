@@ -74,4 +74,15 @@
             parameterType="com.todaysoft.ghealth.mybatis.searcher.SmsSendSearcher">
         SELECT * FROM ghealth_sms_send WHERE SENDED = false AND CREATE_TIME &gt;= #{before} AND CREATE_TIME &lt; #{after} AND STATUS = 4
     </select>
+
+    <select id="getTemplateIdByDate" resultType="String" >
+    SELECT
+        DISTINCT TEMPLATE_ID
+    FROM
+        `ghealth_sms_send`
+    WHERE
+    SENDED = false
+    AND STATUS = 4
+    AND  `CREATE_TIME` = #{date,jdbcType=TIMESTAMP}
+    </select>
 </mapper>
