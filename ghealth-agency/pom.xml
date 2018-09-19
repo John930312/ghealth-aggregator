@@ -90,7 +90,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
-        <finalName>ghealth-agcy</finalName>
+        <finalName>ghealth-agency</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
