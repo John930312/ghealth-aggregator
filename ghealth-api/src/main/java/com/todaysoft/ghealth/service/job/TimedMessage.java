@@ -88,12 +88,11 @@ public class TimedMessage
     /**
      * 定时任务，每天9:30
      */
-//    @Scheduled(cron = "0 30 9 ? * *")
-    @Scheduled(cron = "0 0/2 * ? * *")
+    @Scheduled(cron = "0 30 9 ? * *")
     public void sendForFestival()
     {
         //节日问候
-        List<SmsSend> smsSendList = getWantedFestivalTime(18);
+        List<SmsSend> smsSendList = getWantedFestivalTime(10);
 
         if (!CollectionUtils.isEmpty(smsSendList))
         {
@@ -110,15 +109,15 @@ public class TimedMessage
                 //同模板去重复手机
                 List<String> phones =  new ArrayList<String>();
                 v.forEach(t -> {
-                    if (!phones.contains(t.getPhone()))
+                    if (!phones.contains(t.getPhone().trim()))
                     {
-                        ccpRestApi.messageSend(t.getPhone(), k, null);
+                        ccpRestApi.messageSend(t.getPhone().trim(), k, null);
                         if (logger.isDebugEnabled())
                         {
-                            logger.debug("messageSend: phone->" + t.getPhone() + " templateId->" + t );
+                            logger.debug("messageSend: phone->" + t.getPhone().trim() + " templateId->" + t );
                         }
                         sendService.modify(t);
-                        phones.add(t.getPhone());
+                        phones.add(t.getPhone().trim());
                     }
                 });
 
