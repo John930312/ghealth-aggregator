@@ -429,7 +429,7 @@ public class TestingItemContentsGenerator extends AbstractReportContentsGenerato
                                     .count();
                                 if (count.equals(0))
                                 {
-                                    remark = "如果检测结果都是正常";
+                                    remark = "正常";
                                 }
                                 else
                                 {

@@ -61,7 +61,7 @@ public class DictUtils
         }
         else
         {
-            return "如果检测结果都是正常";
+            return "正常";
         }
     }
     
