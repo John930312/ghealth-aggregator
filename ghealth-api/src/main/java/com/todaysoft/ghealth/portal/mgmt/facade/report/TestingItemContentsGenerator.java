@@ -427,7 +427,7 @@ public class TestingItemContentsGenerator extends AbstractReportContentsGenerato
                                     .stream()
                                     .filter(x -> Arrays.asList("CT", "AG", "TC", "GA").contains(x.getGenetype()))
                                     .count();
-                                if (count.equals(0))
+                                if (count == 0)
                                 {
                                     remark = "正常";
                                 }
