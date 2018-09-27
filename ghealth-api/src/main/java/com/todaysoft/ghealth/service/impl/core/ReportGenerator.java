@@ -134,7 +134,7 @@ public class ReportGenerator
         String timestamp = DateFormatUtils.format(new Date(), "yyyyMMddHHmmss");
         File zip = new File(destDirectory, timestamp + ".zip");
         FileUtils.copyInputStreamToFile(rsp.getContent(), zip);
-        String  fileName = destDirectory.substring(destDirectory.lastIndexOf(File.separator));
+        String fileName = destDirectory.substring(destDirectory.lastIndexOf(File.separator));
         List<File> files = ZipUtils.unzip(zip, destDirectory, fileName);
         
         return files;
@@ -142,8 +142,11 @@ public class ReportGenerator
     
     private void evaluate(ReportGenerateContext context)
     {
-        testingEvaluateMapper.deleteOrderTestingItemEvaluateRecords(context.getOrder().getId());
-        testingEvaluateMapper.deleteOrderTestingItemLocusEvaluateRecords(context.getOrder().getId());
+        synchronized (this)
+        {
+            testingEvaluateMapper.deleteOrderTestingItemLocusEvaluateRecords(context.getOrder().getId());
+            testingEvaluateMapper.deleteOrderTestingItemEvaluateRecords(context.getOrder().getId());
+        }
         
         List<TestingItemAlgorithmConfig> configs = context.getTestingItemAlgorithmConfigs();
         
