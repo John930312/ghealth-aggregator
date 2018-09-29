@@ -49,9 +49,9 @@ public class OrderService implements IOrderService
     @Autowired
     private CustomerMapper customerMapper;
     
-    private final String AGENCY_ID = "123456789";
+    private final String AGENCY_ID = "6b3d586a2e71475f99899f5d0a67b031";
     
-    private final String AGENCY_NAME = "123456789";
+    private final String AGENCY_NAME = "江西赣州孙宇";
     
     private static Logger log = LoggerFactory.getLogger(OrderService.class);
     
