@@ -8,6 +8,7 @@ import com.todaysoft.ghealth.service.impl.core.TestingItemLocusEvaluateResult;
 import com.todaysoft.ghealth.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableDouble;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import java.util.*;
@@ -47,8 +48,10 @@ public class TestingItemAlgorithmForTuse extends AbstractTestingItemAlgorithm
     {
         CancerData data = new CancerData();
         List<CancerData> tuseCancerDatas = testingItemAlgorithmConfig.getCancerData();
+        TestingItem testingItem = testingItemAlgorithmConfig.getTestingItem();
         
         MutableObject rs1042522Mutable = new MutableObject();
+        MutableDouble rs1042522Risk = new MutableDouble();
         MutableBoolean rs2070676Mutable = new MutableBoolean();
         String rs2070676 = null;
         String rs1799793 = null;
@@ -58,6 +61,7 @@ public class TestingItemAlgorithmForTuse extends AbstractTestingItemAlgorithm
             if ("rs1042522".equals(entry.getKey()))
             {
                 rs1042522Mutable.setValue(entry.getValue().getGenetype());
+                rs1042522Risk.setValue(entry.getValue().getFactor());
             }
             else if ("rs2070676".equals(entry.getKey()))
             {
@@ -70,7 +74,7 @@ public class TestingItemAlgorithmForTuse extends AbstractTestingItemAlgorithm
                 rs1799793Mutable.setValue(rs1799793.equals("AA"));
             }
         }
-
+        
         Predicate<CancerData> equals1 = a -> rs1042522Mutable.getValue().equals(a.getGeneType());
         Predicate<CancerData> equals2 = a -> rs1042522Mutable.getValue().equals(StringUtils.reverse(a.getGeneType()));
         Optional<CancerData> cancerData = tuseCancerDatas.stream().filter(equals1.or(equals2)).findFirst();
@@ -78,8 +82,8 @@ public class TestingItemAlgorithmForTuse extends AbstractTestingItemAlgorithm
         List<TuseCancerData> list = Collections.EMPTY_LIST;
         Predicate<TuseCancerData> filter1 = x -> x.getSex().equals(0);
         Predicate<TuseCancerData> filter2 = x -> x.getSex().equals(Integer.valueOf(sex));
-        
-        if (cancerData.isPresent())
+        String flag;
+        if ("TUSE".equals(testingItem.getCode()) && cancerData.isPresent())
         {
             list = cancerData.get().getValue().stream().filter(filter1.or(filter2)).map(a -> {
                 
@@ -96,8 +100,14 @@ public class TestingItemAlgorithmForTuse extends AbstractTestingItemAlgorithm
                 return a;
                 
             }).collect(Collectors.toList());
+            flag = getflag(rs2070676, rs1799793, rs1042522Mutable.getValue().toString());
         }
-        String flag = getflag(rs2070676, rs1799793, rs1042522Mutable.getValue().toString());
+        else
+        {
+            list = cancerData.get().getValue().stream().filter(filter1.or(filter2)).collect(Collectors.toList());
+            flag = getTemplateFlag(rs1042522Risk.getValue());
+        }
+        
         data.setCancerFlag(flag);
         data.setValue(list);
         return data;
@@ -106,7 +116,6 @@ public class TestingItemAlgorithmForTuse extends AbstractTestingItemAlgorithm
     
     private String getflag(String CYP2E1, String ERCC2, String p53)
     {
-        
         // flag = 1 --> -
         // flag = 2 --> -/+
         // flag = 3 --> +
@@ -138,6 +147,26 @@ public class TestingItemAlgorithmForTuse extends AbstractTestingItemAlgorithm
             return "一般风险";
         }
         else if (3 == flag || 4 == flag)
+        {
+            return "较高风险";
+        }
+        else
+        {
+            return "高风险";
+        }
+    }
+    
+    private String getTemplateFlag(double risk)
+    {
+        if (risk < 0.8)
+        {
+            return "低风险";
+        }
+        else if (risk >= 0.85 && risk < 1.15)
+        {
+            return "一般风险";
+        }
+        else if (risk >= 1.15 && risk < 1.8)
         {
             return "较高风险";
         }
