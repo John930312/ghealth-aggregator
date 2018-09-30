@@ -959,7 +959,7 @@ public class OrderMgmtFacade
         service.modify(order);
         
         QueryDetailsRequest queryDetailsRequest = new QueryDetailsRequest();
-        queryDetailsRequest.setId(order.getId());
+        queryDetailsRequest.setId(order.getReportGenerateTaskId());
         service.setOrderStautsSuccessed(queryDetailsRequest);
     }
     
