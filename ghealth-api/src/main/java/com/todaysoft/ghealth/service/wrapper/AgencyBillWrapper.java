@@ -130,6 +130,8 @@ public class AgencyBillWrapper
             Optional.ofNullable(orderService.getOrderById(orderId)).ifPresent(x -> target.setDealOrder(x.getCode()));
             String productId = eventDetails.substring(eventDetails.indexOf("-") + 1, eventDetails.length());
             Optional.ofNullable(testingProductService.get(productId)).ifPresent(x -> target.setProductName(x.getName()));
+        }else {
+            Optional.ofNullable(orderService.getOrderById(eventDetails)).ifPresent(x -> target.setDealOrder(x.getCode()));
         }
         Optional.ofNullable(source.getAgency()).ifPresent(x -> target.setAgencyName(x.getName()));
         
