@@ -36,7 +36,7 @@ public class TestingItemEvaluatorRequest
                 result.setLocusEvaluateResult(locusName, genetype, value);
             }
         });
-        if ("TUSE".equals(config.getTestingItem().getCode()))
+        if (config.getTestingItem().getCode().startsWith("TUSE"))
         {
             CancerData cancerData = config.getAlgorithm().getTuseDatas(config, sex, result.getLocusEvaluateResultsAsMap());
             result.setCancerData(cancerData);

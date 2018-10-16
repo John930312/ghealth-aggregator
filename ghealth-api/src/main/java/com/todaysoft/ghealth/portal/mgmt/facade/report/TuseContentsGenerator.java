@@ -39,7 +39,7 @@ public class TuseContentsGenerator extends AbstractReportContentsGenerator
                 continue;
             }
             // 抑癌基因项目
-            if ("TUSE".equals(testingItem.getCode()))
+            if (testingItem.getCode().startsWith("TUSE"))
             {
                 Optional.ofNullable(result.getCancerData()).ifPresent(x -> {
                     List<TuseCancerData> datas = x.getValue().stream().map(a -> {
@@ -86,7 +86,7 @@ public class TuseContentsGenerator extends AbstractReportContentsGenerator
                 continue;
             }
             // 抑癌基因
-            if ("TUSE".equals(testingItem.getCode()))
+            if (testingItem.getCode().startsWith("TUSE"))
             {
                 Optional.ofNullable(result.getCancerData()).ifPresent(x -> {
                     contents.add(getTableBookmarkContents(x.getValue()));
