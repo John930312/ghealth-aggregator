@@ -33,6 +33,8 @@ public class QueryOrdersRequest extends SignatureTokenListRequest
     private String primaryUsername;
 
     private String customerPhone;
+    
+    private String vigilance;
 
     public String getStartReportTime() {
         return startReportTime;
@@ -183,5 +185,15 @@ public class QueryOrdersRequest extends SignatureTokenListRequest
 
     public void setCustomerPhone(String customerPhone) {
         this.customerPhone = customerPhone;
+    }
+    
+    public String getVigilance()
+    {
+        return vigilance;
+    }
+    
+    public void setVigilance(String vigilance)
+    {
+        this.vigilance = vigilance;
     }
 }

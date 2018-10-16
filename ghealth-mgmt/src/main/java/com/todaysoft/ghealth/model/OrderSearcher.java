@@ -32,6 +32,8 @@ public class OrderSearcher
 
     private String customerPhone;
     
+    private String vigilance;
+    
     public String getOrderCode()
     {
         return orderCode;
@@ -162,5 +164,15 @@ public class OrderSearcher
 
     public void setCustomerPhone(String customerPhone) {
         this.customerPhone = customerPhone;
+    }
+    
+    public String getVigilance()
+    {
+        return vigilance;
+    }
+    
+    public void setVigilance(String vigilance)
+    {
+        this.vigilance = vigilance;
     }
 }

@@ -110,6 +110,16 @@
                     </div>
                 </div>
 
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <select class="form-control" name="vigilance" data-value="${(searcher.vigilance)!?html}">
+                            <option value="">警惕状态</option>
+                            <option value="0">非警惕</option>
+                            <option value="1">警惕中</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="col-sm-2" style="float: right">
                     <div class="form-group">
                         <button type="submit" class="btn btn-sm btn-success">
@@ -159,9 +169,6 @@
                         </td>
                         <td><#if record.vigilance??&&record.vigilance=='0'>非警惕<#else>警惕中</#if></td>
                         <td class="flexible-btns" style="white-space: nowrap">
-                            <!--<a  onclick="vigilant('${record.id!?html}')"> class="btn btn-sm btn-success">-->
-                                <!--<i class="fa fa-thn"></i> 警惕-->
-                            <!--</a>-->
                             <#if record.vigilance??&&record.vigilance=='1'>
                                 <a  class="btn btn-sm label-warning"
                                    onclick="setVigilance('${record.id}','0','${base}/order/setVigilance.do','${base}/order/reload.do')">

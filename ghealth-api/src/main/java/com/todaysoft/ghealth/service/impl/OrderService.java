@@ -382,6 +382,11 @@ public class OrderService implements IOrderService
             List<Order> list = orders.stream().filter(x -> x.getCustomer().getPhone().contains(searcher.getCustomerPhone())).collect(toList());
             getFilterOrders(orders, list);
         }
+        if (!StringUtils.isEmpty(searcher.getVigilance()))
+        {
+            List<Order> list = orders.stream().filter(x -> x.getVigilance().contains(searcher.getVigilance())).collect(toList());
+            getFilterOrders(orders, list);
+        }
         if (!StringUtils.isEmpty(searcher.getStartCreateTime()))
         {
             try
