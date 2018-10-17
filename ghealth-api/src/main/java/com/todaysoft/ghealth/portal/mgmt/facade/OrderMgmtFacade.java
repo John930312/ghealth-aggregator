@@ -61,6 +61,8 @@ import java.util.*;
 @Component
 public class OrderMgmtFacade
 {
+    private static Logger log = LoggerFactory.getLogger(OrderMgmtFacade.class);
+
     @Autowired
     private IAccountService accountService;
     
@@ -904,6 +906,7 @@ public class OrderMgmtFacade
     
     public PagerResponse<Order> specialPager(QueryOrdersRequest request)
     {
+        log.error("API查询字段vigilance:"+request.getVigilance());
         int pageNo = null == request.getPageNo() ? 1 : request.getPageNo();
         int pageSize = null == request.getPageSize() ? 10 : request.getPageSize();
         OrderSearcher searcher = new OrderSearcher();

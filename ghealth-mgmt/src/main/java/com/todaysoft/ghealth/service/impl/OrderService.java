@@ -506,6 +506,7 @@ public class OrderService implements IOrderService
         QueryOrdersRequest request = orderWrapper.searcherWarp(searcher);
         request.setPageNo(pageNo);
         request.setPageSize(pageSize);
+        log.error("MGMT查询字段vigilance:"+searcher.getVigilance());
         PagerResponse<com.todaysoft.ghealth.base.response.model.Order> response =
                 gateway.request("/mgmt/order/specialPager", request, new ParameterizedTypeReference<PagerResponse<com.todaysoft.ghealth.base.response.model.Order>>()
                 {
