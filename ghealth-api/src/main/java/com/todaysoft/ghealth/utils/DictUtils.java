@@ -29,19 +29,19 @@ public class DictUtils
     {
         if (level.equals(1))
         {
-            return "未发现风险";
+            return "吸收能力正常，建议多食用富含叶酸食物";
         }
         else if (level.equals(2))
         {
-            return "低风险";
+            return "吸收能力较正常，建议多食用富含叶酸食物";
         }
         else if (level.equals(3))
         {
-            return "中度风险";
+            return "吸收能力较差，可遵医嘱，服用叶酸片";
         }
         else
         {
-            return "高风险";
+            return "吸收能力差，可遵医嘱，服用叶酸片";
         }
     }
     
@@ -49,19 +49,19 @@ public class DictUtils
     {
         if (level.equals(4))
         {
-            return "代谢能力很差";
+            return "代谢能力很差，可遵医嘱，补充维生素B6/9/12";
         }
         else if (level.equals(3))
         {
-            return "代谢能力差";
+            return "代谢能力差，可遵医嘱，补充维生素B6/9/12";
         }
         else if (level.equals(2))
         {
-            return "代谢能力较差";
+            return "代谢能力较差，多食用富含维生素B6/9/12食物";
         }
         else
         {
-            return "正常";
+            return "吸收能力较正常，建议多食用富含叶酸食物";
         }
     }
     
