@@ -61,7 +61,7 @@ public class DictUtils
         }
         else
         {
-            return "吸收能力较正常，建议多食用富含叶酸食物";
+            return "代谢能力正常，多食用维生素B6/9/12食物";
         }
     }
     

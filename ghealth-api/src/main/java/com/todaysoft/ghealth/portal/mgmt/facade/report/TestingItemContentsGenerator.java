@@ -429,11 +429,11 @@ public class TestingItemContentsGenerator extends AbstractReportContentsGenerato
                                     .count();
                                 if (count == 0)
                                 {
-                                    remark = "正常";
+                                    remark = "代谢能力正常，多食用富含维生素B6/9/12食物";
                                 }
                                 else
                                 {
-                                    remark = "代谢能力略有降低";
+                                    remark = "代谢能力略差，多食用富含维生素B6/9/12食物";
                                 }
                             }
                             else
