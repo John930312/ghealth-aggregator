@@ -564,4 +564,18 @@
     <select id="countByCode" resultType="java.lang.Long" parameterType="java.lang.String">
         SELECT count(o.id) FROM GHEALTH_ORDER o WHERE o.code = #{code} AND o.deleted = false;
     </select>
+
+
+    <resultMap id="agencyProductMap" type="com.todaysoft.ghealth.open.api.mybatis.model.AgencyProduct">
+        <result column="AGENCY_PRICE" property="agencyPrice" />
+        <result column="DISCOUNT_PRICE" property="discountPrice" />
+        <result column="DISCOUNT" property="discount" />
+    </resultMap>
+
+    <select id="getAgencyProduct" resultMap="agencyProductMap" parameterType="com.todaysoft.ghealth.open.api.mybatis.model.AgencyProductSearcher">
+        SELECT ap.AGENCY_PRICE,ap.DISCOUNT_PRICE,ap.DISCOUNT
+        FROM ghealth_agency_product ap
+        LEFT JOIN ghealth_testing_product p ON ap.PRODUCT_ID = p.ID
+        WHERE ap.AGENCY_ID = #{agencyId} AND p.CODE = #{productCode}
+    </select>
 </mapper>

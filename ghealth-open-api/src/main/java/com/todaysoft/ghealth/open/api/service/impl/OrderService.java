@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -172,7 +173,7 @@ public class OrderService implements IOrderService
         Order order = orderMapper.getEntityByCode(code);
         
         ObjectStorage objectStorage = orderMapper.getPdfReportUrl(order.getId());
-
+        
         if (Objects.nonNull(objectStorage))
         {
             Optional.ofNullable(getPdfUrl(objectStorage)).ifPresent(x -> order.setPdfUrl(x));
@@ -213,6 +214,14 @@ public class OrderService implements IOrderService
         request.setDeleted(false);
         request.setStatus("0");
         request.setReportDownloadCount(0);
+        
+        AgencyProductSearcher searcher = new AgencyProductSearcher();
+        searcher.setProductCode(request.getProduct().getCode());
+        searcher.setAgencyId(AGENCY_ID);
+        
+        AgencyProduct agencyProduct = orderMapper.getAgencyProduct(searcher);
+        BigDecimal price = agencyProduct.isDiscount() ? new BigDecimal(agencyProduct.getDiscountPrice()) : agencyProduct.getAgencyPrice();
+        request.setActualPrice(price);
         orderMapper.create(request);
         return new DataResponse<>(request.getId());
     }

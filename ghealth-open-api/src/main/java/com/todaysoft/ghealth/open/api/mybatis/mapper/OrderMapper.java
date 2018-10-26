@@ -1,8 +1,8 @@
 package com.todaysoft.ghealth.open.api.mybatis.mapper;
 
-import java.util.List;
-
 import com.todaysoft.ghealth.open.api.mybatis.model.*;
+
+import java.util.List;
 
 public interface OrderMapper
 {
@@ -21,4 +21,6 @@ public interface OrderMapper
     ObjectStorage getPdfReportUrl(String orderId);
 
     long countByCode(String code);
+
+    AgencyProduct getAgencyProduct(AgencyProductSearcher searcher);
 }
