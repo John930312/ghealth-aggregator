@@ -79,8 +79,7 @@ public class TestingItemAlgorithmForTuse extends AbstractTestingItemAlgorithm
         }
         
         final String rs1042522GeneType = rs1042522.getGenetype();
-        final Double rs2070676Factor = rs2070676.getFactor();
-        final Double rs1799793Factor = rs1799793.getFactor();
+        
         final Double rs1042522Factor = rs1042522.getFactor();
         
         Predicate<CancerData> equals1 = a -> rs1042522GeneType.equals(a.getGeneType());
@@ -101,6 +100,8 @@ public class TestingItemAlgorithmForTuse extends AbstractTestingItemAlgorithm
         
         if ("TUSE".equals(testingItem.getCode()) && cancerData.isPresent())
         {
+            final Double rs2070676Factor = rs2070676.getFactor();
+            final Double rs1799793Factor = rs1799793.getFactor();
             list = cancerData.get().getValue().stream().filter(filter1.or(filter2)).map(a -> {
                 Optional<TuseCancerRisk> risk = a.getRisk().stream().filter(x -> Integer.valueOf(sex).equals(x.getSex())).findFirst();
                 Optional<TuseCancerRisk> avgRisk = a.getAvgRisk().stream().filter(x -> Integer.valueOf(sex).equals(x.getSex())).findFirst();
@@ -117,6 +118,14 @@ public class TestingItemAlgorithmForTuse extends AbstractTestingItemAlgorithm
         else
         {
             list = cancerData.get().getValue().stream().filter(filter1.or(filter2)).collect(toList());
+            cancerData.get().getValue().stream().filter(filter1.or(filter2)).map(a -> {
+                Optional<TuseCancerRisk> risk = a.getRisk().stream().filter(x -> Integer.valueOf(sex).equals(x.getSex())).findFirst();
+                Optional<TuseCancerRisk> avgRisk = a.getAvgRisk().stream().filter(x -> Integer.valueOf(sex).equals(x.getSex())).findFirst();
+                a.setRiskBySex(Double.valueOf(decimalFormat.format(risk.get().getRisk() * ageRisk.getValue() * rs1042522Factor)));
+                a.setAvgRiskBySex(avgRisk.get().getRisk());
+                a.setRealRisk(Double.valueOf(decimalFormat.format(a.getRiskBySex() / avgRisk.get().getRisk())));
+                return a;
+            }).collect(toList());
             flag = ItemLevelEvaluator.getLevelInterval(testingItem, rs1042522.getFactor(), 5);
         }
         
