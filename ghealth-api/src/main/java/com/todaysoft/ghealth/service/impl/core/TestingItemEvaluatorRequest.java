@@ -15,9 +15,10 @@ public class TestingItemEvaluatorRequest
 {
     private static Logger log = LoggerFactory.getLogger(AbstractTestingItemEvaluator.class);
     
-    public TestingItemEvaluateResult evaluate(TestingItemAlgorithmConfig config, Map<String, String> genetypes, String sex)
+    public TestingItemEvaluateResult evaluate(TestingItemAlgorithmConfig config, Map<String, String> genetypes, String sex,String customerBirthday)
     {
         TestingItemEvaluateResult result = buildEvaluateResult(config);
+        result.setCustomerBirthday(customerBirthday);
         
         List<TestingItemLocusEvaluateConfig> locusEvaluateConfigs = config.getLocusEvaluateConfigs();
         
@@ -38,7 +39,7 @@ public class TestingItemEvaluatorRequest
         });
         if (config.getTestingItem().getCode().startsWith("TUSE"))
         {
-            CancerData cancerData = config.getAlgorithm().getTuseDatas(config, sex, result.getLocusEvaluateResultsAsMap());
+            CancerData cancerData = config.getAlgorithm().getTuseDatas(config, sex, result);
             result.setCancerData(cancerData);
         }
         else

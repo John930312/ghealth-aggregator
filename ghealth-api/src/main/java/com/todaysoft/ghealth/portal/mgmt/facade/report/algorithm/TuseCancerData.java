@@ -2,11 +2,13 @@ package com.todaysoft.ghealth.portal.mgmt.facade.report.algorithm;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.List;
+
 public class TuseCancerData
 {
     private String cancerName;
     
-    private Double risk;
+    private List<TuseCancerRisk> risk;
     
     private Integer sex;
     
@@ -15,7 +17,13 @@ public class TuseCancerData
     
     private Double realRisk;
     
-    private Double avgRisk;
+    private List<TuseCancerRisk> avgRisk;
+    
+    @JsonInclude
+    private Double riskBySex;
+    
+    @JsonInclude
+    private Double avgRiskBySex;
     
     public String getCancerName()
     {
@@ -25,16 +33,6 @@ public class TuseCancerData
     public void setCancerName(String cancerName)
     {
         this.cancerName = cancerName;
-    }
-    
-    public Double getRisk()
-    {
-        return risk;
-    }
-    
-    public void setRisk(Double risk)
-    {
-        this.risk = risk;
     }
     
     public Integer getLevel()
@@ -67,13 +65,43 @@ public class TuseCancerData
         this.sex = sex;
     }
     
-    public Double getAvgRisk()
+    public List<TuseCancerRisk> getRisk()
+    {
+        return risk;
+    }
+    
+    public void setRisk(List<TuseCancerRisk> risk)
+    {
+        this.risk = risk;
+    }
+    
+    public List<TuseCancerRisk> getAvgRisk()
     {
         return avgRisk;
     }
     
-    public void setAvgRisk(Double avgRisk)
+    public void setAvgRisk(List<TuseCancerRisk> avgRisk)
     {
         this.avgRisk = avgRisk;
+    }
+    
+    public Double getRiskBySex()
+    {
+        return riskBySex;
+    }
+    
+    public void setRiskBySex(Double riskBySex)
+    {
+        this.riskBySex = riskBySex;
+    }
+    
+    public Double getAvgRiskBySex()
+    {
+        return avgRiskBySex;
+    }
+    
+    public void setAvgRiskBySex(Double avgRiskBySex)
+    {
+        this.avgRiskBySex = avgRiskBySex;
     }
 }

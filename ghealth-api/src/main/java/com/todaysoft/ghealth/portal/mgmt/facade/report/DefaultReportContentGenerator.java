@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 
+import com.todaysoft.ghealth.utils.DictUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.util.CollectionUtils;
@@ -81,7 +82,7 @@ public class DefaultReportContentGenerator extends AbstractReportContentsGenerat
             contents.add(new TextBookmarkContent("CUSTOMER_NAME", customer.getName()));
             contents.add(new TextBookmarkContent("CUSTOMER_SEX", dictService.getText("GENDER", customer.getSex())));
             contents.add(new TextBookmarkContent("CUSTOMER_BIRTHDAY", customer.getBirthday()));
-            contents.add(new TextBookmarkContent("CUSTOMER_AGE", getAgeByBirthday(customer.getBirthday())));
+            contents.add(new TextBookmarkContent("CUSTOMER_AGE", DictUtils.getAgeByBirthday(customer.getBirthday())));
             contents.add(new TextBookmarkContent("CUSTOMER_PHONE", customer.getPhone()));
             contents.add(new TextBookmarkContent("CUSTOMER_EMAIL", customer.getEmail()));
             contents.add(new TextBookmarkContent("CUSTOMER_VOCATION", customer.getVocation()));
@@ -144,31 +145,5 @@ public class DefaultReportContentGenerator extends AbstractReportContentsGenerat
         
         return "";
     }
-    
-    private String getAgeByBirthday(String birthday)
-    {
-        try
-        {
-            if (StringUtils.isEmpty(birthday))
-            {
-                return "";
-            }
-            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(birthday);
-            
-            if (Objects.isNull(date))
-            {
-                return "";
-            }
-            Instant instant = date.toInstant();
-            ZoneId zoneId = ZoneId.systemDefault();
-            LocalDate localDate = instant.atZone(zoneId).toLocalDate();
-            Integer birthday_year = localDate.getYear();
-            Integer now = LocalDate.now().getYear();
-            return String.valueOf(now - birthday_year);
-        }
-        catch (ParseException e)
-        {
-            return "";
-        }
-    }
+
 }

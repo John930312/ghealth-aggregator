@@ -163,7 +163,8 @@ public class ReportGenerator
     
     private TestingItemEvaluateResult evaluate(TestingItemAlgorithmConfig config, ReportGenerateContext context)
     {
-        TestingItemEvaluateResult result = testingItemEvaluatorRequest.evaluate(config, context.getGenetypes(), context.getCustomer().getSex());
+        String customerBirthday = StringUtils.isEmpty(context.getCustomer().getBirthday()) ? null : context.getCustomer().getBirthday();
+        TestingItemEvaluateResult result = testingItemEvaluatorRequest.evaluate(config, context.getGenetypes(), context.getCustomer().getSex(),customerBirthday);
         
         result.getlocusEvaluateResults().forEach(locusEvaluateResult -> {
             TestingItemLocusEvaluateRecord entity = new TestingItemLocusEvaluateRecord();
@@ -220,7 +221,7 @@ public class ReportGenerator
         {
             parentFile = pdf.getParentFile();
         }
-        FileUtils.deleteQuietly(parentFile);
+        //        FileUtils.deleteQuietly(parentFile);
         
         ReportGenerateTask task = new ReportGenerateTask();
         task.setId(context.getGenerateKey());

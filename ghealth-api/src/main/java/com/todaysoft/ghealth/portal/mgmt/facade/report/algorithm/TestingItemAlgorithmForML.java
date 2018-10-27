@@ -79,7 +79,7 @@ public class TestingItemAlgorithmForML extends AbstractTestingItemAlgorithm
     }
     
     @Override
-    public CancerData getTuseDatas(TestingItemAlgorithmConfig testingItemAlgorithmConfig, String sex, Map<String, TestingItemLocusEvaluateResult> map)
+    public CancerData getTuseDatas(TestingItemAlgorithmConfig testingItemAlgorithmConfig, String sex, TestingItemEvaluateResult result)
     {
         return null;
     }

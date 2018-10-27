@@ -43,7 +43,7 @@ public class TuseContentsGenerator extends AbstractReportContentsGenerator
             {
                 Optional.ofNullable(result.getCancerData()).ifPresent(x -> {
                     List<TuseCancerData> datas = x.getValue().stream().map(a -> {
-                        Integer leve = ItemLevelEvaluator.getLevelInterval(testingItem, a.getRealRisk(), LevelForFour);
+                        Integer leve = ItemLevelEvaluator.getLevelInterval(testingItem, a.getRealRisk(), 5);
                         a.setLevel(Optional.ofNullable(leve).orElse(0));
                         return a;
                     }).collect(Collectors.toList());
@@ -102,8 +102,8 @@ public class TuseContentsGenerator extends AbstractReportContentsGenerator
         List<String[]> datas = tuseCancerDatas.stream().map(x -> {
             List<String> strs = new ArrayList<>();
             strs.add(String.valueOf(DictUtils.getTuseCancerMap().get(x.getCancerName())));
-            strs.add(String.valueOf(x.getAvgRisk()));
-            strs.add(String.valueOf(x.getRisk()));
+            strs.add(String.valueOf(x.getAvgRiskBySex()));
+            strs.add(String.valueOf(x.getRiskBySex()));
             strs.add(String.valueOf(DictUtils.getTuseLevelTextByValue(x.getLevel())));
             return strs.toArray(new String[strs.size()]);
         }).collect(Collectors.toList());

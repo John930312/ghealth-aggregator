@@ -1,7 +1,16 @@
 package com.todaysoft.ghealth.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class DictUtils
 {
@@ -16,6 +25,10 @@ public class DictUtils
             return "一般风险";
         }
         else if (level.equals(3))
+        {
+            return "稍高风险";
+        }
+        else if (level.equals(4))
         {
             return "较高风险";
         }
@@ -132,5 +145,154 @@ public class DictUtils
         map.put(2, "慎用，有致聋风险");
         map.put(3, "慎用，有致聋风险");
         return map;
+    }
+    
+    public static String getAgeByBirthday(String birthday)
+    {
+        try
+        {
+            if (StringUtils.isEmpty(birthday))
+            {
+                return "";
+            }
+            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(birthday);
+            
+            if (Objects.isNull(date))
+            {
+                return "";
+            }
+            Instant instant = date.toInstant();
+            ZoneId zoneId = ZoneId.systemDefault();
+            LocalDate localDate = instant.atZone(zoneId).toLocalDate();
+            Integer birthday_year = localDate.getYear();
+            Integer now = LocalDate.now().getYear();
+            return String.valueOf(now - birthday_year);
+        }
+        catch (ParseException e)
+        {
+            return "";
+        }
+    }
+    
+    public static Double getByAge(Integer age)
+    {
+        if (null == age)
+        {
+            return 1.0;
+        }
+        
+        if (age <= 20)
+        {
+            return 0.86;
+        }
+        else if (age > 20 && age <= 30)
+        {
+            return 0.93;
+        }
+        else if (age > 30 && age <= 32)
+        {
+            return 0.93;
+        }
+        else if (age > 32 && age <= 34)
+        {
+            return 0.96;
+        }
+        else if (age > 34 && age <= 36)
+        {
+            return 0.97;
+        }
+        else if (age > 36 && age <= 38)
+        {
+            return 0.98;
+        }
+        else if (age > 38 && age <= 40)
+        {
+            return 0.99;
+        }
+        else if (age > 40 && age <= 42)
+        {
+            return 1.0;
+        }
+        else if (age > 42 && age <= 44)
+        {
+            return 1.01;
+        }
+        else if (age > 44 && age <= 46)
+        {
+            return 1.02;
+        }
+        else if (age > 46 && age <= 48)
+        {
+            return 1.03;
+        }
+        else if (age > 48 && age <= 50)
+        {
+            return 1.04;
+        }
+        else if (age > 50 && age <= 52)
+        {
+            return 1.05;
+        }
+        else if (age > 52 && age <= 54)
+        {
+            return 1.06;
+        }
+        else if (age > 54 && age <= 56)
+        {
+            return 1.07;
+        }
+        else if (age > 56 && age <= 58)
+        {
+            return 1.08;
+        }
+        else if (age > 58 && age <= 60)
+        {
+            return 1.09;
+        }
+        else if (age > 60 && age <= 62)
+        {
+            return 1.1;
+        }
+        else if (age > 62 && age <= 64)
+        {
+            return 1.11;
+        }
+        else if (age > 64 && age <= 66)
+        {
+            return 1.12;
+        }
+        else if (age > 66 && age <= 68)
+        {
+            return 1.13;
+        }
+        else if (age > 68 && age <= 70)
+        {
+            return 1.14;
+        }
+        else if (age > 70 && age <= 72)
+        {
+            return 1.15;
+        }
+        else if (age > 72 && age <= 74)
+        {
+            return 1.16;
+        }
+        else if (age > 74 && age <= 76)
+        {
+            return 1.17;
+        }
+        else if (age > 76 && age <= 78)
+        {
+            return 1.18;
+        }
+        else if (age > 78 && age <= 80)
+        {
+            return 1.19;
+        }
+        else
+        {
+            return 1.21;
+        }
+        
     }
 }

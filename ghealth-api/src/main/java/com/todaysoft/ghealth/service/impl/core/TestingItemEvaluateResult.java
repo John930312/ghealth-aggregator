@@ -20,6 +20,8 @@ public class TestingItemEvaluateResult
     
     private CancerData cancerData;
     
+    private String customerBirthday;
+    
     public TestingItemEvaluateConfig getEvaluateConfig()
     {
         return evaluateConfig;
@@ -88,5 +90,15 @@ public class TestingItemEvaluateResult
     public void setCancerData(CancerData cancerData)
     {
         this.cancerData = cancerData;
+    }
+    
+    public String getCustomerBirthday()
+    {
+        return customerBirthday;
+    }
+    
+    public void setCustomerBirthday(String customerBirthday)
+    {
+        this.customerBirthday = customerBirthday;
     }
 }

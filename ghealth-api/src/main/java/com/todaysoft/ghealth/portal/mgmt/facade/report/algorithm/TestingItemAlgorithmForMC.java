@@ -7,6 +7,7 @@ import com.todaysoft.ghealth.service.ICancerService;
 import com.todaysoft.ghealth.service.impl.ServiceException;
 import com.todaysoft.ghealth.service.impl.core.TestingItemAlgorithmConfig;
 import com.todaysoft.ghealth.service.impl.core.TestingItemEvaluateReferenceValue;
+import com.todaysoft.ghealth.service.impl.core.TestingItemEvaluateResult;
 import com.todaysoft.ghealth.service.impl.core.TestingItemLocusEvaluateResult;
 import com.todaysoft.ghealth.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -112,7 +113,7 @@ public class TestingItemAlgorithmForMC extends AbstractTestingItemAlgorithm
     }
     
     @Override
-    public CancerData getTuseDatas(TestingItemAlgorithmConfig testingItemAlgorithmConfig, String sex, Map<String, TestingItemLocusEvaluateResult> map)
+    public CancerData getTuseDatas(TestingItemAlgorithmConfig testingItemAlgorithmConfig, String sex, TestingItemEvaluateResult result)
     {
         return null;
     }
