@@ -54,10 +54,15 @@ public class TuseContentsGenerator extends AbstractReportContentsGenerator
                                 Collectors.joining("、"));
                         if (StringUtils.isEmpty(cancerName))
                         {
-                            cancerName = datas.stream().filter(b -> LevelForThree.equals(b.getLevel())).map(b -> DictUtils.getTuseCancerMap().get(b.getCancerName())).collect(
-                                Collectors.joining("、"));
+                            cancerName = datas.stream()
+                                .filter(b -> LevelForThree.equals(b.getLevel()))
+                                .map(b -> DictUtils.getTuseCancerMap().get(b.getCancerName()))
+                                .collect(Collectors.joining("、"));
                         }
-                        contents.add(new TextBookmarkContent("TUSE_FOLLOW_CANCERS", cancerName));
+                        if (org.apache.commons.lang3.StringUtils.isNotEmpty(cancerName))
+                        {
+                            contents.add(new TextBookmarkContent("TUSE_FOLLOW_CANCERS", "尤其是" + cancerName));
+                        }
                     }
                     contents.add(new TextBookmarkContent("TUSE_RISK_FLAG", result.getCancerData().getCancerFlag()));
                 });
