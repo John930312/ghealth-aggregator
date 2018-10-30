@@ -11,15 +11,15 @@ import com.todaysoft.ghealth.utils.DictUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.reverseOrder;
+import static java.util.stream.Collectors.toList;
+
 public class TuseContentsGenerator extends AbstractReportContentsGenerator
 {
-    private final Integer LevelForFour = 4;
-    
-    private final Integer LevelForThree = 3;
-    
     @Override
     protected List<TextBookmarkContent> generateTextBookmarkContents(ReportGenerateContext context)
     {
@@ -46,22 +46,35 @@ public class TuseContentsGenerator extends AbstractReportContentsGenerator
                         Integer leve = ItemLevelEvaluator.getLevelInterval(testingItem, a.getRealRisk(), 5);
                         a.setLevel(Optional.ofNullable(leve).orElse(0));
                         return a;
-                    }).collect(Collectors.toList());
+                    }).collect(toList());
                     if (!CollectionUtils.isEmpty(datas))
                     {
-                        String cancerName =
-                            datas.stream().filter(b -> LevelForFour.equals(b.getLevel())).map(b -> DictUtils.getTuseCancerMap().get(b.getCancerName())).collect(
-                                Collectors.joining("、"));
-                        if (StringUtils.isEmpty(cancerName))
+                        Map<Integer, List<TuseCancerData>> collect = datas.stream().collect(Collectors.groupingBy(TuseCancerData::getLevel));
+                        if (!CollectionUtils.isEmpty(collect))
                         {
-                            cancerName = datas.stream()
-                                .filter(b -> LevelForThree.equals(b.getLevel()))
-                                .map(b -> DictUtils.getTuseCancerMap().get(b.getCancerName()))
-                                .collect(Collectors.joining("、"));
-                        }
-                        if (org.apache.commons.lang3.StringUtils.isNotEmpty(cancerName))
-                        {
-                            contents.add(new TextBookmarkContent("TUSE_FOLLOW_CANCERS", "尤其是" + cancerName));
+                            List<Integer> sortList = new ArrayList<>(collect.keySet()).stream().sorted(reverseOrder()).collect(toList());
+                            String cancerName = "";
+                            for (int i = 0; i < sortList.size(); i++)
+                            {
+                                if (i == 2)
+                                {
+                                    break;
+                                }
+                                if (sortList.get(i) < 3)
+                                {
+                                    continue;
+                                }
+                                String name = collect.get(sortList.get(i)).stream().map(b -> DictUtils.getTuseCancerMap().get(b.getCancerName())).collect(
+                                    Collectors.joining(" "));
+                                if (!StringUtils.isEmpty(name))
+                                {
+                                    cancerName += name + " ";
+                                }
+                            }
+                            if (org.apache.commons.lang3.StringUtils.isNotEmpty(cancerName))
+                            {
+                                contents.add(new TextBookmarkContent("TUSE_FOLLOW_CANCERS", "尤其是" + cancerName));
+                            }
                         }
                     }
                     contents.add(new TextBookmarkContent("TUSE_RISK_FLAG", result.getCancerData().getCancerFlag()));
@@ -103,19 +116,19 @@ public class TuseContentsGenerator extends AbstractReportContentsGenerator
     
     private TableBookmarkContent getTableBookmarkContents(List<TuseCancerData> tuseCancerDatas)
     {
+        NumberFormat format = NumberFormat.getInstance();
         List<String[]> records = new ArrayList<>();
         List<String[]> datas = tuseCancerDatas.stream().map(x -> {
             List<String> strs = new ArrayList<>();
             strs.add(String.valueOf(DictUtils.getTuseCancerMap().get(x.getCancerName())));
-            strs.add(String.valueOf(x.getAvgRiskBySex()));
-            strs.add(String.valueOf(x.getRiskBySex()));
-            strs.add(String.valueOf(DictUtils.getTuseLevelTextByValue(x.getLevel())));
+            strs.add(format.format(x.getAvgRiskBySex()));
+            strs.add(format.format(x.getRiskBySex()));
+            strs.add(DictUtils.getTuseLevelTextByValue(x.getLevel()));
             return strs.toArray(new String[strs.size()]);
-        }).collect(Collectors.toList());
+        }).collect(toList());
         TableBookmarkContent content = new TableBookmarkContent();
         content.setBookmarkName("TUSE_RELATED_CANCERS");
         content.setRecords(datas);
         return content;
     }
-    
 }
