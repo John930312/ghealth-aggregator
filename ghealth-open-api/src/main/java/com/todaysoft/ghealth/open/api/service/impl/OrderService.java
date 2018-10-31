@@ -1,6 +1,7 @@
 package com.todaysoft.ghealth.open.api.service.impl;
 
 import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.ServiceException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.hsgene.restful.response.DataResponse;
 import com.hsgene.restful.util.CountRecords;
@@ -25,6 +26,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.IdGenerator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -191,6 +193,13 @@ public class OrderService implements IOrderService
     @Override
     public DataResponse<String> createDatas(GhealthDatas datas)
     {
+        OrderRequest request = datas.getOrder();
+        String code = request.getCode();
+        Long count = orderMapper.countByCode(code);
+        if (count > 0)
+        {
+            throw new ServiceException("当前订单编号已存在");
+        }
         Customer customer = datas.getCustomer();
         CustomerRequest customerRequest = new CustomerRequest();
         BeanUtils.copyProperties(customer, customerRequest);
@@ -204,7 +213,6 @@ public class OrderService implements IOrderService
             customerMapper.create(customerRequest);
         }
         
-        OrderRequest request = datas.getOrder();
         Agency agency = new Agency();
         agency.setId(AGENCY_ID);
         request.setAgency(agency);
